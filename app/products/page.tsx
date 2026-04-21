@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import Image from "next/image";
 import BackButton from "@/components/BackButton";
 
 const PRODUCTS = [
@@ -12,7 +13,7 @@ const PRODUCTS = [
     ipRating: "IP65",
     weight: "約 35kg",
     useCases: ["展覽主視覺", "門市形象展示", "活動入口品牌牆"],
-    image: "/images/single.jpg",
+    image: "/images/single.png",
     highlight: "直立細長比例，橫向拼接後形成超寬螢幕",
   },
   {
@@ -24,7 +25,7 @@ const PRODUCTS = [
     ipRating: "IP54",
     weight: "約 80kg（含底座）",
     useCases: ["展場攤位主視覺", "記者會背板", "活動舞台側屏"],
-    image: "/images/triple.jpg",
+    image: "/images/triple.png",
     highlight: "三折可自立，雙面同時展示，360° 視覺覆蓋",
   },
 ];
@@ -46,14 +47,13 @@ export default async function ProductsPage() {
             key={product.key}
             className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-shadow overflow-hidden"
           >
-            {/* Image placeholder */}
-            <div className="bg-gradient-to-br from-gray-800 to-gray-600 h-64 flex items-center justify-center text-white text-opacity-50">
-              <div className="text-center">
-                <div className="text-6xl mb-2">📺</div>
-                <p className="text-sm text-gray-300">
-                  {product.nameZh} — 圖片待補
-                </p>
-              </div>
+            <div className="relative h-64 bg-gray-100 overflow-hidden">
+              <Image
+                src={product.image}
+                alt={product.nameZh}
+                fill
+                className="object-cover"
+              />
             </div>
 
             <div className="p-8">
