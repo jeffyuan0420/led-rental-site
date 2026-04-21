@@ -1,17 +1,25 @@
 "use client";
 
 import { useRef, useState, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import BackButton from "@/components/BackButton";
 
-// LED panel dimensions (mm → we use pixel ratio 1:4 for display)
-// Single panel: 640 x 1920mm
-const PANEL_W = 160; // px (640mm / 4)
-const PANEL_H = 480; // px (1920mm / 4)
-const GAP = 4;       // px - LED seam gap between panels
+const GAP = 4; // px
+
+const MACHINE_CONFIG = {
+  single: { panelW: 160, panelH: 480, mmW: 640, mmH: 1920, maxQty: 3, label: "單面直立機" },
+  triple: { panelW: 320, panelH: 480, mmW: 1280, mmH: 1920, maxQty: 3, label: "三折雙面機（展開）" },
+};
 
 type Quantity = 1 | 2 | 3;
 
 export default function SimulatorClient() {
+  const searchParams = useSearchParams();
+  const machineType = (searchParams.get("type") === "triple" ? "triple" : "single") as keyof typeof MACHINE_CONFIG;
+  const config = MACHINE_CONFIG[machineType];
+  const PANEL_W = config.panelW;
+  const PANEL_H = config.panelH;
+
   const [quantity, setQuantity] = useState<Quantity>(1);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -94,31 +102,39 @@ export default function SimulatorClient() {
       <div className="w-full lg:w-64 flex-shrink-0">
         <BackButton />
         <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-          {/* Quantity selector */}
-          <div className="mb-6">
-            <p className="text-sm font-semibold text-gray-700 mb-3">選擇台數</p>
-            <div className="flex gap-2">
-              {([1, 2, 3] as Quantity[]).map((q) => (
-                <button
-                  key={q}
-                  onClick={() => handleQuantityChange(q)}
-                  className={`flex-1 py-2 rounded-lg text-sm font-bold border-2 transition-all ${
-                    quantity === q
-                      ? "bg-gray-900 text-white border-gray-900"
-                      : "border-gray-300 text-gray-600 hover:border-gray-500"
-                  }`}
-                >
-                  {q} 台
-                </button>
-              ))}
+          {/* Quantity selector — only for single machine */}
+          {config.maxQty > 1 && (
+            <div className="mb-6">
+              <p className="text-sm font-semibold text-gray-700 mb-3">選擇台數</p>
+              <div className="flex gap-2">
+                {([1, 2, 3] as Quantity[]).map((q) => (
+                  <button
+                    key={q}
+                    onClick={() => handleQuantityChange(q)}
+                    className={`flex-1 py-2 rounded-lg text-sm font-bold border-2 transition-all ${
+                      quantity === q
+                        ? "bg-gray-900 text-white border-gray-900"
+                        : "border-gray-300 text-gray-600 hover:border-gray-500"
+                    }`}
+                  >
+                    {q} 台
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Dimensions info */}
           <div className="mb-6 bg-gray-50 rounded-lg p-3 text-xs text-gray-500">
-            <p className="font-semibold text-gray-700 mb-1">拼接尺寸</p>
-            <p>{640 * quantity} × 1920 mm</p>
-            <p className="mt-1 text-gray-400">（{quantity} 台橫向拼接）</p>
+            <p className="font-semibold text-gray-700 mb-1">{config.label}</p>
+            {config.maxQty > 1 ? (
+              <>
+                <p>{config.mmW * quantity} × {config.mmH} mm</p>
+                <p className="mt-1 text-gray-400">（{quantity} 台橫向拼接）</p>
+              </>
+            ) : (
+              <p>{config.mmW} × {config.mmH} mm</p>
+            )}
           </div>
 
           {/* Upload */}
@@ -186,7 +202,7 @@ export default function SimulatorClient() {
         </div>
         {imageUrl && (
           <p className="text-xs text-gray-400 text-center mt-3">
-            預覽比例 1:4（實際尺寸：{640 * quantity} × 1920 mm）
+            預覽比例 1:4（實際尺寸：{config.mmW * (config.maxQty > 1 ? quantity : 1)} × {config.mmH} mm）
           </p>
         )}
       </div>

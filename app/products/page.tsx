@@ -11,7 +11,7 @@ const PRODUCTS = [
     size: "640 × 1920 mm",
     brightness: "650～800 nits",
     ipRating: "IP31",
-    weight: "約 35kg",
+    weight: "52 kg",
     useCases: ["展覽主視覺", "門市形象展示", "活動入口品牌牆"],
     image: "/images/single.png",
     highlight: "直立細長比例，橫向拼接後形成超寬螢幕",
@@ -106,7 +106,7 @@ export default async function ProductsPage() {
 
               <div className="flex gap-3">
                 <Link
-                  href="/simulator"
+                  href={`/simulator?type=${product.key}`}
                   className="flex-1 text-center bg-gray-900 hover:bg-gray-700 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors"
                 >
                   模擬拼接效果
