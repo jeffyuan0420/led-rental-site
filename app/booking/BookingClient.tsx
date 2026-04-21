@@ -8,6 +8,9 @@ import { supabase, type Booking } from "@/lib/supabase";
 
 type BookedRange = { start: Date; end: Date };
 
+const INVENTORY = { single: 24, triple: 2 };
+const BUFFER_DAYS = 2;
+
 export default function BookingClient() {
   const [bookedRanges, setBookedRanges] = useState<BookedRange[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -15,6 +18,7 @@ export default function BookingClient() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [availabilityMsg, setAvailabilityMsg] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -26,6 +30,11 @@ export default function BookingClient() {
     add_setup: false,
     notes: "",
   });
+
+  useEffect(() => {
+    checkAvailability(startDate, endDate, form.product_type, form.quantity);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startDate, endDate, form.product_type, form.quantity]);
 
   // Load booked dates
   useEffect(() => {
@@ -60,10 +69,53 @@ export default function BookingClient() {
     return date >= tomorrow && !isDateBooked(date);
   }
 
+  async function checkAvailability(
+    start: Date | null,
+    end: Date | null,
+    productType: "single" | "triple",
+    qty: number
+  ) {
+    if (!start || !end) { setAvailabilityMsg(null); return; }
+    const maxUnits = INVENTORY[productType];
+    if (qty > maxUnits) {
+      setAvailabilityMsg(`此機種最多可租 ${maxUnits} 台`);
+      return;
+    }
+    const startStr = start.toISOString().split("T")[0];
+    const endStr = end.toISOString().split("T")[0];
+    const { data } = await supabase
+      .from("bookings")
+      .select("quantity, end_date")
+      .eq("status", "confirmed")
+      .eq("product_type", productType)
+      .lte("start_date", endStr)
+      .gte("end_date", startStr);
+
+    const bookedQty = (data ?? []).reduce((sum, b) => sum + b.quantity, 0);
+    const remaining = maxUnits - bookedQty;
+    if (remaining >= qty) {
+      setAvailabilityMsg(null);
+    } else {
+      const earliestFree = (data ?? [])
+        .map((b) => new Date(b.end_date))
+        .sort((a, b) => a.getTime() - b.getTime())[0];
+      const freeDate = new Date(earliestFree);
+      freeDate.setDate(freeDate.getDate() + BUFFER_DAYS + 1);
+      const freeDateStr = `${freeDate.getFullYear()}/${String(freeDate.getMonth()+1).padStart(2,"0")}/${String(freeDate.getDate()).padStart(2,"0")}`;
+      setAvailabilityMsg(
+        `此時段目前僅剩 ${remaining} 台可租，無法滿足 ${qty} 台需求。預計 ${freeDateStr} 後將釋出更多台數。`
+      );
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!startDate || !endDate) {
       setError("請選擇租賃日期區間");
+      return;
+    }
+    if (availabilityMsg) {
+      setError(availabilityMsg);
       return;
     }
     setLoading(true);
@@ -251,6 +303,12 @@ export default function BookingClient() {
           placeholder="請描述您的活動場景、特殊需求等..."
         />
       </div>
+
+      {availabilityMsg && (
+        <p className="text-yellow-800 text-sm bg-yellow-50 border border-yellow-300 rounded-lg px-4 py-2">
+          ⚠️ {availabilityMsg}
+        </p>
+      )}
 
       {error && (
         <p className="text-red-500 text-sm bg-red-50 border border-red-200 rounded-lg px-4 py-2">
