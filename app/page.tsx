@@ -47,8 +47,8 @@ export default async function HomePage() {
             {[
               {
                 icon: "☀️",
-                title: "高亮度戶外適用",
-                desc: "支援戶外強光環境，畫面清晰銳利，適合展覽、活動現場",
+                title: "高亮度室內展示",
+                desc: "650～800 nits 高亮度，畫面清晰銳利，適合室內展覽、活動現場",
               },
               {
                 icon: "🔧",
