@@ -47,12 +47,12 @@ export default async function ProductsPage() {
             key={product.key}
             className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-shadow overflow-hidden"
           >
-            <div className="relative h-64 bg-gray-100 overflow-hidden">
+            <div className="relative h-80 bg-gray-50 overflow-hidden">
               <Image
                 src={product.image}
                 alt={product.nameZh}
                 fill
-                className="object-cover"
+                className="object-contain p-4"
               />
             </div>
 
