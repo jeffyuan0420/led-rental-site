@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "simulator": "Simulator",
+    "calculator": "Calculator",
+    "booking": "Book Now",
+    "admin": "Admin"
+  },
+  "hero": {
+    "title": "LED Display Rental",
+    "subtitle": "Flexible rental for maximum visual impact",
+    "cta_products": "View Products",
+    "cta_booking": "Book Now"
+  },
+  "product": {
+    "single": "Single-Side Display",
+    "triple": "Triple-Fold Double-Side Display",
+    "size": "Size",
+    "brightness": "Brightness",
+    "ip_rating": "IP Rating",
+    "use_case": "Use Cases"
+  },
+  "simulator": {
+    "title": "Assembly Simulator",
+    "subtitle": "Choose quantity, upload image, preview multi-panel arrangement",
+    "quantity_label": "Number of Units",
+    "upload_label": "Upload Image",
+    "upload_btn": "Choose Image",
+    "download_btn": "Download Preview",
+    "units": " unit(s)"
+  },
+  "calculator": {
+    "title": "Price Calculator",
+    "quantity_label": "Units",
+    "days_label": "Rental Days",
+    "setup_label": "Include Setup Assistance",
+    "shipping_label": "Include Shipping (non-remote area)",
+    "rental_fee": "Rental Fee",
+    "setup_fee": "Setup Fee",
+    "shipping_fee": "Shipping (round trip)",
+    "total": "Estimated Total",
+    "days_unit": "day(s)",
+    "currency": "NT$",
+    "note": "* Estimated amount only. Final price confirmed in agreement."
+  },
+  "booking": {
+    "title": "Book a Rental",
+    "subtitle": "Fill in the details and we'll confirm within 1 business day",
+    "date_label": "Rental Period",
+    "date_start": "Start Date",
+    "date_end": "End Date",
+    "name_label": "Full Name",
+    "company_label": "Company (optional)",
+    "phone_label": "Phone Number",
+    "email_label": "Email Address",
+    "product_label": "Product Type",
+    "quantity_label": "Units",
+    "setup_label": "Setup Assistance Needed",
+    "notes_label": "Notes",
+    "submit_btn": "Submit Booking",
+    "success_title": "Booking Submitted!",
+    "success_msg": "Thank you for your booking. We will confirm the details within 1 business day."
+  },
+  "common": {
+    "line_inquiry": "LINE Inquiry",
+    "loading": "Loading...",
+    "error": "An error occurred. Please try again.",
+    "required": "Required"
+  }
+}

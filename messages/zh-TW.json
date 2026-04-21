@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "home": "首頁",
+    "products": "產品介紹",
+    "simulator": "拼接模擬",
+    "calculator": "費用試算",
+    "booking": "預約租賃",
+    "admin": "後台管理"
+  },
+  "hero": {
+    "title": "LED 廣告機租賃",
+    "subtitle": "靈活租賃，最大化您的展示效益",
+    "cta_products": "了解產品",
+    "cta_booking": "立即預約"
+  },
+  "product": {
+    "single": "單面直立機",
+    "triple": "三折雙面機",
+    "size": "尺寸",
+    "brightness": "亮度",
+    "ip_rating": "防護等級",
+    "use_case": "適用場景"
+  },
+  "simulator": {
+    "title": "拼接視覺模擬器",
+    "subtitle": "選擇台數，上傳圖片，即時預覽拼接效果",
+    "quantity_label": "選擇台數",
+    "upload_label": "上傳圖片",
+    "upload_btn": "選擇圖片",
+    "download_btn": "下載預覽圖",
+    "units": "台"
+  },
+  "calculator": {
+    "title": "費用試算器",
+    "quantity_label": "台數",
+    "days_label": "租賃天數",
+    "setup_label": "含設定協助",
+    "shipping_label": "含運費（非偏遠山區）",
+    "rental_fee": "租賃費用",
+    "setup_fee": "設定協助費",
+    "shipping_fee": "運費（來回）",
+    "total": "估算總費用",
+    "days_unit": "天",
+    "currency": "NT$",
+    "note": "※ 以上為估算金額，實際費用以確認書為準"
+  },
+  "booking": {
+    "title": "預約租賃",
+    "subtitle": "填寫以下資訊，我們將於 1 工作天內與您確認",
+    "date_label": "租賃日期區間",
+    "date_start": "開始日期",
+    "date_end": "結束日期",
+    "name_label": "姓名",
+    "company_label": "公司名稱（選填）",
+    "phone_label": "聯絡電話",
+    "email_label": "電子信箱",
+    "product_label": "產品類型",
+    "quantity_label": "台數",
+    "setup_label": "需要設定協助",
+    "notes_label": "備註",
+    "submit_btn": "送出預約",
+    "success_title": "預約成功！",
+    "success_msg": "感謝您的預約，我們將於 1 工作天內與您確認細節。"
+  },
+  "common": {
+    "line_inquiry": "LINE 詢購",
+    "loading": "載入中...",
+    "error": "發生錯誤，請稍後再試",
+    "required": "必填"
+  }
+}
