@@ -133,6 +133,12 @@ export default function BookingClient() {
     if (sbError) {
       setError(t("submit_error"));
     } else {
+      // Fire-and-forget email notification (non-blocking)
+      fetch("/api/notify-booking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(booking),
+      }).catch(() => {});
       setSubmitted(true);
     }
     setLoading(false);
