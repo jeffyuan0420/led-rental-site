@@ -88,7 +88,9 @@
     "subtitle": "即時估算您的租賃費用",
     "contact_for_quote": "請聯繫我們取得最新報價",
     "back": "返回上一頁",
-    "goto_booking": "前往預約"
+    "goto_booking": "前往預約",
+    "long_rental_warning": "展期超過 5 天，費用依專案報價",
+    "long_rental_cta": "聯繫業務洽談"
   },
   "booking": {
     "title": "預約租賃",

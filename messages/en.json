@@ -88,7 +88,9 @@
     "subtitle": "Get an instant estimate for your rental",
     "contact_for_quote": "Contact us for the latest quote",
     "back": "Back",
-    "goto_booking": "Proceed to Booking"
+    "goto_booking": "Proceed to Booking",
+    "long_rental_warning": "Rentals over 5 days are priced per project",
+    "long_rental_cta": "Contact Us via LINE"
   },
   "booking": {
     "title": "Book a Rental",
