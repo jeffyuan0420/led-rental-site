@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, type Booking } from "@/lib/supabase";
+import { calculateTotal } from "@/lib/pricing";
 
 const PRODUCT_LABELS = {
   single: "單面直立機",
@@ -14,6 +15,55 @@ const STATUS_LABELS = {
   confirmed: { label: "已確認", color: "bg-green-100 text-green-800" },
   cancelled: { label: "已取消", color: "bg-red-100 text-red-800" },
 };
+
+function calcDays(start: string, end: string): number {
+  const ms = new Date(end).getTime() - new Date(start).getTime();
+  return Math.max(1, Math.round(ms / 86400000) + 1);
+}
+
+function calcFee(b: Booking): string {
+  const days = calcDays(b.start_date, b.end_date);
+  if (days > 5) return "專案報價";
+  const { total } = calculateTotal({
+    productType: b.product_type,
+    quantity: b.quantity,
+    days,
+    addSetup: b.add_setup,
+    includeShipping: true,
+  });
+  return `NT$ ${total.toLocaleString()}`;
+}
+
+function exportCSV(bookings: Booking[]) {
+  const headers = ["姓名", "公司", "電話", "Email", "產品", "台數", "進場日期", "撤場日期", "天數", "設定協助", "估算費用", "狀態", "建立時間", "備註"];
+  const rows = bookings.map((b) => {
+    const days = calcDays(b.start_date, b.end_date);
+    return [
+      b.name,
+      b.company ?? "",
+      b.phone,
+      b.email,
+      PRODUCT_LABELS[b.product_type],
+      b.quantity,
+      b.start_date,
+      b.end_date,
+      days,
+      b.add_setup ? "是" : "否",
+      calcFee(b),
+      STATUS_LABELS[b.status].label,
+      new Date(b.created_at).toLocaleString("zh-TW"),
+      b.notes ?? "",
+    ].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(",");
+  });
+  const csv = "﻿" + [headers.join(","), ...rows].join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `bookings-${new Date().toISOString().split("T")[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 export default function AdminBookingsClient() {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -52,6 +102,13 @@ export default function AdminBookingsClient() {
     }
   }
 
+  async function deleteBooking(id: string) {
+    if (!confirm("確定要刪除此筆預訂？此操作無法復原。")) return;
+    await supabase.from("bookings").delete().eq("id", id);
+    setSelected(null);
+    await loadBookings();
+  }
+
   async function handleLogout() {
     await supabase.auth.signOut();
     router.push("/admin/login");
@@ -66,7 +123,13 @@ export default function AdminBookingsClient() {
   return (
     <div>
       {/* Header bar */}
-      <div className="flex justify-end mb-6">
+      <div className="flex justify-between items-center mb-6">
+        <button
+          onClick={() => exportCSV(bookings)}
+          className="text-sm bg-gray-900 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors"
+        >
+          ↓ 匯出 CSV
+        </button>
         <button
           onClick={handleLogout}
           className="text-sm text-gray-500 hover:text-red-600 border border-gray-300 px-4 py-2 rounded-lg transition-colors"
@@ -97,7 +160,7 @@ export default function AdminBookingsClient() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                {["姓名", "公司", "產品", "台數", "日期區間", "設定協助", "狀態", "操作"].map((col) => (
+                {["姓名", "公司", "產品", "台數", "日期區間", "估算費用", "設定協助", "狀態", "操作"].map((col) => (
                   <th key={col} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
                     {col}
                   </th>
@@ -107,7 +170,7 @@ export default function AdminBookingsClient() {
             <tbody className="divide-y divide-gray-100">
               {bookings.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-10 text-gray-400">
+                  <td colSpan={9} className="text-center py-10 text-gray-400">
                     尚無預訂資料
                   </td>
                 </tr>
@@ -125,6 +188,9 @@ export default function AdminBookingsClient() {
                     <td className="px-4 py-3 whitespace-nowrap">
                       {b.start_date} ~ {b.end_date}
                     </td>
+                    <td className="px-4 py-3 whitespace-nowrap font-medium text-gray-900">
+                      {calcFee(b)}
+                    </td>
                     <td className="px-4 py-3">
                       {b.add_setup ? "✅" : "—"}
                     </td>
@@ -134,15 +200,23 @@ export default function AdminBookingsClient() {
                       </span>
                     </td>
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                      <select
-                        value={b.status}
-                        onChange={(e) => updateStatus(b.id, e.target.value as Booking["status"])}
-                        className="text-xs border border-gray-300 rounded px-2 py-1 focus:outline-none"
-                      >
-                        <option value="pending">待確認</option>
-                        <option value="confirmed">已確認</option>
-                        <option value="cancelled">已取消</option>
-                      </select>
+                      <div className="flex items-center gap-2">
+                        <select
+                          value={b.status}
+                          onChange={(e) => updateStatus(b.id, e.target.value as Booking["status"])}
+                          className="text-xs border border-gray-300 rounded px-2 py-1 focus:outline-none"
+                        >
+                          <option value="pending">待確認</option>
+                          <option value="confirmed">已確認</option>
+                          <option value="cancelled">已取消</option>
+                        </select>
+                        <button
+                          onClick={() => deleteBooking(b.id)}
+                          className="text-xs text-red-400 hover:text-red-600 border border-red-200 hover:border-red-400 px-2 py-1 rounded transition-colors"
+                        >
+                          刪除
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -180,6 +254,7 @@ export default function AdminBookingsClient() {
                 { label: "產品", value: PRODUCT_LABELS[selected.product_type] },
                 { label: "台數", value: `${selected.quantity} 台` },
                 { label: "租賃日期", value: `${selected.start_date} ~ ${selected.end_date}` },
+                { label: "估算費用", value: calcFee(selected) },
                 { label: "設定協助", value: selected.add_setup ? "是" : "否" },
                 { label: "備註", value: selected.notes ?? "—" },
                 { label: "建立時間", value: new Date(selected.created_at).toLocaleString("zh-TW") },
@@ -202,6 +277,12 @@ export default function AdminBookingsClient() {
                 className="flex-1 bg-red-100 hover:bg-red-200 text-red-700 font-semibold py-2 rounded-lg text-sm transition-colors"
               >
                 取消預訂
+              </button>
+              <button
+                onClick={() => deleteBooking(selected.id)}
+                className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors"
+              >
+                刪除
               </button>
             </div>
           </div>
