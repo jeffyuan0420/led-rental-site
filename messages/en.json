@@ -13,13 +13,42 @@
     "cta_products": "View Products",
     "cta_booking": "Book Now"
   },
+  "home": {
+    "why_title": "Why Choose Persona Taiwan?",
+    "feat1_title": "High-Brightness Indoor Display",
+    "feat1_desc": "650–800 nits brightness for crystal-clear visuals at indoor exhibitions and events",
+    "feat2_title": "Flexible Multi-Panel Setup",
+    "feat2_desc": "Stack 1 to 3 units side-by-side to extend the visual canvas for any venue",
+    "feat3_title": "Full Setup Support",
+    "feat3_desc": "Optional professional setup assistance from installation through teardown"
+  },
   "product": {
     "single": "Single-Side Display",
     "triple": "Triple-Fold Double-Side Display",
     "size": "Size",
     "brightness": "Brightness",
     "ip_rating": "IP Rating",
-    "use_case": "Use Cases"
+    "use_case": "Use Cases",
+    "weight": "Weight",
+    "page_subtitle": "Two high-brightness LED display models to meet every presentation need",
+    "simulate_btn": "Simulate Layout",
+    "single_name": "Single / Two-Fold Display",
+    "triple_name": "Triple-Fold Double-Side Display",
+    "single_highlight": "Tall vertical format — stack side by side to form an ultra-wide display",
+    "triple_highlight": "Self-standing triple-fold, double-sided for 360° visual coverage",
+    "single_use1": "Exhibition main visual",
+    "single_use2": "Retail brand display",
+    "single_use3": "Event entrance brand wall",
+    "triple_use1": "Trade show booth visual",
+    "triple_use2": "Press conference backdrop",
+    "triple_use3": "Stage side screen",
+    "config_title": "Display Configuration",
+    "config_unit": "Unit",
+    "config_joined": "unit(s) side by side",
+    "config_ratio_16_9": "Wider than 16:9",
+    "config_impact": "Stunning coverage",
+    "config_large_venue": "Perfect for large spaces",
+    "config_ultrawide": "Ultra-wide 2:1"
   },
   "simulator": {
     "title": "Assembly Simulator",
@@ -27,8 +56,12 @@
     "quantity_label": "Number of Units",
     "upload_label": "Upload Image",
     "upload_btn": "Choose Image",
+    "reupload_btn": "Change Image",
     "download_btn": "Download Preview",
-    "units": " unit(s)"
+    "units": " unit(s)",
+    "units_joined": "unit(s) side by side",
+    "empty_hint": "Upload an image to preview the multi-panel layout",
+    "preview_scale": "Preview at 1:4 scale"
   },
   "calculator": {
     "title": "Price Calculator",
@@ -42,7 +75,20 @@
     "total": "Estimated Total",
     "days_unit": "day(s)",
     "currency": "NT$",
-    "note": "* Estimated amount only. Final price confirmed in agreement."
+    "note": "* Estimated amount only. Final price confirmed in agreement.",
+    "product_type_label": "Model",
+    "single_label": "Single / Two-Fold",
+    "triple_label": "Triple-Fold Double-Side",
+    "qty_suffix": "unit(s)",
+    "day_suffix": "day(s)",
+    "include_setup": "Include Setup Assistance Service",
+    "include_shipping": "Include Shipping (non-remote area, round trip)",
+    "estimated_total_label": "Estimated Total",
+    "rates_tbd": "Rates coming soon",
+    "subtitle": "Get an instant estimate for your rental",
+    "contact_for_quote": "Contact us for the latest quote",
+    "back": "Back",
+    "goto_booking": "Proceed to Booking"
   },
   "booking": {
     "title": "Book a Rental",
@@ -60,12 +106,28 @@
     "notes_label": "Notes",
     "submit_btn": "Submit Booking",
     "success_title": "Booking Submitted!",
-    "success_msg": "Thank you for your booking. We will confirm the details within 1 business day."
+    "success_msg": "Thank you for your booking. We will confirm the details within 1 business day.",
+    "add_setup_label": "Setup Assistance Required",
+    "single_option": "Single / Two-Fold Display",
+    "triple_option": "Triple-Fold Double-Side Display",
+    "qty_unit": "unit(s)",
+    "submit_loading": "Submitting...",
+    "submit_error": "Submission failed. Please try again or contact us.",
+    "date_required": "Please select a rental date range",
+    "availability_max": "Maximum {max} unit(s) available for this model",
+    "availability_shortage": "Only {remaining} unit(s) available for this period ({qty} requested). More expected after {date}.",
+    "date_start_placeholder": "Select start date",
+    "date_end_placeholder": "Select end date",
+    "name_placeholder": "Full name",
+    "company_placeholder": "Company name",
+    "phone_placeholder": "0912-345-678",
+    "notes_placeholder": "Describe your event, setup requirements, etc."
   },
   "common": {
     "line_inquiry": "LINE Inquiry",
     "loading": "Loading...",
     "error": "An error occurred. Please try again.",
-    "required": "Required"
+    "required": "Required",
+    "back": "Back"
   }
 }

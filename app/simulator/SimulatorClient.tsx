@@ -2,18 +2,21 @@
 
 import { useRef, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import BackButton from "@/components/BackButton";
 
 const GAP = 4; // px
 
 const MACHINE_CONFIG = {
-  single: { panelW: 160, panelH: 480, mmW: 640, mmH: 1920, maxQty: 3, label: "單面直立機" },
-  triple: { panelW: 320, panelH: 480, mmW: 1280, mmH: 1920, maxQty: 3, label: "三折雙面機（展開）" },
+  single: { panelW: 160, panelH: 480, mmW: 664, mmH: 1920, maxQty: 3, labelKey: "single_name" },
+  triple: { panelW: 320, panelH: 480, mmW: 1280, mmH: 1920, maxQty: 3, labelKey: "triple_name" },
 };
 
 type Quantity = 1 | 2 | 3;
 
 export default function SimulatorClient() {
+  const t = useTranslations("simulator");
+  const tProduct = useTranslations("product");
   const searchParams = useSearchParams();
   const machineType = (searchParams.get("type") === "triple" ? "triple" : "single") as keyof typeof MACHINE_CONFIG;
   const config = MACHINE_CONFIG[machineType];
@@ -42,11 +45,9 @@ export default function SimulatorClient() {
 
       const img = new Image();
       img.onload = () => {
-        // Fill background
         ctx.fillStyle = "#111";
         ctx.fillRect(0, 0, w, h);
 
-        // Draw image scaled to fit entire canvas
         const scale = Math.max(w / img.width, h / img.height);
         const sw = img.width * scale;
         const sh = img.height * scale;
@@ -54,14 +55,12 @@ export default function SimulatorClient() {
         const sy = (h - sh) / 2;
         ctx.drawImage(img, sx, sy, sw, sh);
 
-        // Draw LED seam gaps
         ctx.fillStyle = "#000";
         for (let i = 1; i < qty; i++) {
           const x = PANEL_W * i + GAP * (i - 1);
           ctx.fillRect(x, 0, GAP, h);
         }
 
-        // Draw panel borders
         ctx.strokeStyle = "#333";
         ctx.lineWidth = 1;
         for (let i = 0; i < qty; i++) {
@@ -102,10 +101,9 @@ export default function SimulatorClient() {
       <div className="w-full lg:w-64 flex-shrink-0">
         <BackButton />
         <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-          {/* Quantity selector — only for single machine */}
           {config.maxQty > 1 && (
             <div className="mb-6">
-              <p className="text-sm font-semibold text-gray-700 mb-3">選擇台數</p>
+              <p className="text-sm font-semibold text-gray-700 mb-3">{t("quantity_label")}</p>
               <div className="flex gap-2">
                 {([1, 2, 3] as Quantity[]).map((q) => (
                   <button
@@ -117,7 +115,7 @@ export default function SimulatorClient() {
                         : "border-gray-300 text-gray-600 hover:border-gray-500"
                     }`}
                   >
-                    {q} 台
+                    {q}{t("units")}
                   </button>
                 ))}
               </div>
@@ -126,11 +124,11 @@ export default function SimulatorClient() {
 
           {/* Dimensions info */}
           <div className="mb-6 bg-gray-50 rounded-lg p-3 text-xs text-gray-500">
-            <p className="font-semibold text-gray-700 mb-1">{config.label}</p>
+            <p className="font-semibold text-gray-700 mb-1">{tProduct(config.labelKey as "single_name" | "triple_name")}</p>
             {config.maxQty > 1 ? (
               <>
                 <p>{config.mmW * quantity} × {config.mmH} mm</p>
-                <p className="mt-1 text-gray-400">（{quantity} 台橫向拼接）</p>
+                <p className="mt-1 text-gray-400">（{quantity} {t("units_joined")}）</p>
               </>
             ) : (
               <p>{config.mmW} × {config.mmH} mm</p>
@@ -139,7 +137,7 @@ export default function SimulatorClient() {
 
           {/* Upload */}
           <div className="mb-6">
-            <p className="text-sm font-semibold text-gray-700 mb-3">上傳圖片</p>
+            <p className="text-sm font-semibold text-gray-700 mb-3">{t("upload_label")}</p>
             <input
               ref={fileInputRef}
               type="file"
@@ -151,7 +149,7 @@ export default function SimulatorClient() {
               onClick={() => fileInputRef.current?.click()}
               className="w-full py-2.5 border-2 border-dashed border-gray-300 rounded-lg text-sm text-gray-600 hover:border-yellow-400 hover:text-yellow-700 transition-colors"
             >
-              {imageUrl ? "重新選擇圖片" : "選擇圖片"}
+              {imageUrl ? t("reupload_btn") : t("upload_btn")}
             </button>
           </div>
 
@@ -161,7 +159,7 @@ export default function SimulatorClient() {
             disabled={!imageUrl}
             className="w-full py-2.5 bg-yellow-400 hover:bg-yellow-300 disabled:bg-gray-200 disabled:text-gray-400 text-gray-900 font-semibold rounded-lg text-sm transition-colors"
           >
-            下載預覽圖
+            {t("download_btn")}
           </button>
         </div>
       </div>
@@ -174,20 +172,12 @@ export default function SimulatorClient() {
               <canvas
                 ref={canvasRef}
                 className="rounded shadow-2xl"
-                style={{
-                  maxWidth: "100%",
-                  height: "auto",
-                  display: "block",
-                }}
+                style={{ maxWidth: "100%", height: "auto", display: "block" }}
               />
             </div>
           ) : (
             <div className="text-center text-gray-500">
-              {/* Empty state: show frame outlines */}
-              <div
-                className="flex gap-1 mb-4"
-                style={{ height: PANEL_H + "px" }}
-              >
+              <div className="flex gap-1 mb-4" style={{ height: PANEL_H + "px" }}>
                 {Array.from({ length: quantity }).map((_, i) => (
                   <div
                     key={i}
@@ -196,13 +186,13 @@ export default function SimulatorClient() {
                   />
                 ))}
               </div>
-              <p className="text-sm">請上傳圖片以預覽拼接效果</p>
+              <p className="text-sm">{t("empty_hint")}</p>
             </div>
           )}
         </div>
         {imageUrl && (
           <p className="text-xs text-gray-400 text-center mt-3">
-            預覽比例 1:4（實際尺寸：{config.mmW * (config.maxQty > 1 ? quantity : 1)} × {config.mmH} mm）
+            {t("preview_scale")} — {config.mmW * (config.maxQty > 1 ? quantity : 1)} × {config.mmH} mm
           </p>
         )}
       </div>

@@ -9,7 +9,7 @@ export default async function CalculatorPage() {
         {t("title")}
       </h1>
       <p className="text-center text-gray-500 mb-12 text-lg">
-        即時估算您的租賃費用
+        {t("subtitle")}
       </p>
       <CalculatorClient />
     </div>

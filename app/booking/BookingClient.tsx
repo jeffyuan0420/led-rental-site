@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import BackButton from "@/components/BackButton";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -12,6 +13,7 @@ const INVENTORY = { single: 24, triple: 2 };
 const BUFFER_DAYS = 2;
 
 export default function BookingClient() {
+  const t = useTranslations("booking");
   const [bookedRanges, setBookedRanges] = useState<BookedRange[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -36,7 +38,6 @@ export default function BookingClient() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startDate, endDate, form.product_type, form.quantity]);
 
-  // Load booked dates
   useEffect(() => {
     async function loadBookings() {
       const { data } = await supabase
@@ -78,7 +79,7 @@ export default function BookingClient() {
     if (!start || !end) { setAvailabilityMsg(null); return; }
     const maxUnits = INVENTORY[productType];
     if (qty > maxUnits) {
-      setAvailabilityMsg(`此機種最多可租 ${maxUnits} 台`);
+      setAvailabilityMsg(t("availability_max", { max: maxUnits }));
       return;
     }
     const startStr = start.toISOString().split("T")[0];
@@ -103,7 +104,7 @@ export default function BookingClient() {
       freeDate.setDate(freeDate.getDate() + BUFFER_DAYS + 1);
       const freeDateStr = `${freeDate.getFullYear()}/${String(freeDate.getMonth()+1).padStart(2,"0")}/${String(freeDate.getDate()).padStart(2,"0")}`;
       setAvailabilityMsg(
-        `此時段目前僅剩 ${remaining} 台可租，無法滿足 ${qty} 台需求。預計 ${freeDateStr} 後將釋出更多台數。`
+        t("availability_shortage", { remaining, qty, date: freeDateStr })
       );
     }
   }
@@ -111,7 +112,7 @@ export default function BookingClient() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!startDate || !endDate) {
-      setError("請選擇租賃日期區間");
+      setError(t("date_required"));
       return;
     }
     if (availabilityMsg) {
@@ -130,7 +131,7 @@ export default function BookingClient() {
     const { error: sbError } = await supabase.from("bookings").insert([booking]);
 
     if (sbError) {
-      setError("送出失敗，請稍後再試或聯繫我們");
+      setError(t("submit_error"));
     } else {
       setSubmitted(true);
     }
@@ -141,10 +142,8 @@ export default function BookingClient() {
     return (
       <div className="bg-green-50 border border-green-200 rounded-2xl p-10 text-center">
         <div className="text-5xl mb-4">✅</div>
-        <h2 className="text-2xl font-bold text-green-800 mb-3">預約成功！</h2>
-        <p className="text-green-700">
-          感謝您的預約，我們將於 1 工作天內與您確認細節。
-        </p>
+        <h2 className="text-2xl font-bold text-green-800 mb-3">{t("success_title")}</h2>
+        <p className="text-green-700">{t("success_msg")}</p>
       </div>
     );
   }
@@ -155,11 +154,11 @@ export default function BookingClient() {
       {/* Date picker */}
       <div>
         <label className="block text-sm font-semibold text-gray-700 mb-2">
-          租賃日期區間 <span className="text-red-500">*</span>
+          {t("date_label")} <span className="text-red-500">*</span>
         </label>
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
-            <p className="text-xs text-gray-500 mb-1">開始日期</p>
+            <p className="text-xs text-gray-500 mb-1">{t("date_start")}</p>
             <DatePicker
               selected={startDate}
               onChange={(date: Date | null) => setStartDate(date)}
@@ -168,13 +167,13 @@ export default function BookingClient() {
               endDate={endDate ?? undefined}
               filterDate={filterDate}
               minDate={new Date()}
-              placeholderText="選擇開始日期"
+              placeholderText={t("date_start_placeholder")}
               className="w-full border-2 border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-gray-900 focus:outline-none"
               dateFormat="yyyy/MM/dd"
             />
           </div>
           <div className="flex-1">
-            <p className="text-xs text-gray-500 mb-1">結束日期</p>
+            <p className="text-xs text-gray-500 mb-1">{t("date_end")}</p>
             <DatePicker
               selected={endDate}
               onChange={(date: Date | null) => setEndDate(date)}
@@ -183,7 +182,7 @@ export default function BookingClient() {
               endDate={endDate ?? undefined}
               minDate={startDate ?? new Date()}
               filterDate={filterDate}
-              placeholderText="選擇結束日期"
+              placeholderText={t("date_end_placeholder")}
               className="w-full border-2 border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-gray-900 focus:outline-none"
               dateFormat="yyyy/MM/dd"
             />
@@ -195,7 +194,7 @@ export default function BookingClient() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
-            姓名 <span className="text-red-500">*</span>
+            {t("name_label")} <span className="text-red-500">*</span>
           </label>
           <input
             required
@@ -203,24 +202,24 @@ export default function BookingClient() {
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             className="w-full border-2 border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-gray-900 focus:outline-none"
-            placeholder="王小明"
+            placeholder={t("name_placeholder")}
           />
         </div>
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
-            公司名稱（選填）
+            {t("company_label")}
           </label>
           <input
             type="text"
             value={form.company}
             onChange={(e) => setForm({ ...form, company: e.target.value })}
             className="w-full border-2 border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-gray-900 focus:outline-none"
-            placeholder="XX 有限公司"
+            placeholder={t("company_placeholder")}
           />
         </div>
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
-            聯絡電話 <span className="text-red-500">*</span>
+            {t("phone_label")} <span className="text-red-500">*</span>
           </label>
           <input
             required
@@ -228,12 +227,12 @@ export default function BookingClient() {
             value={form.phone}
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
             className="w-full border-2 border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-gray-900 focus:outline-none"
-            placeholder="0912-345-678"
+            placeholder={t("phone_placeholder")}
           />
         </div>
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
-            電子信箱 <span className="text-red-500">*</span>
+            {t("email_label")} <span className="text-red-500">*</span>
           </label>
           <input
             required
@@ -250,7 +249,7 @@ export default function BookingClient() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
-            產品類型 <span className="text-red-500">*</span>
+            {t("product_label")} <span className="text-red-500">*</span>
           </label>
           <select
             value={form.product_type}
@@ -259,13 +258,13 @@ export default function BookingClient() {
             }
             className="w-full border-2 border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-gray-900 focus:outline-none"
           >
-            <option value="single">單面直立機</option>
-            <option value="triple">三折雙面機</option>
+            <option value="single">{t("single_option")}</option>
+            <option value="triple">{t("triple_option")}</option>
           </select>
         </div>
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
-            台數 <span className="text-red-500">*</span>
+            {t("quantity_label")} <span className="text-red-500">*</span>
           </label>
           <select
             value={form.quantity}
@@ -274,9 +273,9 @@ export default function BookingClient() {
             }
             className="w-full border-2 border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-gray-900 focus:outline-none"
           >
-            <option value={1}>1 台</option>
-            <option value={2}>2 台</option>
-            <option value={3}>3 台</option>
+            <option value={1}>1 {t("qty_unit")}</option>
+            <option value={2}>2 {t("qty_unit")}</option>
+            <option value={3}>3 {t("qty_unit")}</option>
           </select>
         </div>
       </div>
@@ -289,18 +288,18 @@ export default function BookingClient() {
           onChange={(e) => setForm({ ...form, add_setup: e.target.checked })}
           className="w-5 h-5 rounded accent-gray-900"
         />
-        <span className="text-sm text-gray-700">需要設定協助服務</span>
+        <span className="text-sm text-gray-700">{t("add_setup_label")}</span>
       </label>
 
       {/* Notes */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">備註</label>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">{t("notes_label")}</label>
         <textarea
           rows={4}
           value={form.notes}
           onChange={(e) => setForm({ ...form, notes: e.target.value })}
           className="w-full border-2 border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-gray-900 focus:outline-none resize-none"
-          placeholder="請描述您的活動場景、特殊需求等..."
+          placeholder={t("notes_placeholder")}
         />
       </div>
 
@@ -321,7 +320,7 @@ export default function BookingClient() {
         disabled={loading}
         className="w-full bg-gray-900 hover:bg-gray-700 disabled:bg-gray-400 text-white font-bold py-3.5 rounded-xl text-base transition-colors"
       >
-        {loading ? "送出中..." : "送出預約"}
+        {loading ? t("submit_loading") : t("submit_btn")}
       </button>
     </form>
   );

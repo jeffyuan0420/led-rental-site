@@ -4,6 +4,13 @@ import Link from "next/link";
 export default async function HomePage() {
   const t = await getTranslations("hero");
   const tNav = await getTranslations("nav");
+  const tHome = await getTranslations("home");
+
+  const features = [
+    { icon: "☀️", title: tHome("feat1_title"), desc: tHome("feat1_desc") },
+    { icon: "🔧", title: tHome("feat2_title"), desc: tHome("feat2_desc") },
+    { icon: "🎯", title: tHome("feat3_title"), desc: tHome("feat3_desc") },
+  ];
 
   return (
     <div className="flex flex-col">
@@ -41,26 +48,10 @@ export default async function HomePage() {
       <section className="py-20 bg-gray-50">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
-            為什麼選擇 Persona Taiwan？
+            {tHome("why_title")}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: "☀️",
-                title: "高亮度室內展示",
-                desc: "650～800 nits 高亮度，畫面清晰銳利，適合室內展覽、活動現場",
-              },
-              {
-                icon: "🔧",
-                title: "拼接靈活多變",
-                desc: "支援 1 至 3 台拼接，橫向延伸視覺效果，滿足不同場地需求",
-              },
-              {
-                icon: "🎯",
-                title: "全程協助服務",
-                desc: "提供設定協助選配，從佈置到撤場，專業團隊全程到位",
-              },
-            ].map((feature) => (
+            {features.map((feature) => (
               <div
                 key={feature.title}
                 className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition-shadow text-center"

@@ -13,13 +13,42 @@
     "cta_products": "了解產品",
     "cta_booking": "立即預約"
   },
+  "home": {
+    "why_title": "為什麼選擇 Persona Taiwan？",
+    "feat1_title": "高亮度室內展示",
+    "feat1_desc": "650～800 nits 高亮度，畫面清晰銳利，適合室內展覽、活動現場",
+    "feat2_title": "拼接靈活多變",
+    "feat2_desc": "支援 1 至 3 台拼接，橫向延伸視覺效果，滿足不同場地需求",
+    "feat3_title": "全程協助服務",
+    "feat3_desc": "提供設定協助選配，從佈置到撤場，專業團隊全程到位"
+  },
   "product": {
     "single": "單面直立機",
     "triple": "三折雙面機",
     "size": "尺寸",
     "brightness": "亮度",
     "ip_rating": "防護等級",
-    "use_case": "適用場景"
+    "use_case": "適用場景",
+    "weight": "重量",
+    "page_subtitle": "兩款高亮度 LED 廣告機，滿足不同展示需求",
+    "simulate_btn": "模擬拼接效果",
+    "single_name": "單面／兩折機",
+    "triple_name": "三折雙面機",
+    "single_highlight": "直立細長比例，橫向拼接後形成超寬螢幕",
+    "triple_highlight": "三折可自立，雙面同時展示，360° 視覺覆蓋",
+    "single_use1": "展覽主視覺",
+    "single_use2": "門市形象展示",
+    "single_use3": "活動入口品牌牆",
+    "triple_use1": "展場攤位主視覺",
+    "triple_use2": "記者會背板",
+    "triple_use3": "活動舞台側屏",
+    "config_title": "顯示尺寸配置",
+    "config_unit": "台",
+    "config_joined": "台橫向拼接",
+    "config_ratio_16_9": "比 16:9 更寬",
+    "config_impact": "畫面超震撼",
+    "config_large_venue": "適合大空間",
+    "config_ultrawide": "超寬幕 2:1"
   },
   "simulator": {
     "title": "拼接視覺模擬器",
@@ -27,8 +56,12 @@
     "quantity_label": "選擇台數",
     "upload_label": "上傳圖片",
     "upload_btn": "選擇圖片",
+    "reupload_btn": "重新選擇圖片",
     "download_btn": "下載預覽圖",
-    "units": "台"
+    "units": "台",
+    "units_joined": "台橫向拼接",
+    "empty_hint": "請上傳圖片以預覽拼接效果",
+    "preview_scale": "預覽比例 1:4"
   },
   "calculator": {
     "title": "費用試算器",
@@ -42,7 +75,20 @@
     "total": "估算總費用",
     "days_unit": "天",
     "currency": "NT$",
-    "note": "※ 以上為估算金額，實際費用以確認書為準"
+    "note": "※ 以上為估算金額，實際費用以確認書為準",
+    "product_type_label": "機型",
+    "single_label": "單面／兩折機",
+    "triple_label": "三折雙面機",
+    "qty_suffix": "台",
+    "day_suffix": "天",
+    "include_setup": "含設定協助服務",
+    "include_shipping": "含運費（非偏遠山區，來回計）",
+    "estimated_total_label": "估算總費用",
+    "rates_tbd": "費率設定中，敬請期待",
+    "subtitle": "即時估算您的租賃費用",
+    "contact_for_quote": "請聯繫我們取得最新報價",
+    "back": "返回上一頁",
+    "goto_booking": "前往預約"
   },
   "booking": {
     "title": "預約租賃",
@@ -60,12 +106,28 @@
     "notes_label": "備註",
     "submit_btn": "送出預約",
     "success_title": "預約成功！",
-    "success_msg": "感謝您的預約，我們將於 1 工作天內與您確認細節。"
+    "success_msg": "感謝您的預約，我們將於 1 工作天內與您確認細節。",
+    "add_setup_label": "需要設定協助服務",
+    "single_option": "單面／兩折機",
+    "triple_option": "三折雙面機",
+    "qty_unit": "台",
+    "submit_loading": "送出中...",
+    "submit_error": "送出失敗，請稍後再試或聯繫我們",
+    "date_required": "請選擇租賃日期區間",
+    "availability_max": "此機種最多可租 {max} 台",
+    "availability_shortage": "此時段目前僅剩 {remaining} 台可租，無法滿足 {qty} 台需求。預計 {date} 後將釋出更多台數。",
+    "date_start_placeholder": "選擇開始日期",
+    "date_end_placeholder": "選擇結束日期",
+    "name_placeholder": "王小明",
+    "company_placeholder": "XX 有限公司",
+    "phone_placeholder": "0912-345-678",
+    "notes_placeholder": "請描述您的活動場景、特殊需求等..."
   },
   "common": {
     "line_inquiry": "LINE 詢購",
     "loading": "載入中...",
     "error": "發生錯誤，請稍後再試",
-    "required": "必填"
+    "required": "必填",
+    "back": "返回上一頁"
   }
 }
