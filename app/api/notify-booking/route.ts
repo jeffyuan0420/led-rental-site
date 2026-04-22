@@ -60,7 +60,7 @@ export async function POST(req: Request) {
   `;
 
   const { error } = await resend.emails.send({
-    from: "Persona Taiwan <booking@persona-taiwan.com>",
+    from: "Persona Taiwan <onboarding@resend.dev>",
     to: [NOTIFY_EMAIL],
     replyTo: email,
     subject,
