@@ -67,6 +67,7 @@
     "title": "Price Calculator",
     "quantity_label": "Units",
     "days_label": "Rental Days",
+    "days_hint": "Include both setup and teardown days for an accurate estimate",
     "setup_label": "Include Setup Assistance",
     "shipping_label": "Include Shipping (non-remote area)",
     "rental_fee": "Rental Fee",

@@ -7,14 +7,11 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { supabase, type Booking } from "@/lib/supabase";
 
-type BookedRange = { start: Date; end: Date };
-
 const INVENTORY = { single: 24, triple: 2 };
 const BUFFER_DAYS = 2;
 
 export default function BookingClient() {
   const t = useTranslations("booking");
-  const [bookedRanges, setBookedRanges] = useState<BookedRange[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [submitted, setSubmitted] = useState(false);
@@ -38,36 +35,11 @@ export default function BookingClient() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startDate, endDate, form.product_type, form.quantity]);
 
-  useEffect(() => {
-    async function loadBookings() {
-      const { data } = await supabase
-        .from("bookings")
-        .select("start_date, end_date")
-        .eq("status", "confirmed");
-
-      if (data) {
-        setBookedRanges(
-          data.map((b) => ({
-            start: new Date(b.start_date),
-            end: new Date(b.end_date),
-          }))
-        );
-      }
-    }
-    loadBookings();
-  }, []);
-
-  function isDateBooked(date: Date): boolean {
-    return bookedRanges.some(
-      (range) => date >= range.start && date <= range.end
-    );
-  }
-
   function filterDate(date: Date): boolean {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(0, 0, 0, 0);
-    return date >= tomorrow && !isDateBooked(date);
+    return date >= tomorrow;
   }
 
   async function checkAvailability(

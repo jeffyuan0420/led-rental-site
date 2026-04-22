@@ -67,6 +67,7 @@
     "title": "費用試算器",
     "quantity_label": "台數",
     "days_label": "租賃天數",
+    "days_hint": "請將進場與撤場當天都計入，費用才準確",
     "setup_label": "含設定協助",
     "shipping_label": "含運費（非偏遠山區）",
     "rental_fee": "租賃費用",

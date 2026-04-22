@@ -68,7 +68,8 @@ export default function CalculatorClient() {
 
       {/* Days — free-type input */}
       <div className="mb-6">
-        <label className="block text-sm font-semibold text-gray-700 mb-3">{t("days_label")}</label>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">{t("days_label")}</label>
+        <p className="text-xs text-gray-400 mb-3">{t("days_hint")}</p>
         <div className="flex items-center gap-4">
           <input
             type="number"
