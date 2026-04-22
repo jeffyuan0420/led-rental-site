@@ -1,4 +1,4 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 import { NextResponse } from "next/server";
 
 const NOTIFY_EMAIL = "help@csknight.com";
@@ -22,11 +22,11 @@ const PRODUCT_LABELS: Record<string, string> = {
 };
 
 export async function POST(req: Request) {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
+  const smtpUser = process.env.SMTP_USER;
+  const smtpPass = process.env.SMTP_PASS;
+  if (!smtpUser || !smtpPass) {
     return NextResponse.json({ error: "Email service not configured" }, { status: 503 });
   }
-  const resend = new Resend(apiKey);
 
   let body: BookingPayload;
   try {
@@ -35,11 +35,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
-  const {
-    name, company, phone, email,
-    product_type, quantity, add_setup,
-    start_date, end_date, notes,
-  } = body;
+  const { name, company, phone, email, product_type, quantity, add_setup, start_date, end_date, notes } = body;
+
+  const transporter = nodemailer.createTransport({
+    host: "pollux8.url.com.tw",
+    port: 465,
+    secure: true,
+    auth: { user: smtpUser, pass: smtpPass },
+  });
 
   const subject = `【新預約】${name}｜${PRODUCT_LABELS[product_type]} × ${quantity} 台`;
 
@@ -59,18 +62,17 @@ export async function POST(req: Request) {
     <p style="color:#6b7280;font-size:12px;margin-top:16px">此信由 Persona Taiwan 租賃系統自動發送</p>
   `;
 
-  const { error } = await resend.emails.send({
-    from: "Persona Taiwan <onboarding@resend.dev>",
-    to: [NOTIFY_EMAIL],
-    replyTo: email,
-    subject,
-    html,
-  });
-
-  if (error) {
-    console.error("Resend error:", error);
+  try {
+    await transporter.sendMail({
+      from: `"Persona Taiwan" <${smtpUser}>`,
+      to: NOTIFY_EMAIL,
+      replyTo: email,
+      subject,
+      html,
+    });
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("SMTP error:", err);
     return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
   }
-
-  return NextResponse.json({ ok: true });
 }
