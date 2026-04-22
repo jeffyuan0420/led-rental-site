@@ -38,9 +38,9 @@ export async function POST(req: Request) {
   const { name, company, phone, email, product_type, quantity, add_setup, start_date, end_date, notes } = body;
 
   const transporter = nodemailer.createTransport({
-    host: "pollux8.url.com.tw",
-    port: 465,
-    secure: true,
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
     auth: { user: smtpUser, pass: smtpPass },
   });
 
