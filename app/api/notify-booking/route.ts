@@ -58,9 +58,8 @@ export async function POST(req: Request) {
   const deadline = addWorkingDays(new Date(), PAYMENT.paymentDeadlineDays);
   const deadlineStr = `${deadline.getFullYear()}/${String(deadline.getMonth() + 1).padStart(2, "0")}/${String(deadline.getDate()).padStart(2, "0")}${DAYS_OF_WEEK[deadline.getDay()]}`;
 
-  // LINE OA 官方帳號預填訊息（客戶一鍵送出）
-  const lineTemplate = encodeURIComponent(`您好，我是 ${name}，預約 ${start_date}–${end_date} 的 Persona 盛源 LED廣告機租賃。已完成匯款，末5碼：___，轉帳時間：___，金額：NT$${total.toLocaleString()}。請確認，謝謝！`);
-  const lineUrl = `https://line.me/R/oaMessage/${PAYMENT.companyLineOA}/?${lineTemplate}`;
+  // LINE OA 連結（開啟官方帳號聊天）
+  const lineUrl = `https://line.me/R/ti/p/${PAYMENT.companyLineOA}`;
 
   // --- Internal admin notification ---
   const adminSubject = `【新預約】${name}｜${PRODUCT_LABELS[product_type]} × ${quantity} 台`;
@@ -102,6 +101,10 @@ export async function POST(req: Request) {
         <tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">租賃日期</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">${start_date} ～ ${end_date}（共 ${days} 天）</td></tr>
         <tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">設定協助</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">${setupLabel}</td></tr>
         ${teardown_time === "night" ? `<tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">撤場時間</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">夜間撤場（19:00–22:00）</td></tr>` : ""}
+        <tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">發票需求</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">${invoice_type === "company" ? "三聯式（公司）" : "二聯式（個人）"}</td></tr>
+        ${invoice_type === "company" && invoice_company ? `<tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">公司抬頭</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">${invoice_company}</td></tr>` : ""}
+        ${invoice_type === "company" && invoice_tax_id ? `<tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">統一編號</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">${invoice_tax_id}</td></tr>` : ""}
+        ${invoice_type === "company" && invoice_address ? `<tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">發票地址</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">${invoice_address}</td></tr>` : ""}
         ${notes ? `<tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600;vertical-align:top">備註</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">${notes}</td></tr>` : ""}
       </table>
 
@@ -134,16 +137,16 @@ export async function POST(req: Request) {
       </div>
 
       <h3 style="margin-top:24px;margin-bottom:8px;color:#374151">■ 匯款後請通知我們</h3>
-      <p style="font-size:14px;color:#374151">完成匯款後，請點擊下方按鈕，透過 LINE 官方帳號傳送付款通知：</p>
+      <p style="font-size:14px;color:#374151">完成匯款後，請複製以下訊息，透過 LINE 官方帳號傳送給我們確認：</p>
       <div style="background:#f3f4f6;border-radius:8px;padding:14px;font-size:13px;color:#374151;line-height:1.7;border:1px solid #e5e7eb">
         您好，我是 ${name}，預約 ${start_date}–${end_date} 的 Persona 盛源 LED廣告機租賃。<br>
         已完成匯款，末5碼：<strong>___</strong>，轉帳時間：<strong>___</strong>，金額：NT$${total.toLocaleString()}。<br>
         請確認，謝謝！
       </div>
       <div style="margin-top:12px;text-align:center">
-        <a href="${lineUrl}" style="display:inline-block;background:#06c755;color:#fff;font-weight:700;text-decoration:none;padding:12px 28px;border-radius:8px;font-size:14px">📱 點此傳送 LINE 匯款通知</a>
+        <a href="${lineUrl}" style="display:inline-block;background:#06c755;color:#fff;font-weight:700;text-decoration:none;padding:12px 28px;border-radius:8px;font-size:14px">📱 開啟 LINE 官方帳號</a>
       </div>
-      <p style="font-size:12px;color:#9ca3af;text-align:center;margin-top:8px">（訊息已自動填入，補充末5碼與轉帳時間後送出即可）</p>
+      <p style="font-size:12px;color:#9ca3af;text-align:center;margin-top:8px">（請在手機上開啟，複製上方訊息後貼上傳送）</p>
       `}
 
       <p style="margin-top:24px;font-size:13px;color:#6b7280">如對匯款資訊有任何疑問，請先透過 LINE 或 Email 與我們確認後再轉帳。</p>
