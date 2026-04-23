@@ -6,11 +6,9 @@ import { useTranslations } from "next-intl";
 import BackButton from "@/components/BackButton";
 
 const MACHINE_CONFIG = {
-  single: { panelW: 160, panelH: 480, mmW: 664, mmH: 1920, pxW: 344, pxH: 1032, maxQty: 5, labelKey: "single_name" },
-  triple: { panelW: 320, panelH: 480, mmW: 1280, mmH: 1920, pxW: 688, pxH: 1032, maxQty: 3, labelKey: "triple_name" },
+  single: { panelW: 160, panelH: 480, mmW: 664, mmH: 1920, pxW: 344, pxH: 1032, maxQty: 5, labelKey: "single_name", demoVideo: "/videos/demo-robot.mp4" },
+  triple: { panelW: 320, panelH: 480, mmW: 1280, mmH: 1920, pxW: 688, pxH: 1032, maxQty: 3, labelKey: "triple_name", demoVideo: "/videos/demo-triple-car.mp4" },
 };
-
-const DEMO_VIDEO = "/videos/demo-robot.mp4";
 
 type Quantity = 1 | 2 | 3 | 4 | 5;
 
@@ -78,7 +76,7 @@ export default function SimulatorClient() {
               autoPlay loop muted playsInline
               style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
             >
-              <source src={DEMO_VIDEO} type="video/mp4" />
+              <source src={config.demoVideo} type="video/mp4" />
             </video>
             {/* Dashed panel separators */}
             {Array.from({ length: quantity - 1 }).map((_, i) => (
