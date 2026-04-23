@@ -92,41 +92,66 @@ export default function SimulatorClient() {
       {/* Preview + video selector */}
       <div className="flex-1 min-w-0">
         {/* Video panels */}
-        <div className="bg-gray-900 rounded-xl p-6 flex items-center justify-center min-h-[520px] mb-6">
-          <div className="flex items-stretch">
-            {Array.from({ length: quantity }).map((_, i) => {
-              const video = DEMO_VIDEOS.find((v) => v.id === panelVideos[i]) ?? DEMO_VIDEOS[0];
-              return (
-                <div key={i} className="flex items-center">
-                  {i > 0 && (
-                    <div
-                      style={{
-                        width: "2px",
-                        height: PANEL_H + "px",
-                        background: "repeating-linear-gradient(to bottom, rgba(255,255,255,0.5) 0, rgba(255,255,255,0.5) 6px, transparent 6px, transparent 10px)",
-                      }}
-                    />
-                  )}
-                  <div
-                    style={{ width: PANEL_W + "px", height: PANEL_H + "px", overflow: "hidden", flexShrink: 0 }}
-                    className="rounded-sm"
+        {(() => {
+          const totalW = PANEL_W * quantity;
+          const allSame = panelVideos.slice(0, quantity).every((v) => v === panelVideos[0]);
+          const firstVideo = DEMO_VIDEOS.find((v) => v.id === panelVideos[0]) ?? DEMO_VIDEOS[0];
+          return (
+            <div className="bg-gray-900 rounded-xl p-6 flex items-center justify-center min-h-[520px] mb-4">
+              {allSame ? (
+                // Unified display: one video spanning all panels
+                <div style={{ position: "relative", width: totalW + "px", height: PANEL_H + "px", overflow: "hidden" }} className="rounded-sm">
+                  <video
+                    key={firstVideo.src}
+                    autoPlay loop muted playsInline
+                    style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                   >
-                    <video
-                      key={video.src}
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                    >
-                      <source src={video.src} type="video/mp4" />
-                    </video>
-                  </div>
+                    <source src={firstVideo.src} type="video/mp4" />
+                  </video>
+                  {/* Dashed panel separators overlaid */}
+                  {Array.from({ length: quantity - 1 }).map((_, i) => (
+                    <div key={i} style={{
+                      position: "absolute", top: 0, left: PANEL_W * (i + 1) + "px",
+                      width: "2px", height: "100%",
+                      background: "repeating-linear-gradient(to bottom, rgba(255,255,255,0.6) 0, rgba(255,255,255,0.6) 6px, transparent 6px, transparent 10px)",
+                    }} />
+                  ))}
                 </div>
-              );
-            })}
-          </div>
-        </div>
+              ) : (
+                // Per-panel: each plays its own video
+                <div className="flex items-stretch">
+                  {Array.from({ length: quantity }).map((_, i) => {
+                    const video = DEMO_VIDEOS.find((v) => v.id === panelVideos[i]) ?? DEMO_VIDEOS[0];
+                    return (
+                      <div key={i} className="flex items-center">
+                        {i > 0 && (
+                          <div style={{
+                            width: "2px", height: PANEL_H + "px",
+                            background: "repeating-linear-gradient(to bottom, rgba(255,255,255,0.5) 0, rgba(255,255,255,0.5) 6px, transparent 6px, transparent 10px)",
+                          }} />
+                        )}
+                        <div style={{ width: PANEL_W + "px", height: PANEL_H + "px", overflow: "hidden" }} className="rounded-sm">
+                          <video key={video.src} autoPlay loop muted playsInline
+                            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}>
+                            <source src={video.src} type="video/mp4" />
+                          </video>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })()}
+        {/* Mode hint */}
+        {quantity > 1 && (
+          <p className="text-xs text-center mb-4 text-gray-400">
+            {panelVideos.slice(0, quantity).every((v) => v === panelVideos[0])
+              ? t("unified_hint")
+              : t("mixed_hint")}
+          </p>
+        )}
 
         {/* Per-panel video selector */}
         <div className="space-y-4">

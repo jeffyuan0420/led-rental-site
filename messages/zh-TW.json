@@ -65,7 +65,9 @@
     "content_rec_label": "建議素材解析度",
     "content_rec_16_9": "（最接近 16:9，建議使用此配置）",
     "panel_label": "螢幕",
-    "select_video_label": "選擇展示素材"
+    "select_video_label": "選擇展示素材",
+    "unified_hint": "▲ 同一素材橫跨所有螢幕，呈現完整拼接畫面",
+    "mixed_hint": "▲ 各螢幕播放不同素材"
   },
   "calculator": {
     "title": "費用試算器",
