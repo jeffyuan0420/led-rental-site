@@ -5,15 +5,30 @@ import { useTranslations } from "next-intl";
 import BackButton from "@/components/BackButton";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { supabase, type Booking } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
+import { getSetupPersons, calculateTotal, RATES, type SetupOption } from "@/lib/pricing";
 
+const MAX_QTY = { single: 10, triple: 2 };
 const INVENTORY = { single: 24, triple: 2 };
 const BUFFER_DAYS = 2;
 
+function addDays(date: Date, n: number): Date {
+  const d = new Date(date);
+  d.setDate(d.getDate() + n);
+  return d;
+}
+
 export default function BookingClient() {
   const t = useTranslations("booking");
+
+  // Event dates (what customer fills first)
+  const [eventStart, setEventStart] = useState<Date | null>(null);
+  const [eventEnd, setEventEnd] = useState<Date | null>(null);
+
+  // Rental dates (auto-populated, but editable)
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,10 +40,24 @@ export default function BookingClient() {
     phone: "",
     email: "",
     product_type: "single" as "single" | "triple",
-    quantity: 1 as 1 | 2 | 3,
-    add_setup: false,
+    quantity: 1,
+    setup_option: "none" as SetupOption,
+    teardown_time: "daytime" as "daytime" | "night",
+    invoice_type: "personal" as "personal" | "company",
+    invoice_company: "",
+    invoice_tax_id: "",
+    invoice_address: "",
     notes: "",
   });
+
+  // Auto-populate rental dates when event dates change
+  useEffect(() => {
+    if (eventStart) setStartDate(addDays(eventStart, -1));
+  }, [eventStart]);
+
+  useEffect(() => {
+    if (eventEnd) setEndDate(addDays(eventEnd, 1));
+  }, [eventEnd]);
 
   useEffect(() => {
     checkAvailability(startDate, endDate, form.product_type, form.quantity);
@@ -64,14 +93,14 @@ export default function BookingClient() {
       .lte("start_date", endStr)
       .gte("end_date", startStr);
 
-    const bookedQty = (data ?? []).reduce((sum, b) => sum + b.quantity, 0);
+    const bookedQty = (data ?? []).reduce((sum: number, b: { quantity: number }) => sum + b.quantity, 0);
     const remaining = maxUnits - bookedQty;
     if (remaining >= qty) {
       setAvailabilityMsg(null);
     } else {
       const earliestFree = (data ?? [])
-        .map((b) => new Date(b.end_date))
-        .sort((a, b) => a.getTime() - b.getTime())[0];
+        .map((b: { end_date: string }) => new Date(b.end_date))
+        .sort((a: Date, b: Date) => a.getTime() - b.getTime())[0];
       const freeDate = new Date(earliestFree);
       freeDate.setDate(freeDate.getDate() + BUFFER_DAYS + 1);
       const freeDateStr = `${freeDate.getFullYear()}/${String(freeDate.getMonth()+1).padStart(2,"0")}/${String(freeDate.getDate()).padStart(2,"0")}`;
@@ -87,6 +116,10 @@ export default function BookingClient() {
       setError(t("date_required"));
       return;
     }
+    if (form.invoice_type === "company" && (!form.invoice_company || !form.invoice_tax_id || !form.invoice_address)) {
+      setError(t("invoice_required"));
+      return;
+    }
     if (availabilityMsg) {
       setError(availabilityMsg);
       return;
@@ -95,9 +128,23 @@ export default function BookingClient() {
     setError(null);
 
     const booking = {
-      ...form,
+      name: form.name,
+      company: form.company || null,
+      phone: form.phone,
+      email: form.email,
+      product_type: form.product_type,
+      quantity: form.quantity,
+      event_start_date: eventStart ? eventStart.toISOString().split("T")[0] : null,
+      event_end_date: eventEnd ? eventEnd.toISOString().split("T")[0] : null,
       start_date: startDate.toISOString().split("T")[0],
       end_date: endDate.toISOString().split("T")[0],
+      setup_option: form.setup_option,
+      teardown_time: form.teardown_time,
+      invoice_type: form.invoice_type,
+      invoice_company: form.invoice_type === "company" ? form.invoice_company : null,
+      invoice_tax_id: form.invoice_type === "company" ? form.invoice_tax_id : null,
+      invoice_address: form.invoice_type === "company" ? form.invoice_address : null,
+      notes: form.notes || null,
     };
 
     const { error: sbError } = await supabase.from("bookings").insert([booking]);
@@ -105,7 +152,6 @@ export default function BookingClient() {
     if (sbError) {
       setError(t("submit_error"));
     } else {
-      // Fire-and-forget email notification (non-blocking)
       fetch("/api/notify-booking", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -129,11 +175,53 @@ export default function BookingClient() {
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 space-y-6">
       <BackButton />
-      {/* Date picker */}
+
+      {/* Step 1: Event Dates */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
+        <label className="block text-sm font-semibold text-gray-700 mb-1">
+          {t("event_date_label")} <span className="text-red-500">*</span>
+        </label>
+        <p className="text-xs text-gray-400 mb-3">{t("event_date_hint")}</p>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1">
+            <p className="text-xs text-gray-500 mb-1">{t("event_start")}</p>
+            <DatePicker
+              selected={eventStart}
+              onChange={(date: Date | null) => setEventStart(date)}
+              selectsStart
+              startDate={eventStart ?? undefined}
+              endDate={eventEnd ?? undefined}
+              filterDate={filterDate}
+              minDate={new Date()}
+              placeholderText={t("event_start_placeholder")}
+              className="w-full border-2 border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-gray-900 focus:outline-none"
+              dateFormat="yyyy/MM/dd"
+            />
+          </div>
+          <div className="flex-1">
+            <p className="text-xs text-gray-500 mb-1">{t("event_end")}</p>
+            <DatePicker
+              selected={eventEnd}
+              onChange={(date: Date | null) => setEventEnd(date)}
+              selectsEnd
+              startDate={eventStart ?? undefined}
+              endDate={eventEnd ?? undefined}
+              minDate={eventStart ?? new Date()}
+              filterDate={filterDate}
+              placeholderText={t("event_end_placeholder")}
+              className="w-full border-2 border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-gray-900 focus:outline-none"
+              dateFormat="yyyy/MM/dd"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Step 2: Rental Dates (auto-populated, editable) */}
+      <div className="bg-gray-50 rounded-xl p-4">
+        <label className="block text-sm font-semibold text-gray-700 mb-1">
           {t("date_label")} <span className="text-red-500">*</span>
         </label>
+        <p className="text-xs text-gray-400 mb-3">{t("rental_date_hint")}</p>
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
             <p className="text-xs text-gray-500 mb-1">{t("date_start")}</p>
@@ -166,6 +254,7 @@ export default function BookingClient() {
             />
           </div>
         </div>
+        <p className="text-xs text-yellow-600 mt-2">{t("rental_date_note")}</p>
       </div>
 
       {/* Contact info */}
@@ -174,52 +263,37 @@ export default function BookingClient() {
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             {t("name_label")} <span className="text-red-500">*</span>
           </label>
-          <input
-            required
-            type="text"
-            value={form.name}
+          <input required type="text" value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             className="w-full border-2 border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-gray-900 focus:outline-none"
-            placeholder={t("name_placeholder")}
-          />
+            placeholder={t("name_placeholder")} />
         </div>
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             {t("company_label")}
           </label>
-          <input
-            type="text"
-            value={form.company}
+          <input type="text" value={form.company}
             onChange={(e) => setForm({ ...form, company: e.target.value })}
             className="w-full border-2 border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-gray-900 focus:outline-none"
-            placeholder={t("company_placeholder")}
-          />
+            placeholder={t("company_placeholder")} />
         </div>
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             {t("phone_label")} <span className="text-red-500">*</span>
           </label>
-          <input
-            required
-            type="tel"
-            value={form.phone}
+          <input required type="tel" value={form.phone}
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
             className="w-full border-2 border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-gray-900 focus:outline-none"
-            placeholder={t("phone_placeholder")}
-          />
+            placeholder={t("phone_placeholder")} />
         </div>
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             {t("email_label")} <span className="text-red-500">*</span>
           </label>
-          <input
-            required
-            type="email"
-            value={form.email}
+          <input required type="email" value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             className="w-full border-2 border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-gray-900 focus:outline-none"
-            placeholder="example@email.com"
-          />
+            placeholder="example@email.com" />
         </div>
       </div>
 
@@ -229,13 +303,12 @@ export default function BookingClient() {
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             {t("product_label")} <span className="text-red-500">*</span>
           </label>
-          <select
-            value={form.product_type}
-            onChange={(e) =>
-              setForm({ ...form, product_type: e.target.value as "single" | "triple" })
-            }
-            className="w-full border-2 border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-gray-900 focus:outline-none"
-          >
+          <select value={form.product_type}
+            onChange={(e) => {
+              const pt = e.target.value as "single" | "triple";
+              setForm({ ...form, product_type: pt, quantity: Math.min(form.quantity, MAX_QTY[pt]) });
+            }}
+            className="w-full border-2 border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-gray-900 focus:outline-none">
             <option value="single">{t("single_option")}</option>
             <option value="triple">{t("triple_option")}</option>
           </select>
@@ -244,60 +317,180 @@ export default function BookingClient() {
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             {t("quantity_label")} <span className="text-red-500">*</span>
           </label>
-          <select
-            value={form.quantity}
-            onChange={(e) =>
-              setForm({ ...form, quantity: parseInt(e.target.value) as 1 | 2 | 3 })
-            }
-            className="w-full border-2 border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-gray-900 focus:outline-none"
-          >
-            <option value={1}>1 {t("qty_unit")}</option>
-            <option value={2}>2 {t("qty_unit")}</option>
-            <option value={3}>3 {t("qty_unit")}</option>
+          <select value={form.quantity}
+            onChange={(e) => setForm({ ...form, quantity: parseInt(e.target.value) })}
+            className="w-full border-2 border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-gray-900 focus:outline-none">
+            {Array.from({ length: MAX_QTY[form.product_type] }, (_, i) => i + 1).map((n) => (
+              <option key={n} value={n}>{n} {t("qty_unit")}</option>
+            ))}
           </select>
         </div>
       </div>
 
-      {/* Setup */}
-      <label className="flex items-center gap-3 cursor-pointer">
-        <input
-          type="checkbox"
-          checked={form.add_setup}
-          onChange={(e) => setForm({ ...form, add_setup: e.target.checked })}
-          className="w-5 h-5 rounded accent-gray-900"
-        />
-        <span className="text-sm text-gray-700">{t("add_setup_label")}</span>
-      </label>
+      {/* Setup Option */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">{t("setup_option_label")}</label>
+        <p className="text-xs text-gray-400 mb-3">
+          {t("setup_persons_hint", { count: getSetupPersons(form.quantity) })}
+        </p>
+        <div className="flex gap-2">
+          {(["none", "half", "full"] as SetupOption[]).map((opt) => (
+            <button key={opt} type="button"
+              onClick={() => setForm({ ...form, setup_option: opt })}
+              className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all ${form.setup_option === opt ? "bg-gray-900 text-white border-gray-900" : "border-gray-300 text-gray-600 hover:border-gray-700"}`}>
+              {t(`setup_${opt}` as "setup_none" | "setup_half" | "setup_full")}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Teardown Time */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">{t("teardown_label")}</label>
+        <p className="text-xs text-gray-400 mb-3">{t("teardown_hint")}</p>
+        <div className="flex gap-2">
+          {([
+            ["daytime", t("teardown_daytime")],
+            ["night",   t("teardown_night")],
+          ] as ["daytime" | "night", string][]).map(([val, label]) => (
+            <button key={val} type="button"
+              onClick={() => setForm({ ...form, teardown_time: val })}
+              className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all ${form.teardown_time === val ? "bg-gray-900 text-white border-gray-900" : "border-gray-300 text-gray-600 hover:border-gray-700"}`}>
+              {label}
+            </button>
+          ))}
+        </div>
+        {form.teardown_time === "night" && (
+          <p className="text-xs text-amber-600 mt-2">{t("teardown_night_note")}</p>
+        )}
+      </div>
+
+      {/* Invoice */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">{t("invoice_label")}</label>
+        <div className="flex gap-2 mb-3">
+          {([
+            ["personal", t("invoice_personal")],
+            ["company",  t("invoice_company_opt")],
+          ] as ["personal" | "company", string][]).map(([val, label]) => (
+            <button key={val} type="button"
+              onClick={() => setForm({ ...form, invoice_type: val })}
+              className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all ${form.invoice_type === val ? "bg-gray-900 text-white border-gray-900" : "border-gray-300 text-gray-600 hover:border-gray-700"}`}>
+              {label}
+            </button>
+          ))}
+        </div>
+        {form.invoice_type === "company" && (
+          <div className="space-y-3 bg-gray-50 rounded-xl p-4">
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">
+                {t("invoice_company_name")} <span className="text-red-500">*</span>
+              </label>
+              <input type="text" value={form.invoice_company}
+                onChange={(e) => setForm({ ...form, invoice_company: e.target.value })}
+                className="w-full border-2 border-gray-300 rounded-xl px-4 py-2 text-sm focus:border-gray-900 focus:outline-none"
+                placeholder={t("invoice_company_placeholder")} />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">
+                {t("invoice_tax_id")} <span className="text-red-500">*</span>
+              </label>
+              <input type="text" value={form.invoice_tax_id} maxLength={8}
+                onChange={(e) => setForm({ ...form, invoice_tax_id: e.target.value.replace(/\D/g, "") })}
+                className="w-full border-2 border-gray-300 rounded-xl px-4 py-2 text-sm focus:border-gray-900 focus:outline-none"
+                placeholder="12345678" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">
+                {t("invoice_address")} <span className="text-red-500">*</span>
+              </label>
+              <input type="text" value={form.invoice_address}
+                onChange={(e) => setForm({ ...form, invoice_address: e.target.value })}
+                className="w-full border-2 border-gray-300 rounded-xl px-4 py-2 text-sm focus:border-gray-900 focus:outline-none"
+                placeholder={t("invoice_address_placeholder")} />
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Notes */}
       <div>
         <label className="block text-sm font-semibold text-gray-700 mb-2">{t("notes_label")}</label>
-        <textarea
-          rows={4}
-          value={form.notes}
+        <textarea rows={4} value={form.notes}
           onChange={(e) => setForm({ ...form, notes: e.target.value })}
           className="w-full border-2 border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-gray-900 focus:outline-none resize-none"
-          placeholder={t("notes_placeholder")}
-        />
+          placeholder={t("notes_placeholder")} />
       </div>
+
+      {/* Price Summary */}
+      {startDate && endDate && (() => {
+        const days = Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+        const { rentalFee, setupFee, needsQuote } = calculateTotal({
+          productType: form.product_type,
+          quantity: form.quantity,
+          days,
+          setupOption: form.setup_option,
+          includeShipping: false,
+        });
+        const nightFee = form.teardown_time === "night" ? RATES.nightSurcharge * form.quantity : 0;
+        const subtotal = rentalFee + setupFee + nightFee;
+        const tax = Math.round(subtotal * 0.05);
+        const total = subtotal + tax;
+        return (
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-5">
+            <h3 className="text-sm font-bold text-gray-700 mb-3">{t("summary_title")}</h3>
+            {needsQuote ? (
+              <p className="text-amber-700 text-sm font-semibold">{t("summary_quote_required")}</p>
+            ) : (
+              <div className="space-y-1.5 text-sm">
+                <div className="flex justify-between text-gray-600">
+                  <span>{t("summary_rental_fee")}</span>
+                  <span>NT$ {rentalFee.toLocaleString()}</span>
+                </div>
+                {setupFee > 0 && (
+                  <div className="flex justify-between text-gray-600">
+                    <span>{t("summary_setup_fee")}</span>
+                    <span>NT$ {setupFee.toLocaleString()}</span>
+                  </div>
+                )}
+                {nightFee > 0 && (
+                  <div className="flex justify-between text-gray-600">
+                    <span>{t("summary_night_fee")}</span>
+                    <span>NT$ {nightFee.toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-gray-500 text-xs pt-1 border-t border-gray-200">
+                  <span>{t("summary_subtotal")}</span>
+                  <span>NT$ {subtotal.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between text-gray-500 text-xs">
+                  <span>{t("summary_tax")}</span>
+                  <span>NT$ {tax.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between font-bold text-gray-900 text-base pt-1 border-t border-gray-300">
+                  <span>{t("summary_total")}</span>
+                  <span>NT$ {total.toLocaleString()}</span>
+                </div>
+                <p className="text-xs text-gray-400 mt-1">{t("summary_note")}</p>
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {availabilityMsg && (
         <p className="text-yellow-800 text-sm bg-yellow-50 border border-yellow-300 rounded-lg px-4 py-2">
           ⚠️ {availabilityMsg}
         </p>
       )}
-
       {error && (
         <p className="text-red-500 text-sm bg-red-50 border border-red-200 rounded-lg px-4 py-2">
           {error}
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full bg-gray-900 hover:bg-gray-700 disabled:bg-gray-400 text-white font-bold py-3.5 rounded-xl text-base transition-colors"
-      >
+      <button type="submit" disabled={loading}
+        className="w-full bg-gray-900 hover:bg-gray-700 disabled:bg-gray-400 text-white font-bold py-3.5 rounded-xl text-base transition-colors">
         {loading ? t("submit_loading") : t("submit_btn")}
       </button>
     </form>

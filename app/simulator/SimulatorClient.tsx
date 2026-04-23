@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import BackButton from "@/components/BackButton";
 
-const GAP = 4; // px
+const GAP = 0; // panels touch; dashed line drawn on top
 
 const MACHINE_CONFIG = {
   single: { panelW: 160, panelH: 480, mmW: 664, mmH: 1920, maxQty: 3, labelKey: "single_name" },
@@ -55,18 +55,26 @@ export default function SimulatorClient() {
         const sy = (h - sh) / 2;
         ctx.drawImage(img, sx, sy, sw, sh);
 
-        ctx.fillStyle = "#000";
-        for (let i = 1; i < qty; i++) {
-          const x = PANEL_W * i + GAP * (i - 1);
-          ctx.fillRect(x, 0, GAP, h);
-        }
-
+        // panel outlines
         ctx.strokeStyle = "#333";
         ctx.lineWidth = 1;
+        ctx.setLineDash([]);
         for (let i = 0; i < qty; i++) {
-          const x = i * (PANEL_W + GAP);
-          ctx.strokeRect(x + 0.5, 0.5, PANEL_W - 1, h - 1);
+          ctx.strokeRect(i * PANEL_W + 0.5, 0.5, PANEL_W - 1, h - 1);
         }
+
+        // dashed separator between panels
+        ctx.strokeStyle = "rgba(255,255,255,0.45)";
+        ctx.lineWidth = 2;
+        ctx.setLineDash([8, 5]);
+        for (let i = 1; i < qty; i++) {
+          const x = PANEL_W * i;
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, h);
+          ctx.stroke();
+        }
+        ctx.setLineDash([]);
       };
       img.src = imgUrl;
     },
@@ -177,13 +185,23 @@ export default function SimulatorClient() {
             </div>
           ) : (
             <div className="text-center text-gray-500">
-              <div className="flex gap-1 mb-4" style={{ height: PANEL_H + "px" }}>
+              <div className="flex items-center mb-4">
                 {Array.from({ length: quantity }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="border-2 border-gray-600 rounded"
-                    style={{ width: PANEL_W + "px", height: PANEL_H + "px" }}
-                  />
+                  <div key={i} className="flex items-center">
+                    {i > 0 && (
+                      <div
+                        style={{
+                          width: "2px",
+                          height: PANEL_H + "px",
+                          background: "repeating-linear-gradient(to bottom, #6B7280 0, #6B7280 6px, transparent 6px, transparent 10px)",
+                        }}
+                      />
+                    )}
+                    <div
+                      className="border-2 border-gray-600 rounded"
+                      style={{ width: PANEL_W + "px", height: PANEL_H + "px" }}
+                    />
+                  </div>
                 ))}
               </div>
               <p className="text-sm">{t("empty_hint")}</p>

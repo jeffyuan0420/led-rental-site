@@ -28,7 +28,7 @@ function calcFee(b: Booking): string {
     productType: b.product_type,
     quantity: b.quantity,
     days,
-    addSetup: b.add_setup,
+    setupOption: b.setup_option,
     includeShipping: true,
   });
   return `NT$ ${total.toLocaleString()}`;
@@ -48,7 +48,7 @@ function exportCSV(bookings: Booking[]) {
       b.start_date,
       b.end_date,
       days,
-      b.add_setup ? "是" : "否",
+      b.setup_option === "none" ? "否" : b.setup_option === "half" ? "半天" : "整天",
       calcFee(b),
       STATUS_LABELS[b.status].label,
       new Date(b.created_at).toLocaleString("zh-TW"),
@@ -192,7 +192,7 @@ export default function AdminBookingsClient() {
                       {calcFee(b)}
                     </td>
                     <td className="px-4 py-3">
-                      {b.add_setup ? "✅" : "—"}
+                      {b.setup_option === "none" ? "—" : b.setup_option === "half" ? "半天" : "整天"}
                     </td>
                     <td className="px-4 py-3">
                       <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${STATUS_LABELS[b.status].color}`}>
@@ -255,7 +255,7 @@ export default function AdminBookingsClient() {
                 { label: "台數", value: `${selected.quantity} 台` },
                 { label: "租賃日期", value: `${selected.start_date} ~ ${selected.end_date}` },
                 { label: "估算費用", value: calcFee(selected) },
-                { label: "設定協助", value: selected.add_setup ? "是" : "否" },
+                { label: "設定協助", value: selected.setup_option === "none" ? "否" : selected.setup_option === "half" ? "半天" : "整天" },
                 { label: "備註", value: selected.notes ?? "—" },
                 { label: "建立時間", value: new Date(selected.created_at).toLocaleString("zh-TW") },
               ].map((row) => (

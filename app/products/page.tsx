@@ -21,6 +21,7 @@ export default async function ProductsPage() {
       useCases: [t("single_use1"), t("single_use2"), t("single_use3")],
       image: "/images/single.png",
       highlight: t("single_highlight"),
+      youtubeId: "urffISPwXK4",
     },
     {
       key: "triple" as const,
@@ -33,6 +34,7 @@ export default async function ProductsPage() {
       useCases: [t("triple_use1"), t("triple_use2"), t("triple_use3")],
       image: "/images/triple.png",
       highlight: t("triple_highlight"),
+      youtubeId: "l5qzBeU3Cps",
     },
   ];
 
@@ -58,6 +60,17 @@ export default async function ProductsPage() {
                 alt={product.name}
                 fill
                 className="object-contain p-4"
+              />
+            </div>
+
+            {/* YouTube product video */}
+            <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
+              <iframe
+                src={`https://www.youtube.com/embed/${product.youtubeId}`}
+                title={product.name}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="absolute inset-0 w-full h-full"
               />
             </div>
 

@@ -4,25 +4,26 @@ import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import BackButton from "@/components/BackButton";
-import { RATES, calculateTotal, type ProductType } from "@/lib/pricing";
+import { RATES, calculateTotal, getSetupPersons, type ProductType, type SetupOption } from "@/lib/pricing";
 
 const LINE_OA = "https://line.me/R/ti/p/@touchpersona";
-const MAX_STANDARD_DAYS = 5;
+const MAX_STANDARD_DAYS = RATES.maxDays;
 
 export default function CalculatorClient() {
   const t = useTranslations("calculator");
   const [productType, setProductType] = useState<ProductType>("single");
   const [qtyInput, setQtyInput] = useState<string>("1");
   const [daysInput, setDaysInput] = useState<string>("1");
-  const [addSetup, setAddSetup] = useState(false);
+  const [setupOption, setSetupOption] = useState<SetupOption>("none");
   const [includeShipping, setIncludeShipping] = useState(true);
 
   const quantity = Math.max(1, parseInt(qtyInput) || 1);
   const days = Math.max(1, parseInt(daysInput) || 1);
   const isLongRental = days > MAX_STANDARD_DAYS;
 
-  const result = calculateTotal({ productType, quantity, days, addSetup, includeShipping });
+  const result = calculateTotal({ productType, quantity, days, setupOption, includeShipping });
   const hasRates = RATES.perUnit.single > 0;
+  const setupPersons = getSetupPersons(quantity);
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
@@ -84,13 +85,34 @@ export default function CalculatorClient() {
         </div>
       </div>
 
-      {/* Options */}
-      <div className="mb-8 space-y-3">
-        <label className="flex items-center gap-3 cursor-pointer">
-          <input type="checkbox" checked={addSetup} onChange={(e) => setAddSetup(e.target.checked)} className="w-5 h-5 rounded accent-gray-900" />
-          <span className="text-sm text-gray-700">{t("include_setup")}</span>
-          {RATES.setup > 0 && <span className="text-xs text-gray-400 ml-auto">NT$ {RATES.setup.toLocaleString()}</span>}
-        </label>
+      {/* Setup Option */}
+      <div className="mb-6">
+        <label className="block text-sm font-semibold text-gray-700 mb-1">{t("setup_option_label")}</label>
+        <p className="text-xs text-gray-400 mb-3">
+          {t("setup_persons_hint", { count: setupPersons })}
+          {" · "}
+          {t("setup_rate_hint", { half: (setupPersons * RATES.setup.halfDay).toLocaleString(), full: (setupPersons * RATES.setup.fullDay).toLocaleString() })}
+        </p>
+        <div className="flex gap-2">
+          {([
+            ["none",  t("setup_none")],
+            ["half",  `${t("setup_half")} NT$${(setupPersons * RATES.setup.halfDay).toLocaleString()}`],
+            ["full",  `${t("setup_full")} NT$${(setupPersons * RATES.setup.fullDay).toLocaleString()}`],
+          ] as [SetupOption, string][]).map(([opt, label]) => (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => setSetupOption(opt)}
+              className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all ${setupOption === opt ? "bg-gray-900 text-white border-gray-900" : "border-gray-300 text-gray-600 hover:border-gray-700"}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Shipping */}
+      <div className="mb-8">
         <label className="flex items-center gap-3 cursor-pointer">
           <input type="checkbox" checked={includeShipping} onChange={(e) => setIncludeShipping(e.target.checked)} className="w-5 h-5 rounded accent-gray-900" />
           <span className="text-sm text-gray-700">{t("include_shipping")}</span>
@@ -125,7 +147,7 @@ export default function CalculatorClient() {
                   <span>{t("rental_fee")} ({quantity} × {days} × NT${result.unitRate.toLocaleString()})</span>
                   <span>NT$ {result.rentalFee.toLocaleString()}</span>
                 </div>
-                {addSetup && (
+                {setupOption !== "none" && (
                   <div className="flex justify-between text-gray-600">
                     <span>{t("setup_fee")}</span>
                     <span>NT$ {result.setupFee.toLocaleString()}</span>
@@ -138,9 +160,19 @@ export default function CalculatorClient() {
                   </div>
                 )}
               </div>
-              <div className="border-t border-gray-300 pt-3 flex justify-between items-center">
-                <span className="font-bold text-gray-900 text-lg">{t("estimated_total_label")}</span>
-                <span className="font-bold text-2xl text-gray-900">NT$ {result.total.toLocaleString()}</span>
+              <div className="border-t border-gray-300 pt-3 space-y-1.5">
+                <div className="flex justify-between items-center text-gray-500 text-sm">
+                  <span>{t("subtotal_excl_tax")}</span>
+                  <span>NT$ {result.total.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center text-gray-500 text-sm">
+                  <span>{t("tax_label")} (5%)</span>
+                  <span>NT$ {Math.round(result.total * 0.05).toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center pt-1 border-t border-gray-200">
+                  <span className="font-bold text-gray-900 text-lg">{t("estimated_total_label")}</span>
+                  <span className="font-bold text-2xl text-gray-900">NT$ {Math.round(result.total * 1.05).toLocaleString()}</span>
+                </div>
               </div>
               <p className="text-xs text-gray-400 mt-2">{t("note")}</p>
             </>

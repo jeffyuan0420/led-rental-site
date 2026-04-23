@@ -11,10 +11,17 @@ CREATE TABLE IF NOT EXISTS bookings (
   phone TEXT NOT NULL,
   email TEXT NOT NULL,
   product_type TEXT NOT NULL CHECK (product_type IN ('single', 'triple')),
-  quantity INTEGER NOT NULL CHECK (quantity IN (1, 2, 3)),
+  quantity INTEGER NOT NULL,
+  event_start_date DATE,
+  event_end_date DATE,
   start_date DATE NOT NULL,
   end_date DATE NOT NULL,
-  add_setup BOOLEAN DEFAULT FALSE,
+  setup_option TEXT DEFAULT 'none' CHECK (setup_option IN ('none', 'half', 'full')),
+  teardown_time TEXT DEFAULT 'daytime' CHECK (teardown_time IN ('daytime', 'night')),
+  invoice_type TEXT DEFAULT 'personal' CHECK (invoice_type IN ('personal', 'company')),
+  invoice_company TEXT,
+  invoice_tax_id TEXT,
+  invoice_address TEXT,
   notes TEXT,
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'cancelled')),
   created_at TIMESTAMPTZ DEFAULT NOW()
@@ -59,7 +66,7 @@ CREATE INDEX IF NOT EXISTS idx_bookings_status
 -- 測試資料（可選，測試完刪除）
 -- ============================================================
 
--- INSERT INTO bookings (name, company, phone, email, product_type, quantity, start_date, end_date, add_setup, status)
+-- INSERT INTO bookings (name, company, phone, email, product_type, quantity, start_date, end_date, setup_option, teardown_time, invoice_type, status)
 -- VALUES
---   ('測試客戶A', '測試公司', '0912000001', 'test@test.com', 'single', 1, '2026-05-01', '2026-05-03', false, 'confirmed'),
---   ('測試客戶B', NULL, '0912000002', 'test2@test.com', 'triple', 2, '2026-05-10', '2026-05-12', true, 'pending');
+--   ('測試客戶A', '測試公司', '0912000001', 'test@test.com', 'single', 1, '2026-05-01', '2026-05-03', 'none', 'daytime', 'personal', 'confirmed'),
+--   ('測試客戶B', NULL, '0912000002', 'test2@test.com', 'triple', 2, '2026-05-10', '2026-05-12', 'half', 'night', 'company', 'pending');

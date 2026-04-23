@@ -10,7 +10,7 @@ interface BookingPayload {
   email: string;
   product_type: "single" | "triple";
   quantity: number;
-  add_setup: boolean;
+  setup_option: "none" | "half" | "full";
   start_date: string;
   end_date: string;
   notes?: string;
@@ -35,7 +35,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
-  const { name, company, phone, email, product_type, quantity, add_setup, start_date, end_date, notes } = body;
+  const { name, company, phone, email, product_type, quantity, setup_option, start_date, end_date, notes } = body;
+  const setupLabel = setup_option === "none" ? "否" : setup_option === "half" ? "半天" : "整天";
 
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -56,7 +57,7 @@ export async function POST(req: Request) {
       <tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">機型</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">${PRODUCT_LABELS[product_type]}</td></tr>
       <tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">台數</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">${quantity} 台</td></tr>
       <tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">租賃日期</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">${start_date} ～ ${end_date}</td></tr>
-      <tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">設定協助</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">${add_setup ? "是" : "否"}</td></tr>
+      <tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">設定協助</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">${setupLabel}</td></tr>
       ${notes ? `<tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600;vertical-align:top">備註</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">${notes}</td></tr>` : ""}
     </table>
     <p style="color:#6b7280;font-size:12px;margin-top:16px">此信由 Persona Taiwan 租賃系統自動發送</p>
