@@ -384,6 +384,12 @@ export default function AdminBookingsClient() {
                 { label: "租賃日期", value: `${selected.start_date} ~ ${selected.end_date}` },
                 { label: "估算費用", value: calcFee(selected) },
                 { label: "設定協助", value: selected.setup_option === "none" ? "否" : selected.setup_option === "half" ? "半天" : "整天" },
+                { label: "發票需求", value: selected.invoice_type === "company" ? "三聯式（公司）" : "二聯式（個人）" },
+                ...(selected.invoice_type === "company" ? [
+                  { label: "公司抬頭", value: selected.invoice_company ?? "—" },
+                  { label: "統一編號", value: selected.invoice_tax_id ?? "—" },
+                  { label: "發票地址", value: selected.invoice_address ?? "—" },
+                ] : []),
                 { label: "備註", value: selected.notes ?? "—" },
                 { label: "建立時間", value: new Date(selected.created_at).toLocaleString("zh-TW") },
               ].map((row) => (

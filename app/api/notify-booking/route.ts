@@ -22,6 +22,10 @@ interface BookingPayload {
   teardown_time?: "daytime" | "night";
   start_date: string;
   end_date: string;
+  invoice_type?: "personal" | "company";
+  invoice_company?: string;
+  invoice_tax_id?: string;
+  invoice_address?: string;
   notes?: string;
 }
 
@@ -39,7 +43,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
-  const { name, company, phone, email, product_type, quantity, setup_option, teardown_time = "daytime", start_date, end_date, notes } = body;
+  const { name, company, phone, email, product_type, quantity, setup_option, teardown_time = "daytime", start_date, end_date, invoice_type, invoice_company, invoice_tax_id, invoice_address, notes } = body;
   const setupLabel = setup_option === "none" ? "不需要" : setup_option === "half" ? "半天" : "整天";
 
   // Fee calculation
@@ -72,9 +76,15 @@ export async function POST(req: Request) {
       <tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">設定協助</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">${setupLabel}</td></tr>
       ${teardown_time === "night" ? `<tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">撤場時間</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">夜間（19:00–22:00）</td></tr>` : ""}
       <tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">估算費用</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;font-weight:700">${needsQuote ? "專案報價" : `NT$ ${total.toLocaleString()}（含稅）`}</td></tr>
+      <tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">發票需求</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">${invoice_type === "company" ? "三聯式（公司）" : "二聯式（個人）"}</td></tr>
+      ${invoice_type === "company" ? `
+        ${invoice_company ? `<tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">公司抬頭</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">${invoice_company}</td></tr>` : ""}
+        ${invoice_tax_id ? `<tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">統一編號</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">${invoice_tax_id}</td></tr>` : ""}
+        ${invoice_address ? `<tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">發票地址</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">${invoice_address}</td></tr>` : ""}
+      ` : ""}
       ${notes ? `<tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600;vertical-align:top">備註</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">${notes}</td></tr>` : ""}
     </table>
-    <p style="color:#6b7280;font-size:12px;margin-top:16px">此信由 Persona Taiwan 租賃系統自動發送</p>
+    <p style="color:#6b7280;font-size:12px;margin-top:16px">此信由 Persona 盛源 LED廣告機租賃系統自動發送</p>
   `;
 
   // --- Customer confirmation email ---
