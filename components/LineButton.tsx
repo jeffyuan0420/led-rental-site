@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 
 export default function LineButton() {
   const t = useTranslations("common");
-  const lineUrl = process.env.NEXT_PUBLIC_LINE_OA_URL ?? "#";
+  const lineUrl = "https://line.me/R/ti/p/@touchpersona";
 
   return (
     <a
