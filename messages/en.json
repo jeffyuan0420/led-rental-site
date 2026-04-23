@@ -64,10 +64,7 @@
     "preview_scale": "Preview at 1:4 scale",
     "content_rec_label": "Recommended content resolution",
     "content_rec_16_9": "(closest to 16:9 — recommended for video)",
-    "panel_label": "Panel",
-    "select_video_label": "Select Demo Content",
-    "unified_hint": "▲ Same content spanning all panels — unified display effect",
-    "mixed_hint": "▲ Each panel playing different content"
+    "multi_content_note": "* Each panel can play different content independently for flexible display combinations"
   },
   "calculator": {
     "title": "Price Calculator",
