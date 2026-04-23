@@ -8,11 +8,11 @@ import BackButton from "@/components/BackButton";
 const GAP = 0; // panels touch; dashed line drawn on top
 
 const MACHINE_CONFIG = {
-  single: { panelW: 160, panelH: 480, mmW: 664, mmH: 1920, maxQty: 3, labelKey: "single_name" },
-  triple: { panelW: 320, panelH: 480, mmW: 1280, mmH: 1920, maxQty: 3, labelKey: "triple_name" },
+  single: { panelW: 160, panelH: 480, mmW: 664, mmH: 1920, pxW: 344, pxH: 1032, maxQty: 5, labelKey: "single_name" },
+  triple: { panelW: 320, panelH: 480, mmW: 1280, mmH: 1920, pxW: 688, pxH: 1032, maxQty: 3, labelKey: "triple_name" },
 };
 
-type Quantity = 1 | 2 | 3;
+type Quantity = 1 | 2 | 3 | 4 | 5;
 
 export default function SimulatorClient() {
   const t = useTranslations("simulator");
@@ -112,12 +112,12 @@ export default function SimulatorClient() {
           {config.maxQty > 1 && (
             <div className="mb-6">
               <p className="text-sm font-semibold text-gray-700 mb-3">{t("quantity_label")}</p>
-              <div className="flex gap-2">
-                {([1, 2, 3] as Quantity[]).map((q) => (
+              <div className="flex flex-wrap gap-2">
+                {(Array.from({ length: config.maxQty }, (_, i) => i + 1) as Quantity[]).map((q) => (
                   <button
                     key={q}
                     onClick={() => handleQuantityChange(q)}
-                    className={`flex-1 py-2 rounded-lg text-sm font-bold border-2 transition-all ${
+                    className={`flex-1 min-w-[36px] py-2 rounded-lg text-sm font-bold border-2 transition-all ${
                       quantity === q
                         ? "bg-gray-900 text-white border-gray-900"
                         : "border-gray-300 text-gray-600 hover:border-gray-500"
@@ -130,17 +130,19 @@ export default function SimulatorClient() {
             </div>
           )}
 
-          {/* Dimensions info */}
-          <div className="mb-6 bg-gray-50 rounded-lg p-3 text-xs text-gray-500">
+          {/* Dimensions + resolution info */}
+          <div className="mb-6 bg-gray-50 rounded-lg p-3 text-xs text-gray-500 space-y-1">
             <p className="font-semibold text-gray-700 mb-1">{tProduct(config.labelKey as "single_name" | "triple_name")}</p>
-            {config.maxQty > 1 ? (
-              <>
-                <p>{config.mmW * quantity} × {config.mmH} mm</p>
-                <p className="mt-1 text-gray-400">（{quantity} {t("units_joined")}）</p>
-              </>
-            ) : (
-              <p>{config.mmW} × {config.mmH} mm</p>
-            )}
+            <p>{config.mmW * quantity} × {config.mmH} mm</p>
+            <p className="text-gray-400">{config.pxW * quantity} × {config.pxH} px</p>
+            {/* Content recommendation */}
+            <div className="mt-2 pt-2 border-t border-gray-200">
+              <p className="font-semibold text-gray-600 mb-0.5">{t("content_rec_label")}</p>
+              <p className="text-yellow-700">{config.pxW * quantity} × {config.pxH} px</p>
+              {machineType === "single" && quantity === 5 && (
+                <p className="text-green-700 font-semibold mt-1">≈ 16:9 {t("content_rec_16_9")}</p>
+              )}
+            </div>
           </div>
 
           {/* Upload */}
@@ -210,7 +212,7 @@ export default function SimulatorClient() {
         </div>
         {imageUrl && (
           <p className="text-xs text-gray-400 text-center mt-3">
-            {t("preview_scale")} — {config.mmW * (config.maxQty > 1 ? quantity : 1)} × {config.mmH} mm
+            {t("preview_scale")} — {config.mmW * quantity} × {config.mmH} mm / {config.pxW * quantity} × {config.pxH} px
           </p>
         )}
       </div>

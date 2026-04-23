@@ -61,7 +61,9 @@
     "units": " unit(s)",
     "units_joined": "unit(s) side by side",
     "empty_hint": "Upload an image to preview the multi-panel layout",
-    "preview_scale": "Preview at 1:4 scale"
+    "preview_scale": "Preview at 1:4 scale",
+    "content_rec_label": "Recommended content resolution",
+    "content_rec_16_9": "(closest to 16:9 — recommended for video)"
   },
   "calculator": {
     "title": "Price Calculator",

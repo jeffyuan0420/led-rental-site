@@ -61,7 +61,9 @@
     "units": "台",
     "units_joined": "台橫向拼接",
     "empty_hint": "請上傳圖片以預覽拼接效果",
-    "preview_scale": "預覽比例 1:4"
+    "preview_scale": "預覽比例 1:4",
+    "content_rec_label": "建議素材解析度",
+    "content_rec_16_9": "（最接近 16:9，建議使用此配置）"
   },
   "calculator": {
     "title": "費用試算器",
