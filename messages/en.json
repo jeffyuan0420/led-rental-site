@@ -5,7 +5,8 @@
     "simulator": "Simulator",
     "calculator": "Calculator",
     "booking": "Book Now",
-    "admin": "Admin"
+    "admin": "Admin",
+    "faq": "FAQ"
   },
   "hero": {
     "title": "LED Display Rental",

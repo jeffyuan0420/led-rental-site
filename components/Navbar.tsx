@@ -17,6 +17,7 @@ export default function Navbar() {
     { href: "/simulator", label: t("simulator") },
     { href: "/calculator", label: t("calculator") },
     { href: "/booking", label: t("booking") },
+    { href: "/faq", label: t("faq") },
   ];
 
   async function switchLocale(locale: string) {
