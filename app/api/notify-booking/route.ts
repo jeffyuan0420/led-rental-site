@@ -134,14 +134,14 @@ export async function POST(req: Request) {
       </div>
 
       <h3 style="margin-top:24px;margin-bottom:8px;color:#374151">■ 匯款後請通知我們</h3>
-      <p style="font-size:14px;color:#374151">完成匯款後，請複製以下訊息，透過 LINE 傳送給我們的會計確認：</p>
+      <p style="font-size:14px;color:#374151">完成匯款後，請點擊下方按鈕，透過 LINE 官方帳號傳送付款通知：</p>
       <div style="background:#f3f4f6;border-radius:8px;padding:14px;font-size:13px;color:#374151;line-height:1.7;border:1px solid #e5e7eb">
         您好，我是 ${name}，預約 ${start_date}–${end_date} 的 Persona 盛源 LED廣告機租賃。<br>
         已完成匯款，末5碼：<strong>___</strong>，轉帳時間：<strong>___</strong>，金額：NT$${total.toLocaleString()}。<br>
         請確認，謝謝！
       </div>
       <div style="margin-top:12px;text-align:center">
-        <a href="${lineUrl}?text=${lineTemplate}" style="display:inline-block;background:#06c755;color:#fff;font-weight:700;text-decoration:none;padding:12px 28px;border-radius:8px;font-size:14px">📱 點此開啟 LINE 通知會計</a>
+        <a href="${lineUrl}" style="display:inline-block;background:#06c755;color:#fff;font-weight:700;text-decoration:none;padding:12px 28px;border-radius:8px;font-size:14px">📱 點此傳送 LINE 匯款通知</a>
       </div>
       <p style="font-size:12px;color:#9ca3af;text-align:center;margin-top:8px">（訊息已自動填入，補充末5碼與轉帳時間後送出即可）</p>
       `}
