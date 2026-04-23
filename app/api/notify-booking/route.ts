@@ -63,13 +63,41 @@ export async function POST(req: Request) {
     <p style="color:#6b7280;font-size:12px;margin-top:16px">此信由 Persona Taiwan 租賃系統自動發送</p>
   `;
 
+  const ackSubject = `【預約申請確認】感謝您預約 Persona Taiwan LED 廣告機租賃`;
+  const ackHtml = `
+    <div style="font-family:sans-serif;max-width:560px;color:#111">
+      <h2 style="color:#111">感謝您的預約申請</h2>
+      <p>親愛的 ${name} 您好，</p>
+      <p>感謝您透過 Persona Taiwan 官網提交租賃預約申請，我們已收到您的申請。</p>
+      <h3 style="margin-top:24px;margin-bottom:8px;color:#374151">您的預約資訊</h3>
+      <table style="border-collapse:collapse;width:100%;font-size:14px">
+        <tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600;width:120px">機型</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">${PRODUCT_LABELS[product_type]} × ${quantity} 台</td></tr>
+        <tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">租賃日期</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">${start_date} ～ ${end_date}</td></tr>
+        <tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">設定協助</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">${setupLabel}</td></tr>
+        ${notes ? `<tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600;vertical-align:top">備註</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">${notes}</td></tr>` : ""}
+      </table>
+      <p style="margin-top:20px">我們將於 <strong>1 個工作天內</strong>與您確認時段可用性，並另行寄送匯款資訊。</p>
+      <p>如有任何問題，歡迎透過 LINE 或 Email 與我們聯繫。</p>
+      <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0"/>
+      <p style="color:#6b7280;font-size:12px">Persona Taiwan｜help@csknight.com</p>
+    </div>
+  `;
+
   try {
+    // Internal notification to admin
     await transporter.sendMail({
       from: `"Persona Taiwan" <${smtpUser}>`,
       to: NOTIFY_EMAIL,
       replyTo: email,
       subject,
       html,
+    });
+    // Acknowledgment to customer
+    await transporter.sendMail({
+      from: `"Persona Taiwan" <${smtpUser}>`,
+      to: email,
+      subject: ackSubject,
+      html: ackHtml,
     });
     return NextResponse.json({ ok: true });
   } catch (err) {

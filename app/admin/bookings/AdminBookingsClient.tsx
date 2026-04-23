@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, type Booking } from "@/lib/supabase";
-import { calculateTotal } from "@/lib/pricing";
+import { calculateTotal, RATES } from "@/lib/pricing";
+import { PAYMENT, addWorkingDays } from "@/lib/payment";
 
 const PRODUCT_LABELS = {
   single: "單面直立機",
@@ -65,10 +66,19 @@ function exportCSV(bookings: Booking[]) {
   URL.revokeObjectURL(url);
 }
 
+const DAYS_OF_WEEK = ["（日）", "（一）", "（二）", "（三）", "（四）", "（五）", "（六）"];
+
+function formatDeadline(date: Date): string {
+  return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}${DAYS_OF_WEEK[date.getDay()]}`;
+}
+
 export default function AdminBookingsClient() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Booking | null>(null);
+  const [showConfirmPreview, setShowConfirmPreview] = useState(false);
+  const [confirmSending, setConfirmSending] = useState(false);
+  const [confirmResult, setConfirmResult] = useState<"sent" | "error" | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -112,6 +122,40 @@ export default function AdminBookingsClient() {
   async function handleLogout() {
     await supabase.auth.signOut();
     router.push("/admin/login");
+  }
+
+  async function sendConfirmEmail() {
+    if (!selected) return;
+    setConfirmSending(true);
+    setConfirmResult(null);
+    try {
+      const res = await fetch("/api/confirm-booking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: selected.name,
+          email: selected.email,
+          company: selected.company,
+          product_type: selected.product_type,
+          quantity: selected.quantity,
+          start_date: selected.start_date,
+          end_date: selected.end_date,
+          setup_option: selected.setup_option,
+          teardown_time: selected.teardown_time,
+          notes: selected.notes,
+        }),
+      });
+      if (res.ok) {
+        setConfirmResult("sent");
+        await updateStatus(selected.id, "confirmed");
+      } else {
+        setConfirmResult("error");
+      }
+    } catch {
+      setConfirmResult("error");
+    } finally {
+      setConfirmSending(false);
+    }
   }
 
   if (loading) {
@@ -226,6 +270,90 @@ export default function AdminBookingsClient() {
         </div>
       </div>
 
+      {/* Confirm email preview modal */}
+      {showConfirmPreview && selected && (() => {
+        const days = calcDays(selected.start_date, selected.end_date);
+        const { rentalFee, setupFee } = calculateTotal({ productType: selected.product_type, quantity: selected.quantity, days, setupOption: selected.setup_option, includeShipping: false });
+        const nightFee = selected.teardown_time === "night" ? RATES.nightSurcharge * selected.quantity : 0;
+        const subtotal = rentalFee + setupFee + nightFee;
+        const tax = Math.round(subtotal * 0.05);
+        const total = subtotal + tax;
+        const deadline = addWorkingDays(new Date(), PAYMENT.paymentDeadlineDays);
+        const deadlineStr = formatDeadline(deadline);
+        return (
+          <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setShowConfirmPreview(false)}>
+            <div className="bg-white rounded-2xl p-8 max-w-lg w-full shadow-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+              <div className="flex justify-between items-start mb-5">
+                <h2 className="text-lg font-bold text-gray-900">確認信預覽</h2>
+                <button onClick={() => setShowConfirmPreview(false)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
+              </div>
+              <div className="text-xs text-gray-500 mb-1">收件人</div>
+              <div className="text-sm font-medium text-gray-900 mb-4">{selected.email}</div>
+
+              <div className="bg-gray-50 rounded-lg p-4 text-sm space-y-3 border border-gray-200">
+                <p className="font-semibold text-gray-700">■ 預約資訊</p>
+                <div className="space-y-1 text-gray-600">
+                  <p>機型：{PRODUCT_LABELS[selected.product_type]} × {selected.quantity} 台</p>
+                  <p>日期：{selected.start_date} ～ {selected.end_date}（共 {days} 天）</p>
+                  {selected.teardown_time === "night" && <p>撤場：夜間撤場（19:00–22:00）</p>}
+                </div>
+                <p className="font-semibold text-gray-700 pt-1">■ 付款金額</p>
+                <div className="space-y-1 text-gray-600">
+                  <p>租賃費用：NT$ {rentalFee.toLocaleString()}</p>
+                  {setupFee > 0 && <p>設定協助費：NT$ {setupFee.toLocaleString()}</p>}
+                  {nightFee > 0 && <p>夜間撤場費：NT$ {nightFee.toLocaleString()}</p>}
+                  <p>小計（未稅）：NT$ {subtotal.toLocaleString()}</p>
+                  <p>營業稅（5%）：NT$ {tax.toLocaleString()}</p>
+                  <p className="font-bold text-gray-900">合計（含稅）：NT$ {total.toLocaleString()}</p>
+                </div>
+                <p className="font-semibold text-gray-700 pt-1">■ 匯款資訊</p>
+                <div className="space-y-1 text-gray-600">
+                  <p>銀行：{PAYMENT.bankName}（{PAYMENT.bankCode}）</p>
+                  <p>戶名：{PAYMENT.accountName}</p>
+                  <p>帳號：<span className="font-mono font-bold text-gray-900">{PAYMENT.accountNumber}</span></p>
+                </div>
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded text-xs text-yellow-800">
+                  付款截止：{deadlineStr}
+                </div>
+              </div>
+
+              {confirmResult === "sent" && (
+                <p className="mt-4 text-green-600 font-semibold text-sm text-center">✅ 確認信已寄出，狀態已更新為「已確認」</p>
+              )}
+              {confirmResult === "error" && (
+                <p className="mt-4 text-red-600 font-semibold text-sm text-center">❌ 寄送失敗，請稍後再試</p>
+              )}
+
+              {confirmResult !== "sent" && (
+                <div className="mt-5 flex gap-3">
+                  <button
+                    onClick={sendConfirmEmail}
+                    disabled={confirmSending}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold py-2 rounded-lg text-sm transition-colors"
+                  >
+                    {confirmSending ? "寄送中..." : "確認寄出"}
+                  </button>
+                  <button
+                    onClick={() => setShowConfirmPreview(false)}
+                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 rounded-lg text-sm transition-colors"
+                  >
+                    取消
+                  </button>
+                </div>
+              )}
+              {confirmResult === "sent" && (
+                <button
+                  onClick={() => { setShowConfirmPreview(false); setSelected(null); }}
+                  className="mt-4 w-full bg-gray-900 hover:bg-gray-700 text-white font-semibold py-2 rounded-lg text-sm transition-colors"
+                >
+                  關閉
+                </button>
+              )}
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Detail modal */}
       {selected && (
         <div
@@ -265,7 +393,15 @@ export default function AdminBookingsClient() {
                 </div>
               ))}
             </div>
-            <div className="mt-6 flex gap-3">
+            <div className="mt-6 flex gap-3 flex-wrap">
+              {selected.status === "pending" && calcDays(selected.start_date, selected.end_date) <= 5 && (
+                <button
+                  onClick={() => { setShowConfirmPreview(true); setConfirmResult(null); }}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg text-sm transition-colors"
+                >
+                  ✉ 發送確認信
+                </button>
+              )}
               <button
                 onClick={() => updateStatus(selected.id, "confirmed")}
                 className="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-lg text-sm transition-colors"
