@@ -10,7 +10,8 @@ export const PAYMENT = {
   accountName: "鉅財王數位科技股份有限公司",
   accountNumber: "82120000150007",
   paymentDeadlineDays: 3, // 幾個工作天內完成匯款
-  accountantLineId: "0908867233", // 會計的 LINE ID（供客戶匯款後通知用）
+  accountantLineId: "0908867233", // 會計的個人 LINE ID（備用）
+  companyLineOA: "@touchpersona",  // 公司 LINE 官方帳號（用於確認信預填訊息）
 } as const;
 
 /** 計算 N 個工作天後的日期（週一～週五） */

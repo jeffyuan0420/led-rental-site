@@ -54,8 +54,9 @@ export async function POST(req: Request) {
   const deadline = addWorkingDays(new Date(), PAYMENT.paymentDeadlineDays);
   const deadlineStr = `${deadline.getFullYear()}/${String(deadline.getMonth() + 1).padStart(2, "0")}/${String(deadline.getDate()).padStart(2, "0")}${DAYS_OF_WEEK[deadline.getDay()]}`;
 
-  const lineUrl = `https://line.me/R/ti/p/~${PAYMENT.accountantLineId}`;
-  const lineTemplate = encodeURIComponent(`您好，我是 ${name}，預約 ${start_date}–${end_date} 的 Persona Taiwan LED 廣告機租賃。已完成匯款，末5碼：___，轉帳時間：___，金額：NT$${total.toLocaleString()}。請確認，謝謝！`);
+  // LINE OA 官方帳號預填訊息（客戶一鍵送出）
+  const lineTemplate = encodeURIComponent(`您好，我是 ${name}，預約 ${start_date}–${end_date} 的 Persona 盛源 LED廣告機租賃。已完成匯款，末5碼：___，轉帳時間：___，金額：NT$${total.toLocaleString()}。請確認，謝謝！`);
+  const lineUrl = `https://line.me/R/oaMessage/${PAYMENT.companyLineOA}/?${lineTemplate}`;
 
   // --- Internal admin notification ---
   const adminSubject = `【新預約】${name}｜${PRODUCT_LABELS[product_type]} × ${quantity} 台`;
@@ -77,12 +78,12 @@ export async function POST(req: Request) {
   `;
 
   // --- Customer confirmation email ---
-  const customerSubject = `【租賃確認】感謝您預約 Persona Taiwan LED 廣告機`;
+  const customerSubject = `【租賃確認】感謝您預約 Persona 盛源 LED廣告機`;
   const customerHtml = `
     <div style="font-family:sans-serif;max-width:580px;color:#111">
       <h2 style="color:#111">租賃預約確認通知</h2>
       <p>親愛的 ${name} 您好，</p>
-      <p>感謝您預約 Persona Taiwan LED 廣告機租賃服務，您的預約已成功建立。請於 <strong>${PAYMENT.paymentDeadlineDays} 個工作天內（${deadlineStr} 前）</strong>完成全額匯款，以正式保留機台時段。</p>
+      <p>感謝您預約 Persona 盛源 LED廣告機租賃服務，您的預約已成功建立。請於 <strong>${PAYMENT.paymentDeadlineDays} 個工作天內（${deadlineStr} 前）</strong>完成全額匯款，以正式保留機台時段。</p>
 
       <h3 style="margin-top:24px;margin-bottom:8px;color:#374151">■ 預約資訊</h3>
       <table style="border-collapse:collapse;width:100%;font-size:14px">
@@ -125,14 +126,14 @@ export async function POST(req: Request) {
       <h3 style="margin-top:24px;margin-bottom:8px;color:#374151">■ 匯款後請通知我們</h3>
       <p style="font-size:14px;color:#374151">完成匯款後，請複製以下訊息，透過 LINE 傳送給我們的會計確認：</p>
       <div style="background:#f3f4f6;border-radius:8px;padding:14px;font-size:13px;color:#374151;line-height:1.7;border:1px solid #e5e7eb">
-        您好，我是 ${name}，預約 ${start_date}–${end_date} 的 Persona Taiwan LED 廣告機租賃。<br>
+        您好，我是 ${name}，預約 ${start_date}–${end_date} 的 Persona 盛源 LED廣告機租賃。<br>
         已完成匯款，末5碼：<strong>___</strong>，轉帳時間：<strong>___</strong>，金額：NT$${total.toLocaleString()}。<br>
         請確認，謝謝！
       </div>
       <div style="margin-top:12px;text-align:center">
         <a href="${lineUrl}?text=${lineTemplate}" style="display:inline-block;background:#06c755;color:#fff;font-weight:700;text-decoration:none;padding:12px 28px;border-radius:8px;font-size:14px">📱 點此開啟 LINE 通知會計</a>
       </div>
-      <p style="font-size:12px;color:#9ca3af;text-align:center;margin-top:8px">（開啟後請填入末5碼與轉帳時間後再送出）</p>
+      <p style="font-size:12px;color:#9ca3af;text-align:center;margin-top:8px">（訊息已自動填入，補充末5碼與轉帳時間後送出即可）</p>
       `}
 
       <p style="margin-top:24px;font-size:13px;color:#6b7280">如對匯款資訊有任何疑問，請先透過 LINE 或 Email 與我們確認後再轉帳。</p>
