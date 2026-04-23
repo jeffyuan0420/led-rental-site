@@ -52,7 +52,7 @@
   },
   "simulator": {
     "title": "Assembly Simulator",
-    "subtitle": "Choose quantity, upload image, preview multi-panel arrangement",
+    "subtitle": "Choose quantity and preview the multi-panel display effect",
     "quantity_label": "Number of Units",
     "upload_label": "Upload Image",
     "upload_btn": "Choose Image",

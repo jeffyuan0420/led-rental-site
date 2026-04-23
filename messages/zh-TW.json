@@ -52,7 +52,7 @@
   },
   "simulator": {
     "title": "拼接視覺模擬器",
-    "subtitle": "選擇台數，上傳圖片，即時預覽拼接效果",
+    "subtitle": "選擇台數，即時預覽拼接展示效果",
     "quantity_label": "選擇台數",
     "upload_label": "上傳圖片",
     "upload_btn": "選擇圖片",
