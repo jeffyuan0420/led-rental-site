@@ -12,8 +12,8 @@ const PRODUCT_LABELS = {
 };
 
 const STATUS_LABELS = {
-  pending: { label: "待確認", color: "bg-yellow-100 text-yellow-800" },
-  confirmed: { label: "已確認", color: "bg-green-100 text-green-800" },
+  pending: { label: "待付款", color: "bg-yellow-100 text-yellow-800" },
+  confirmed: { label: "✅ 已收款", color: "bg-green-100 text-green-800" },
   cancelled: { label: "已取消", color: "bg-red-100 text-red-800" },
 };
 
@@ -284,7 +284,7 @@ export default function AdminBookingsClient() {
           <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setShowConfirmPreview(false)}>
             <div className="bg-white rounded-2xl p-8 max-w-lg w-full shadow-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
               <div className="flex justify-between items-start mb-5">
-                <h2 className="text-lg font-bold text-gray-900">確認信預覽</h2>
+                <h2 className="text-lg font-bold text-gray-900">補寄確認信預覽</h2>
                 <button onClick={() => setShowConfirmPreview(false)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
               </div>
               <div className="text-xs text-gray-500 mb-1">收件人</div>
@@ -394,25 +394,25 @@ export default function AdminBookingsClient() {
               ))}
             </div>
             <div className="mt-6 flex gap-3 flex-wrap">
-              {selected.status === "pending" && calcDays(selected.start_date, selected.end_date) <= 5 && (
+              {calcDays(selected.start_date, selected.end_date) <= 5 && (
                 <button
                   onClick={() => { setShowConfirmPreview(true); setConfirmResult(null); }}
                   className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg text-sm transition-colors"
                 >
-                  ✉ 發送確認信
+                  ✉ 補寄確認信
                 </button>
               )}
               <button
                 onClick={() => updateStatus(selected.id, "confirmed")}
                 className="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-lg text-sm transition-colors"
               >
-                確認預訂
+                ✅ 確認已收款
               </button>
               <button
                 onClick={() => updateStatus(selected.id, "cancelled")}
                 className="flex-1 bg-red-100 hover:bg-red-200 text-red-700 font-semibold py-2 rounded-lg text-sm transition-colors"
               >
-                取消預訂
+                取消
               </button>
               <button
                 onClick={() => deleteBooking(selected.id)}
