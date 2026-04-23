@@ -24,6 +24,13 @@ export default function SimulatorClient() {
   const [quantity, setQuantity] = useState<Quantity>(1);
   const totalW = PANEL_W * quantity;
 
+  // Scale down to fit within preview area (max 560px wide)
+  const MAX_DISPLAY_W = 560;
+  const scale = Math.min(1, MAX_DISPLAY_W / totalW);
+  const scaledW = Math.round(totalW * scale);
+  const scaledH = Math.round(PANEL_H * scale);
+  const scaleRatio = Math.round(config.mmH / (PANEL_H * scale));
+
   return (
     <div className="flex flex-col lg:flex-row gap-10 items-start">
       {/* Controls */}
@@ -70,27 +77,33 @@ export default function SimulatorClient() {
       {/* Preview */}
       <div className="flex-1 min-w-0">
         <div className="bg-gray-900 rounded-xl p-6 flex items-center justify-center min-h-[520px]">
-          {/* Unified display: one video spanning all panels */}
-          <div style={{ position: "relative", width: totalW + "px", height: PANEL_H + "px", overflow: "hidden" }} className="rounded-sm">
-            <video
-              autoPlay loop muted playsInline
-              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-            >
-              <source src={config.demoVideo} type="video/mp4" />
-            </video>
-            {/* Dashed panel separators */}
-            {Array.from({ length: quantity - 1 }).map((_, i) => (
-              <div key={i} style={{
-                position: "absolute", top: 0, left: PANEL_W * (i + 1) + "px",
-                width: "2px", height: "100%",
-                background: "repeating-linear-gradient(to bottom, rgba(255,255,255,0.6) 0, rgba(255,255,255,0.6) 6px, transparent 6px, transparent 10px)",
-              }} />
-            ))}
+          {/* Outer wrapper sized to scaled dimensions so layout is correct */}
+          <div style={{ width: scaledW + "px", height: scaledH + "px", flexShrink: 0 }}>
+            {/* Inner div at natural size, scaled down via CSS transform */}
+            <div style={{
+              position: "relative", width: totalW + "px", height: PANEL_H + "px",
+              overflow: "hidden", transform: `scale(${scale})`, transformOrigin: "top left",
+            }} className="rounded-sm">
+              <video
+                autoPlay loop muted playsInline
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+              >
+                <source src={config.demoVideo} type="video/mp4" />
+              </video>
+              {/* Dashed panel separators */}
+              {Array.from({ length: quantity - 1 }).map((_, i) => (
+                <div key={i} style={{
+                  position: "absolute", top: 0, left: PANEL_W * (i + 1) + "px",
+                  width: "2px", height: "100%",
+                  background: "repeating-linear-gradient(to bottom, rgba(255,255,255,0.6) 0, rgba(255,255,255,0.6) 6px, transparent 6px, transparent 10px)",
+                }} />
+              ))}
+            </div>
           </div>
         </div>
 
         <p className="text-xs text-gray-400 text-center mt-3">
-          {t("preview_scale")} — {config.mmW * quantity} × {config.mmH} mm / {config.pxW * quantity} × {config.pxH} px
+          預覽比例約 1:{scaleRatio} — {config.mmW * quantity} × {config.mmH} mm / {config.pxW * quantity} × {config.pxH} px
         </p>
         <p className="text-xs text-gray-400 text-center mt-1">{t("multi_content_note")}</p>
       </div>
