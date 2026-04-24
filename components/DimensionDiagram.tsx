@@ -28,9 +28,15 @@ interface Props {
   machineType: MachineType;
 }
 
+const MAX_QTY: Record<MachineType, number> = {
+  single: 5,
+  triple: 3,
+};
+
 export default function DimensionDiagram({ machineType }: Props) {
   const t = useTranslations("product");
-  const [qty, setQty] = useState<1 | 2 | 3>(1);
+  const [qty, setQty] = useState(1);
+  const maxQty = MAX_QTY[machineType];
 
   const { unitW, unitH } = DIMS[machineType];
   const totalW = unitW * qty;
@@ -52,8 +58,8 @@ export default function DimensionDiagram({ machineType }: Props) {
       </p>
 
       {/* Quantity tabs */}
-      <div className="flex gap-2 mb-4">
-        {([1, 2, 3] as const).map((q) => (
+      <div className="flex gap-2 mb-4 flex-wrap">
+        {Array.from({ length: maxQty }, (_, i) => i + 1).map((q) => (
           <button
             key={q}
             onClick={() => setQty(q)}
