@@ -82,13 +82,14 @@ export default function SimulatorClient() {
               width: totalW + "px",
               height: PANEL_H + "px",
               overflow: "hidden",
+              background: "#000",
               transform: `scale(${scale})`,
               transformOrigin: "top left",
             }} className="rounded-sm">
-              {/* Single video stretched across all panels to show the splicing effect */}
+              {/* contain: no distortion; video stays portrait, wider canvas = wider field of view */}
               <video
                 autoPlay loop muted playsInline
-                style={{ width: "100%", height: "100%", objectFit: "fill", display: "block" }}
+                style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }}
               >
                 <source src={config.demoVideo} type="video/mp4" />
               </video>
