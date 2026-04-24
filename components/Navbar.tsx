@@ -12,16 +12,23 @@ const SALES_REPS: Record<string, string[]> = {
   南區: ["0902018518", "rsray", "0980017885"],
 };
 
+const REGIONS = [
+  { key: "北區", labelKey: "sales_region_north" },
+  { key: "中區", labelKey: "sales_region_central" },
+  { key: "南區", labelKey: "sales_region_south" },
+] as const;
+
 function lineUrl(id: string) {
   return `https://line.me/ti/p/~${id}`;
 }
 
 function SalesModal({ onClose }: { onClose: () => void }) {
+  const t = useTranslations("nav");
   const [selected, setSelected] = useState<string | null>(null);
 
-  function handleRegion(region: string) {
-    setSelected(region);
-    const reps = SALES_REPS[region];
+  function handleRegion(key: string) {
+    setSelected(key);
+    const reps = SALES_REPS[key];
     const rep = reps[Math.floor(Math.random() * reps.length)];
     setTimeout(() => {
       window.open(lineUrl(rep), "_blank");
@@ -35,25 +42,25 @@ function SalesModal({ onClose }: { onClose: () => void }) {
       <div className="relative bg-white rounded-2xl shadow-2xl p-8 w-80 text-center">
         <button onClick={onClose} className="absolute top-3 right-4 text-gray-400 hover:text-gray-600 text-xl">✕</button>
         <div className="text-3xl mb-3">💼</div>
-        <h3 className="text-lg font-bold text-gray-900 mb-1">購買洽詢</h3>
-        <p className="text-sm text-gray-500 mb-6">請選擇您的所在區域，系統將為您隨機媒合業務專員</p>
+        <h3 className="text-lg font-bold text-gray-900 mb-1">{t("sales_modal_title")}</h3>
+        <p className="text-sm text-gray-500 mb-6">{t("sales_modal_subtitle")}</p>
         <div className="flex flex-col gap-3">
-          {Object.keys(SALES_REPS).map((region) => (
+          {REGIONS.map((region) => (
             <button
-              key={region}
-              onClick={() => handleRegion(region)}
+              key={region.key}
+              onClick={() => handleRegion(region.key)}
               disabled={selected !== null}
               className={`w-full py-3 rounded-xl font-bold text-base transition-all border-2 ${
-                selected === region
+                selected === region.key
                   ? "bg-yellow-400 border-yellow-400 text-gray-900"
                   : "border-yellow-400 text-yellow-700 hover:bg-yellow-50"
               }`}
             >
-              {region}
+              {t(region.labelKey)}
             </button>
           ))}
         </div>
-        <p className="text-xs text-gray-400 mt-4">點擊後將開啟 LINE 與業務專員聯繫</p>
+        <p className="text-xs text-gray-400 mt-4">{t("sales_modal_footer")}</p>
       </div>
     </div>
   );
@@ -105,7 +112,7 @@ export default function Navbar() {
               onClick={() => setShowSalesModal(true)}
               className="ml-2 bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-bold text-sm px-4 py-1.5 rounded-lg transition-colors"
             >
-              購買洽詢
+              {t("sales_btn")}
             </button>
             {/* Locale switcher */}
             <div className="flex gap-1 border border-gray-600 rounded overflow-hidden">
@@ -149,7 +156,7 @@ export default function Navbar() {
               onClick={() => { setMenuOpen(false); setShowSalesModal(true); }}
               className="text-left bg-yellow-400 text-gray-900 font-bold text-sm px-4 py-2 rounded-lg"
             >
-              購買洽詢
+              {t("sales_btn")}
             </button>
             <div className="flex gap-2 pt-2 border-t border-gray-700">
               <button onClick={() => switchLocale("zh-TW")} className="text-xs text-gray-300 hover:text-white">中文</button>

@@ -1,48 +1,32 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
-const FLOW_STEPS = [
-  {
-    icon: "📋",
-    title: "填寫預約表單",
-    details: ["選擇機型與台數", "確認租賃日期", "填寫聯絡及發票資訊"],
-    bg: "#1f2937",
-  },
-  {
-    icon: "📧",
-    title: "時段保留通知",
-    details: ["收到確認信及費用明細", "48小時內完成匯款", "LINE 傳送匯款末5碼"],
-    bg: "#374151",
-  },
-  {
-    icon: "✍️",
-    title: "簽署合約",
-    details: ["電子合約確認", "時段正式保留", "收到正式確認書"],
-    bg: "#4b5563",
-  },
-  {
-    icon: "🚚",
-    title: "進場配送",
-    details: ["機台準時送達現場", "設定協助（如有選）", "確認外觀完好"],
-    bg: "#b45309",
-  },
-  {
-    icon: "📦",
-    title: "撤場歸還",
-    details: ["活動結束後歸還機台", "確認無損壞", "押金退還（如有）"],
-    bg: "#d97706",
-  },
+const STEP_META = [
+  { icon: "📋", bg: "#1f2937" },
+  { icon: "📧", bg: "#374151" },
+  { icon: "✍️", bg: "#4b5563" },
+  { icon: "🚚", bg: "#b45309" },
+  { icon: "📦", bg: "#d97706" },
 ];
 
 export default async function HomePage() {
   const t = await getTranslations("hero");
   const tNav = await getTranslations("nav");
   const tHome = await getTranslations("home");
+  const tFlow = await getTranslations("flow");
 
   const features = [
     { icon: "☀️", title: tHome("feat1_title"), desc: tHome("feat1_desc") },
     { icon: "🔧", title: tHome("feat2_title"), desc: tHome("feat2_desc") },
     { icon: "🎯", title: tHome("feat3_title"), desc: tHome("feat3_desc") },
+  ];
+
+  const FLOW_STEPS = [
+    { ...STEP_META[0], title: tFlow("s1_title"), details: [tFlow("s1_d1"), tFlow("s1_d2"), tFlow("s1_d3")] },
+    { ...STEP_META[1], title: tFlow("s2_title"), details: [tFlow("s2_d1"), tFlow("s2_d2"), tFlow("s2_d3")] },
+    { ...STEP_META[2], title: tFlow("s3_title"), details: [tFlow("s3_d1"), tFlow("s3_d2"), tFlow("s3_d3")] },
+    { ...STEP_META[3], title: tFlow("s4_title"), details: [tFlow("s4_d1"), tFlow("s4_d2"), tFlow("s4_d3")] },
+    { ...STEP_META[4], title: tFlow("s5_title"), details: [tFlow("s5_d1"), tFlow("s5_d2"), tFlow("s5_d3")] },
   ];
 
   return (
@@ -103,8 +87,8 @@ export default async function HomePage() {
       {/* Rental Flow */}
       <section className="py-20 bg-gray-900" id="process">
         <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-3 text-white">租賃下單流程</h2>
-          <p className="text-center text-gray-400 mb-14 text-sm">從預約到歸還，全程透明順暢</p>
+          <h2 className="text-3xl font-bold text-center mb-3 text-white">{tFlow("title")}</h2>
+          <p className="text-center text-gray-400 mb-14 text-sm">{tFlow("subtitle")}</p>
 
           {/* Desktop: horizontal arrows */}
           <div className="hidden lg:flex items-start">
@@ -181,23 +165,27 @@ export default async function HomePage() {
             <div className="bg-gray-800 border border-gray-600 rounded-xl p-5">
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-yellow-400 text-lg">📅</span>
-                <span className="text-white font-bold text-base">標準預約</span>
+                <span className="text-white font-bold text-base">{tFlow("policy_std_title")}</span>
               </div>
               <p className="text-gray-300 text-sm leading-relaxed">
-                請於租賃日前 <strong className="text-yellow-400">2 個工作天</strong>完成訂金匯款確認，方可安排出貨。
+                {tFlow("policy_std_before")}
+                <strong className="text-yellow-400">{tFlow("policy_std_highlight")}</strong>
+                {tFlow("policy_std_after")}
               </p>
             </div>
             <div className="bg-gray-800 border border-amber-600/50 rounded-xl p-5">
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-amber-400 text-lg">⚡</span>
-                <span className="text-white font-bold text-base">緊急訂單（次日需求）</span>
+                <span className="text-white font-bold text-base">{tFlow("policy_urg_title")}</span>
               </div>
               <p className="text-gray-300 text-sm leading-relaxed">
-                請於前一日 <strong className="text-amber-400">中午 12:00 前</strong>完成匯款並來電確認，視車輛調度決定是否可安排。
+                {tFlow("policy_urg_before")}
+                <strong className="text-amber-400">{tFlow("policy_urg_highlight")}</strong>
+                {tFlow("policy_urg_after")}
               </p>
             </div>
             <p className="md:col-span-2 text-center text-gray-500 text-xs mt-1">
-              無法於期限前確認者，恕無法保留時段。建議提前預約以確保服務品質。
+              {tFlow("policy_note")}
             </p>
           </div>
         </div>
