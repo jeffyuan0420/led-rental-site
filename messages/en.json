@@ -240,6 +240,27 @@
     "summary_note": "* Estimated amount only. Final price confirmed in agreement.",
     "summary_quote_required": "Over 5 days — project-based pricing applies. We'll contact you after submission."
   },
+  "promo": {
+    "p0_badge": "📅 Limited Offer",
+    "p0_main": "Book a 4-Day Package",
+    "p0_highlight": "Free One-Way Shipping",
+    "p0_sub": "+ First Day Rent Waived",
+    "p0_note": "Offer valid until 2025/05/31. Limited availability.",
+    "p0_cta": "Book Now",
+    "p1_badge": "🎊 New Customer",
+    "p1_main": "First Rental",
+    "p1_highlight": "Free Setup Assistance",
+    "p1_sub": "On-site technician — save NT$3,000–4,500",
+    "p1_note": "This month only. One use per customer.",
+    "p1_cta": "View Plans",
+    "p2_badge": "💡 Multi-Unit Deal",
+    "p2_main": "Rent 2+ Units Together",
+    "p2_highlight": "Get 10% Off",
+    "p2_sub": "Applies to all models and rental periods",
+    "p2_note": "Can be combined with shipping offer",
+    "p2_cta": "Calculate Now",
+    "close": "Close"
+  },
   "common": {
     "line_inquiry": "LINE Inquiry",
     "loading": "Loading...",
