@@ -86,10 +86,15 @@ export default function SimulatorClient() {
               transform: `scale(${scale})`,
               transformOrigin: "top left",
             }} className="rounded-sm">
-              {/* contain: no distortion; video stays portrait, wider canvas = wider field of view */}
+              {/*
+                height:100% locks video to PANEL_H, width:auto scales proportionally.
+                Video should be (maxQty × pxW) × pxH wide — e.g. 1720×1032 for single (5-panel),
+                2064×1032 for triple (3-panel). Each panel then naturally reveals its slice.
+                Current demo video is single-panel width so 2+ panels show black on right.
+              */}
               <video
                 autoPlay loop muted playsInline
-                style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }}
+                style={{ height: "100%", width: "auto", display: "block" }}
               >
                 <source src={config.demoVideo} type="video/mp4" />
               </video>
