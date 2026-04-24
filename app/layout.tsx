@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import Navbar from "@/components/Navbar";
+import PromoBanner from "@/components/PromoBanner";
 import LineButton from "@/components/LineButton";
 import "./globals.css";
 
@@ -29,6 +30,7 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col bg-white text-gray-900">
         <NextIntlClientProvider messages={messages}>
           <Navbar />
+          <PromoBanner />
           <main className="flex-1">{children}</main>
           <LineButton />
         </NextIntlClientProvider>
