@@ -126,16 +126,16 @@ export default async function HomePage() {
                   }}
                 >
                   <span className="text-3xl mb-1">{step.icon}</span>
-                  <span className="text-xs font-bold leading-tight">{step.title}</span>
+                  <span className="text-sm font-bold leading-tight">{step.title}</span>
                 </div>
                 {/* Number + details */}
-                <div className="mt-4 px-3">
-                  <div className="w-7 h-7 rounded-full bg-yellow-400 text-gray-900 font-bold text-sm flex items-center justify-center mx-auto mb-3">
+                <div className="mt-4 px-3 flex flex-col items-center text-center">
+                  <div className="w-8 h-8 rounded-full bg-yellow-400 text-gray-900 font-bold text-base flex items-center justify-center mb-3">
                     {i + 1}
                   </div>
-                  <ul className="space-y-1.5">
+                  <ul className="space-y-1.5 text-left">
                     {step.details.map((d, j) => (
-                      <li key={j} className="flex items-start gap-1.5 text-xs text-gray-300">
+                      <li key={j} className="flex items-start gap-1.5 text-sm text-gray-300">
                         <span className="text-yellow-400 mt-0.5 shrink-0">—</span>
                         <span>{d}</span>
                       </li>
@@ -166,7 +166,7 @@ export default async function HomePage() {
                   </div>
                   <ul className="space-y-1">
                     {step.details.map((d, j) => (
-                      <li key={j} className="flex items-start gap-1.5 text-xs text-gray-400">
+                      <li key={j} className="flex items-start gap-1.5 text-sm text-gray-400">
                         <span className="text-yellow-400 shrink-0">—</span>
                         <span>{d}</span>
                       </li>
@@ -175,6 +175,30 @@ export default async function HomePage() {
                 </div>
               </div>
             ))}
+          </div>
+          {/* Booking policy notice */}
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
+            <div className="bg-gray-800 border border-gray-600 rounded-xl p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-yellow-400 text-lg">📅</span>
+                <span className="text-white font-bold text-base">標準預約</span>
+              </div>
+              <p className="text-gray-300 text-sm leading-relaxed">
+                請於租賃日前 <strong className="text-yellow-400">2 個工作天</strong>完成訂金匯款確認，方可安排出貨。
+              </p>
+            </div>
+            <div className="bg-gray-800 border border-amber-600/50 rounded-xl p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-amber-400 text-lg">⚡</span>
+                <span className="text-white font-bold text-base">緊急訂單（次日需求）</span>
+              </div>
+              <p className="text-gray-300 text-sm leading-relaxed">
+                請於前一日 <strong className="text-amber-400">中午 12:00 前</strong>完成匯款並來電確認，視車輛調度決定是否可安排。
+              </p>
+            </div>
+            <p className="md:col-span-2 text-center text-gray-500 text-xs mt-1">
+              無法於期限前確認者，恕無法保留時段。建議提前預約以確保服務品質。
+            </p>
           </div>
         </div>
       </section>
