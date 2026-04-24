@@ -66,7 +66,7 @@ export default async function ProductsPage() {
             {/* YouTube product video */}
             <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
               <iframe
-                src={`https://www.youtube.com/embed/${product.youtubeId}`}
+                src={`https://www.youtube.com/embed/${product.youtubeId}?autoplay=1&mute=1&loop=1&playlist=${product.youtubeId}`}
                 title={product.name}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen

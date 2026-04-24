@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import BackButton from "@/components/BackButton";
@@ -22,6 +22,9 @@ export default function SimulatorClient() {
   const PANEL_H = config.panelH;
 
   const [quantity, setQuantity] = useState<Quantity>(1);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const totalW = PANEL_W * quantity;
 
   // Scale down to fit within preview area (max 560px wide)
@@ -31,14 +34,71 @@ export default function SimulatorClient() {
   const scaledH = Math.round(PANEL_H * scale);
   const scaleRatio = Math.round(config.mmH / (PANEL_H * scale));
 
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (imageUrl) URL.revokeObjectURL(imageUrl);
+    setImageUrl(URL.createObjectURL(file));
+  }
+
+  async function handleDownload() {
+    if (!imageUrl) return;
+    const canvas = document.createElement("canvas");
+    canvas.width = totalW;
+    canvas.height = PANEL_H;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const img = new Image();
+    img.src = imageUrl;
+    await new Promise<void>((resolve) => { img.onload = () => resolve(); });
+
+    // Cover-fit: crop the image to fill the entire canvas
+    const imgRatio = img.width / img.height;
+    const canvasRatio = totalW / PANEL_H;
+    let sx = 0, sy = 0, sw = img.width, sh = img.height;
+    if (imgRatio > canvasRatio) {
+      sw = img.height * canvasRatio;
+      sx = (img.width - sw) / 2;
+    } else {
+      sh = img.width / canvasRatio;
+      sy = (img.height - sh) / 2;
+    }
+    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, totalW, PANEL_H);
+
+    // Draw panel dividers
+    ctx.strokeStyle = "rgba(255,255,255,0.6)";
+    ctx.setLineDash([6, 4]);
+    ctx.lineWidth = 2;
+    for (let i = 1; i < quantity; i++) {
+      ctx.beginPath();
+      ctx.moveTo(PANEL_W * i, 0);
+      ctx.lineTo(PANEL_W * i, PANEL_H);
+      ctx.stroke();
+    }
+
+    const link = document.createElement("a");
+    link.href = canvas.toDataURL("image/png");
+    link.download = "simulator-preview.png";
+    link.click();
+  }
+
+  const panelDividers = Array.from({ length: quantity - 1 }).map((_, i) => (
+    <div key={i} style={{
+      position: "absolute", top: 0, left: PANEL_W * (i + 1) + "px",
+      width: "2px", height: "100%",
+      background: "repeating-linear-gradient(to bottom, rgba(255,255,255,0.6) 0, rgba(255,255,255,0.6) 6px, transparent 6px, transparent 10px)",
+    }} />
+  ));
+
   return (
     <div className="flex flex-col lg:flex-row gap-10 items-start">
       {/* Controls */}
       <div className="w-full lg:w-64 flex-shrink-0">
         <BackButton />
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm space-y-6">
           {config.maxQty > 1 && (
-            <div className="mb-6">
+            <div>
               <p className="text-sm font-semibold text-gray-700 mb-3">{t("quantity_label")}</p>
               <div className="flex flex-wrap gap-2">
                 {(Array.from({ length: config.maxQty }, (_, i) => i + 1) as Quantity[]).map((q) => (
@@ -58,6 +118,24 @@ export default function SimulatorClient() {
             </div>
           )}
 
+          {/* Image upload */}
+          <div>
+            <p className="text-sm font-semibold text-gray-700 mb-3">{t("upload_label")}</p>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleFileChange}
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full py-2.5 rounded-lg border-2 border-dashed border-gray-300 text-sm text-gray-600 hover:border-gray-500 hover:text-gray-800 transition-colors"
+            >
+              {imageUrl ? t("reupload_btn") : t("upload_btn")}
+            </button>
+          </div>
+
           {/* Dimensions + resolution info */}
           <div className="bg-gray-50 rounded-lg p-3 text-xs text-gray-500 space-y-1">
             <p className="font-semibold text-gray-700 mb-1">{tProduct(config.labelKey as "single_name" | "triple_name")}</p>
@@ -71,40 +149,54 @@ export default function SimulatorClient() {
               )}
             </div>
           </div>
+
+          {imageUrl && (
+            <button
+              onClick={handleDownload}
+              className="w-full py-2.5 bg-gray-900 hover:bg-gray-700 text-white rounded-lg text-sm font-semibold transition-colors"
+            >
+              {t("download_btn")}
+            </button>
+          )}
         </div>
       </div>
 
       {/* Preview */}
       <div className="flex-1 min-w-0">
         <div className="bg-gray-900 rounded-xl p-6 flex items-center justify-center min-h-[520px]">
-          {/* Outer wrapper sized to scaled dimensions so layout is correct */}
           <div style={{ width: scaledW + "px", height: scaledH + "px", flexShrink: 0 }}>
-            {/* Inner div at natural size, scaled down via CSS transform */}
             <div style={{
               position: "relative", width: totalW + "px", height: PANEL_H + "px",
               overflow: "hidden", transform: `scale(${scale})`, transformOrigin: "top left",
             }} className="rounded-sm">
-              <video
-                autoPlay loop muted playsInline
-                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-              >
-                <source src={config.demoVideo} type="video/mp4" />
-              </video>
-              {/* Dashed panel separators */}
-              {Array.from({ length: quantity - 1 }).map((_, i) => (
-                <div key={i} style={{
-                  position: "absolute", top: 0, left: PANEL_W * (i + 1) + "px",
-                  width: "2px", height: "100%",
-                  background: "repeating-linear-gradient(to bottom, rgba(255,255,255,0.6) 0, rgba(255,255,255,0.6) 6px, transparent 6px, transparent 10px)",
-                }} />
-              ))}
+              {imageUrl ? (
+                // Image spans the full multi-panel area; each panel shows its slice naturally
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={imageUrl}
+                  alt="preview"
+                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                />
+              ) : (
+                <video
+                  autoPlay loop muted playsInline
+                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                >
+                  <source src={config.demoVideo} type="video/mp4" />
+                </video>
+              )}
+              {panelDividers}
             </div>
           </div>
         </div>
 
-        <p className="text-xs text-gray-400 text-center mt-3">
-          預覽比例約 1:{scaleRatio} — {config.mmW * quantity} × {config.mmH} mm / {config.pxW * quantity} × {config.pxH} px
-        </p>
+        {imageUrl ? (
+          <p className="text-xs text-gray-400 text-center mt-3">
+            {t("preview_scale")} — {config.mmW * quantity} × {config.mmH} mm / {config.pxW * quantity} × {config.pxH} px
+          </p>
+        ) : (
+          <p className="text-xs text-yellow-500 text-center mt-3">{t("empty_hint")}</p>
+        )}
         <p className="text-xs text-gray-400 text-center mt-1">{t("multi_content_note")}</p>
       </div>
     </div>
