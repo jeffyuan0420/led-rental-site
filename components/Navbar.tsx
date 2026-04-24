@@ -6,10 +6,64 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
+const SALES_REPS: Record<string, string[]> = {
+  北區: ["0908867358", "richsource015", "0968970633"],
+  中區: ["0968283885", "ryanwu1122", "0977131871"],
+  南區: ["0902018518", "rsray", "0980017885"],
+};
+
+function lineUrl(id: string) {
+  return `https://line.me/ti/p/~${id}`;
+}
+
+function SalesModal({ onClose }: { onClose: () => void }) {
+  const [selected, setSelected] = useState<string | null>(null);
+
+  function handleRegion(region: string) {
+    setSelected(region);
+    const reps = SALES_REPS[region];
+    const rep = reps[Math.floor(Math.random() * reps.length)];
+    setTimeout(() => {
+      window.open(lineUrl(rep), "_blank");
+      onClose();
+    }, 300);
+  }
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
+      <div className="relative bg-white rounded-2xl shadow-2xl p-8 w-80 text-center">
+        <button onClick={onClose} className="absolute top-3 right-4 text-gray-400 hover:text-gray-600 text-xl">✕</button>
+        <div className="text-3xl mb-3">💼</div>
+        <h3 className="text-lg font-bold text-gray-900 mb-1">購買洽詢</h3>
+        <p className="text-sm text-gray-500 mb-6">請選擇您的所在區域，系統將為您隨機媒合業務專員</p>
+        <div className="flex flex-col gap-3">
+          {Object.keys(SALES_REPS).map((region) => (
+            <button
+              key={region}
+              onClick={() => handleRegion(region)}
+              disabled={selected !== null}
+              className={`w-full py-3 rounded-xl font-bold text-base transition-all border-2 ${
+                selected === region
+                  ? "bg-yellow-400 border-yellow-400 text-gray-900"
+                  : "border-yellow-400 text-yellow-700 hover:bg-yellow-50"
+              }`}
+            >
+              {region}
+            </button>
+          ))}
+        </div>
+        <p className="text-xs text-gray-400 mt-4">點擊後將開啟 LINE 與業務專員聯繫</p>
+      </div>
+    </div>
+  );
+}
+
 export default function Navbar() {
   const t = useTranslations("nav");
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showSalesModal, setShowSalesModal] = useState(false);
 
   const links = [
     { href: "/", label: t("home") },
@@ -26,81 +80,87 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-gray-900 text-white shadow-md sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
-          <Image src="/logo.png" alt="Persona Taiwan" width={140} height={36} className="h-9 w-auto" style={{filter: 'none'}} />
-        </Link>
+    <>
+      <nav className="bg-gray-900 text-white shadow-md sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+          {/* Logo */}
+          <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
+            <Image src="/logo.png" alt="Persona Taiwan" width={140} height={36} className="h-9 w-auto" style={{filter: 'none'}} />
+          </Link>
 
-        {/* Desktop links */}
-        <div className="hidden md:flex items-center gap-6">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`text-sm font-medium transition-colors hover:text-yellow-400 ${
-                pathname === link.href ? "text-yellow-400" : "text-gray-200"
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
-          {/* Locale switcher */}
-          <div className="flex gap-1 ml-4 border border-gray-600 rounded overflow-hidden">
+          {/* Desktop links */}
+          <div className="hidden md:flex items-center gap-6">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`text-sm font-medium transition-colors hover:text-yellow-400 ${
+                  pathname === link.href ? "text-yellow-400" : "text-gray-200"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
             <button
-              onClick={() => switchLocale("zh-TW")}
-              className="px-2 py-1 text-xs hover:bg-gray-700 transition-colors"
+              onClick={() => setShowSalesModal(true)}
+              className="ml-2 bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-bold text-sm px-4 py-1.5 rounded-lg transition-colors"
             >
-              中文
+              購買洽詢
             </button>
-            <button
-              onClick={() => switchLocale("en")}
-              className="px-2 py-1 text-xs hover:bg-gray-700 transition-colors"
-            >
-              EN
-            </button>
+            {/* Locale switcher */}
+            <div className="flex gap-1 border border-gray-600 rounded overflow-hidden">
+              <button onClick={() => switchLocale("zh-TW")} className="px-2 py-1 text-xs hover:bg-gray-700 transition-colors">中文</button>
+              <button onClick={() => switchLocale("en")} className="px-2 py-1 text-xs hover:bg-gray-700 transition-colors">EN</button>
+            </div>
           </div>
+
+          {/* Mobile hamburger */}
+          <button
+            className="md:hidden text-gray-200 hover:text-white"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Toggle menu"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {menuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
         </div>
 
-        {/* Mobile hamburger */}
-        <button
-          className="md:hidden text-gray-200 hover:text-white"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle menu"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            {menuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            )}
-          </svg>
-        </button>
-      </div>
-
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div className="md:hidden bg-gray-800 px-4 py-3 flex flex-col gap-3">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMenuOpen(false)}
-              className={`text-sm font-medium transition-colors hover:text-yellow-400 ${
-                pathname === link.href ? "text-yellow-400" : "text-gray-200"
-              }`}
+        {/* Mobile menu */}
+        {menuOpen && (
+          <div className="md:hidden bg-gray-800 px-4 py-3 flex flex-col gap-3">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMenuOpen(false)}
+                className={`text-sm font-medium transition-colors hover:text-yellow-400 ${
+                  pathname === link.href ? "text-yellow-400" : "text-gray-200"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <button
+              onClick={() => { setMenuOpen(false); setShowSalesModal(true); }}
+              className="text-left bg-yellow-400 text-gray-900 font-bold text-sm px-4 py-2 rounded-lg"
             >
-              {link.label}
-            </Link>
-          ))}
-          <div className="flex gap-2 pt-2 border-t border-gray-700">
-            <button onClick={() => switchLocale("zh-TW")} className="text-xs text-gray-300 hover:text-white">中文</button>
-            <span className="text-gray-600">|</span>
-            <button onClick={() => switchLocale("en")} className="text-xs text-gray-300 hover:text-white">EN</button>
+              購買洽詢
+            </button>
+            <div className="flex gap-2 pt-2 border-t border-gray-700">
+              <button onClick={() => switchLocale("zh-TW")} className="text-xs text-gray-300 hover:text-white">中文</button>
+              <span className="text-gray-600">|</span>
+              <button onClick={() => switchLocale("en")} className="text-xs text-gray-300 hover:text-white">EN</button>
+            </div>
           </div>
-        </div>
-      )}
-    </nav>
+        )}
+      </nav>
+
+      {showSalesModal && <SalesModal onClose={() => setShowSalesModal(false)} />}
+    </>
   );
 }
