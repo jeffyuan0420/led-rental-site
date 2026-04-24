@@ -81,22 +81,18 @@ export default function SimulatorClient() {
               position: "relative",
               width: totalW + "px",
               height: PANEL_H + "px",
-              display: "flex",
               overflow: "hidden",
+              background: "#000",
               transform: `scale(${scale})`,
               transformOrigin: "top left",
             }} className="rounded-sm">
-              {/* Each panel is an independent video — full portrait content, no cropping */}
-              {Array.from({ length: quantity }).map((_, i) => (
-                <div key={i} style={{ width: PANEL_W + "px", height: PANEL_H + "px", flexShrink: 0, overflow: "hidden" }}>
-                  <video
-                    autoPlay loop muted playsInline
-                    style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                  >
-                    <source src={config.demoVideo} type="video/mp4" />
-                  </video>
-                </div>
-              ))}
+              {/* contain: full video height always visible, black bars fill remaining width */}
+              <video
+                autoPlay loop muted playsInline
+                style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }}
+              >
+                <source src={config.demoVideo} type="video/mp4" />
+              </video>
               {/* Dashed panel separators */}
               {Array.from({ length: quantity - 1 }).map((_, i) => (
                 <div key={i} style={{
