@@ -238,7 +238,12 @@
     "summary_tax": "VAT (5%)",
     "summary_total": "Est. Total (incl. tax)",
     "summary_note": "* Estimated amount only. Final price confirmed in agreement.",
-    "summary_quote_required": "Over 5 days — project-based pricing applies. We'll contact you after submission."
+    "summary_quote_required": "Over 5 days — project-based pricing applies. We'll contact you after submission.",
+    "delivery_address_label": "Delivery Address (Event Venue)",
+    "delivery_address_hint": "Enter the delivery location so we can determine if remote-area surcharges apply",
+    "customer_address_label": "Customer Address (Personal: home address)",
+    "customer_address_hint": "For internal use only, not shared publicly",
+    "address_required": "Please complete the full address (city, district, and street)"
   },
   "promo": {
     "p0_badge": "📅 Limited Offer",

@@ -7,6 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { supabase } from "@/lib/supabase";
 import { getSetupPersons, calculateTotal, RATES, type SetupOption } from "@/lib/pricing";
+import TaiwanAddressInput from "@/components/TaiwanAddressInput";
 
 const MAX_QTY = { single: 10, triple: 2 };
 const INVENTORY = { single: 24, triple: 2 };
@@ -46,7 +47,9 @@ export default function BookingClient() {
     invoice_type: "personal" as "personal" | "company",
     invoice_company: "",
     invoice_tax_id: "",
-    invoice_address: "",
+    invoice_city: "", invoice_district: "", invoice_detail: "",
+    delivery_city: "", delivery_district: "", delivery_detail: "",
+    customer_city: "", customer_district: "", customer_detail: "",
     notes: "",
   });
 
@@ -116,7 +119,15 @@ export default function BookingClient() {
       setError(t("date_required"));
       return;
     }
-    if (form.invoice_type === "company" && (!form.invoice_company || !form.invoice_tax_id || !form.invoice_address)) {
+    if (!form.delivery_city || !form.delivery_district || !form.delivery_detail) {
+      setError(t("address_required"));
+      return;
+    }
+    if (!form.customer_city || !form.customer_district || !form.customer_detail) {
+      setError(t("address_required"));
+      return;
+    }
+    if (form.invoice_type === "company" && (!form.invoice_company || !form.invoice_tax_id || !form.invoice_city || !form.invoice_district || !form.invoice_detail)) {
       setError(t("invoice_required"));
       return;
     }
@@ -143,7 +154,9 @@ export default function BookingClient() {
       invoice_type: form.invoice_type,
       invoice_company: form.invoice_type === "company" ? form.invoice_company : null,
       invoice_tax_id: form.invoice_type === "company" ? form.invoice_tax_id : null,
-      invoice_address: form.invoice_type === "company" ? form.invoice_address : null,
+      invoice_address: form.invoice_type === "company" ? `${form.invoice_city}${form.invoice_district}${form.invoice_detail}` : null,
+      delivery_address: `${form.delivery_city}${form.delivery_district}${form.delivery_detail}`,
+      customer_address: `${form.customer_city}${form.customer_district}${form.customer_detail}`,
       notes: form.notes || null,
     };
 
@@ -404,13 +417,40 @@ export default function BookingClient() {
               <label className="block text-xs font-semibold text-gray-600 mb-1">
                 {t("invoice_address")} <span className="text-red-500">*</span>
               </label>
-              <input type="text" value={form.invoice_address}
-                onChange={(e) => setForm({ ...form, invoice_address: e.target.value })}
-                className="w-full border-2 border-gray-300 rounded-xl px-4 py-2 text-sm focus:border-gray-900 focus:outline-none"
-                placeholder={t("invoice_address_placeholder")} />
+              <TaiwanAddressInput
+                city={form.invoice_city} district={form.invoice_district} detail={form.invoice_detail}
+                onChange={(c, d, v) => setForm({ ...form, invoice_city: c, invoice_district: d, invoice_detail: v })}
+                required
+              />
             </div>
           </div>
         )}
+      </div>
+
+      {/* Delivery Address */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">
+          {t("delivery_address_label")} <span className="text-red-500">*</span>
+        </label>
+        <p className="text-xs text-gray-400 mb-2">{t("delivery_address_hint")}</p>
+        <TaiwanAddressInput
+          city={form.delivery_city} district={form.delivery_district} detail={form.delivery_detail}
+          onChange={(c, d, v) => setForm({ ...form, delivery_city: c, delivery_district: d, delivery_detail: v })}
+          required
+        />
+      </div>
+
+      {/* Customer Address */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">
+          {t("customer_address_label")} <span className="text-red-500">*</span>
+        </label>
+        <p className="text-xs text-gray-400 mb-2">{t("customer_address_hint")}</p>
+        <TaiwanAddressInput
+          city={form.customer_city} district={form.customer_district} detail={form.customer_detail}
+          onChange={(c, d, v) => setForm({ ...form, customer_city: c, customer_district: d, customer_detail: v })}
+          required
+        />
       </div>
 
       {/* Notes */}

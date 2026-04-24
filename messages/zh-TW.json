@@ -238,7 +238,12 @@
     "summary_tax": "營業稅（5%）",
     "summary_total": "估算總費用（含稅）",
     "summary_note": "※ 實際費用以確認書為準",
-    "summary_quote_required": "展期超過 5 天，費用依專案報價，送出後業務將與您聯繫"
+    "summary_quote_required": "展期超過 5 天，費用依專案報價，送出後業務將與您聯繫",
+    "delivery_address_label": "送貨地址（活動會場）",
+    "delivery_address_hint": "填寫機器實際配送地點，以判斷是否適用偏遠地區加收",
+    "customer_address_label": "客戶地址（個人請填住址）",
+    "customer_address_hint": "僅供內部使用，不對外公開",
+    "address_required": "請填寫完整地址（縣市、鄉鎮市區、詳細地址）"
   },
   "promo": {
     "p0_badge": "📅 限時優惠",
