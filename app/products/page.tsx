@@ -13,7 +13,7 @@ export default async function ProductsPage() {
     {
       key: "single" as const,
       name: t("single_name"),
-      nameEn: "Single / Two-Fold Display",
+      nameEn: "Two-Fold Display",
       size: "664 × 1920 mm",
       brightness: "650～800 nits",
       ipRating: "IP31",

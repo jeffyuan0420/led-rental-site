@@ -13,7 +13,7 @@ const geistSans = Geist({
 
 export const metadata: Metadata = {
   title: "Persona Taiwan | LED 廣告機租賃",
-  description: "高亮度 LED 廣告機彈性租賃，提供單面機與三折雙面機，適合展覽、活動、門市展示。",
+  description: "高亮度 LED 廣告機彈性租賃，提供兩折機與三折雙面機，適合展覽、活動、門市展示。",
 };
 
 export default async function RootLayout({

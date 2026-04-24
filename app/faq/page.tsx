@@ -12,6 +12,7 @@ export default async function FaqPage() {
     { q: t("q6"), a: t("a6") },
     { q: t("q7"), a: t("a7") },
     { q: t("q8"), a: t("a8") },
+    { q: t("q9"), a: t("a9") },
   ];
 
   return (

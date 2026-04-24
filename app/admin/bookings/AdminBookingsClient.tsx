@@ -7,7 +7,7 @@ import { calculateTotal, RATES } from "@/lib/pricing";
 import { PAYMENT, addWorkingDays } from "@/lib/payment";
 
 const PRODUCT_LABELS = {
-  single: "單面直立機",
+  single: "兩折機",
   triple: "三折雙面機",
 };
 
