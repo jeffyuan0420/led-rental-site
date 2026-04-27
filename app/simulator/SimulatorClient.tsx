@@ -24,9 +24,6 @@ export default function SimulatorClient() {
 
   const [quantity, setQuantity] = useState<Quantity>(1);
   const totalW = PANEL_W * quantity;
-  // Render video at natural aspect ratio; offset so the center slice is always visible
-  const videoFullW = PANEL_W * config.maxQty;
-  const videoOffset = -Math.round((videoFullW - totalW) / 2);
 
   const MAX_DISPLAY_W = 560;
   const scale = Math.min(1, MAX_DISPLAY_W / totalW);
@@ -113,8 +110,8 @@ export default function SimulatorClient() {
               <video
                 autoPlay loop muted playsInline
                 style={{
-                  position: "absolute", top: 0, left: videoOffset + "px",
-                  height: "100%", width: "auto", display: "block",
+                  position: "absolute", top: 0, left: 0,
+                  width: "100%", height: "100%", objectFit: "cover",
                 }}
               >
                 <source src={config.demoVideo} type="video/mp4" />
