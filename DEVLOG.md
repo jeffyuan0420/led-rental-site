@@ -20,6 +20,17 @@
 
 ---
 
+## v0.9.7 — 2026-04-27：前台「標準預約」工作天文案 2→5（i18n）
+
+**變更：**
+- `messages/zh-TW.json`：`policy_std_highlight` "2 個工作天" → "5 個工作天"
+- `messages/en.json`：`policy_std_highlight` "2 business days" → "5 business days"
+
+**原因：**
+- v0.9.6 漏改前台靜態文案（i18n 翻譯檔），補齊與後端邏輯一致
+
+---
+
 ## v0.1.0 — 2026-04-21：專案初始化 + 基礎架構
 
 **建立內容：**

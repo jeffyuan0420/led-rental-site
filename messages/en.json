@@ -55,7 +55,7 @@
     "s5_d3": "Deposit refunded (if applicable)",
     "policy_std_title": "Standard Booking",
     "policy_std_before": "Complete the deposit transfer at least ",
-    "policy_std_highlight": "2 business days",
+    "policy_std_highlight": "5 business days",
     "policy_std_after": " before the rental date to confirm your booking.",
     "policy_urg_title": "Urgent Order (Next-Day)",
     "policy_urg_before": "Complete payment and call us before ",
