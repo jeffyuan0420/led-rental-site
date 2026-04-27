@@ -24,10 +24,6 @@ export default function SimulatorClient() {
 
   const [quantity, setQuantity] = useState<Quantity>(1);
   const totalW = PANEL_W * quantity;
-  // Full width of the widest possible config — video should be this wide (pxW × maxQty)
-  const videoFullW = PANEL_W * config.maxQty;
-  // Center the wide video: negative offset reveals the center portion for fewer panels
-  const videoOffset = -Math.round((videoFullW - totalW) / 2);
 
   const MAX_DISPLAY_W = 560;
   const scale = Math.min(1, MAX_DISPLAY_W / totalW);
@@ -111,17 +107,11 @@ export default function SimulatorClient() {
               transform: `scale(${scale})`,
               transformOrigin: "top left",
             }} className="rounded-sm">
-              {/*
-                Video centered within the full-width canvas.
-                Source video must be (maxQty × pxW) × pxH: 1720×1032 for single, 2064×1032 for triple.
-                1 panel → center slice visible (just the subject)
-                More panels → symmetric reveal of background on both sides
-              */}
               <video
                 autoPlay loop muted playsInline
                 style={{
-                  position: "absolute", top: 0, left: videoOffset + "px",
-                  height: "100%", width: "auto", display: "block",
+                  position: "absolute", top: 0, left: 0,
+                  width: "100%", height: "100%", objectFit: "fill",
                 }}
               >
                 <source src={config.demoVideo} type="video/mp4" />
