@@ -7,7 +7,8 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 const SALES_REPS: Record<string, string[]> = {
-  北區: ["0908867358", "richsource015", "0968970633"],
+  // 原本3人各出現2次(20%)，新增4人各出現1次(10%)
+  北區: ["0908867358", "0908867358", "richsource015", "richsource015", "marscsknight", "marscsknight", "0980381600", "hsiang860711", "0968601499", "0908008619"],
   中區: ["0968283885", "ryanwu1122", "0977131871"],
   南區: ["0902018518", "rsray", "0980017885"],
 };
