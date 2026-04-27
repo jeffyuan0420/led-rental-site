@@ -93,7 +93,7 @@ export default function Navbar() {
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
-            <Image src="/logo.png" alt="Persona Taiwan" width={140} height={36} className="h-9 w-auto" style={{filter: 'none'}} />
+            <Image src="/logo.jpg" alt="Persona Taiwan" width={140} height={36} className="h-9 w-auto" style={{filter: 'none'}} />
           </Link>
 
           {/* Desktop links */}
