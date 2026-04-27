@@ -111,7 +111,7 @@ export default function SimulatorClient() {
                 autoPlay loop muted playsInline
                 style={{
                   position: "absolute", top: 0, left: 0,
-                  width: "100%", height: "100%", objectFit: "cover",
+                  width: "100%", height: "100%", objectFit: "cover", objectPosition: "center bottom",
                 }}
               >
                 <source src={config.demoVideo} type="video/mp4" />
