@@ -16,7 +16,8 @@ export default function SimulatorClient() {
   const t = useTranslations("simulator");
   const tProduct = useTranslations("product");
   const searchParams = useSearchParams();
-  const machineType = (searchParams.get("type") === "triple" ? "triple" : "single") as keyof typeof MACHINE_CONFIG;
+  const initialType = (searchParams.get("type") === "triple" ? "triple" : "single") as keyof typeof MACHINE_CONFIG;
+  const [machineType, setMachineType] = useState<keyof typeof MACHINE_CONFIG>(initialType);
   const config = MACHINE_CONFIG[machineType];
   const PANEL_W = config.panelW;
   const PANEL_H = config.panelH;
@@ -40,6 +41,26 @@ export default function SimulatorClient() {
       <div className="w-full lg:w-64 flex-shrink-0">
         <BackButton />
         <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          {/* Machine type toggle */}
+          <div className="mb-5">
+            <p className="text-sm font-semibold text-gray-700 mb-2">{t("type_label")}</p>
+            <div className="flex gap-2">
+              {(["single", "triple"] as const).map((type) => (
+                <button
+                  key={type}
+                  onClick={() => { setMachineType(type); setQuantity(1); }}
+                  className={`flex-1 py-2 rounded-lg text-xs font-bold border-2 transition-all ${
+                    machineType === type
+                      ? "bg-gray-900 text-white border-gray-900"
+                      : "border-gray-300 text-gray-600 hover:border-gray-500"
+                  }`}
+                >
+                  {tProduct(MACHINE_CONFIG[type].labelKey as "single_name" | "triple_name")}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {config.maxQty > 1 && (
             <div className="mb-6">
               <p className="text-sm font-semibold text-gray-700 mb-3">{t("quantity_label")}</p>

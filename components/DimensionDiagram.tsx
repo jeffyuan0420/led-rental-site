@@ -19,8 +19,8 @@ function getRatio(w: number, h: number): string {
 
 function getRatioLabel(machineType: MachineType, qty: number, tProduct: ReturnType<typeof useTranslations>): string | null {
   if (machineType === "triple" && qty === 3) return tProduct("config_ultrawide");
-  if (machineType === "triple" && qty === 2) return tProduct("config_ratio_16_9");
-  if (machineType === "single" && qty === 3) return tProduct("config_ratio_16_9");
+  if (machineType === "triple" && qty === 2) return tProduct("config_ratio_4_3");
+  if (machineType === "single" && qty === 3) return tProduct("config_ratio_near_1_1");
   return null;
 }
 

@@ -113,6 +113,8 @@
     "config_unit": "台",
     "config_joined": "台橫向拼接",
     "config_ratio_16_9": "比 16:9 更寬",
+    "config_ratio_near_1_1": "接近 1:1",
+    "config_ratio_4_3": "4:3",
     "config_impact": "畫面超震撼",
     "config_large_venue": "適合大空間",
     "config_ultrawide": "超寬幕 2:1"
@@ -120,6 +122,7 @@
   "simulator": {
     "title": "拼接視覺模擬器",
     "subtitle": "選擇台數，即時預覽拼接展示效果",
+    "type_label": "機型",
     "quantity_label": "選擇台數",
     "upload_label": "上傳圖片",
     "upload_btn": "選擇圖片",

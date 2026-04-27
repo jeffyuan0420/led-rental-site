@@ -113,6 +113,8 @@
     "config_unit": "Unit",
     "config_joined": "unit(s) side by side",
     "config_ratio_16_9": "Wider than 16:9",
+    "config_ratio_near_1_1": "Nearly 1:1",
+    "config_ratio_4_3": "4:3",
     "config_impact": "Stunning coverage",
     "config_large_venue": "Perfect for large spaces",
     "config_ultrawide": "Ultra-wide 2:1"
@@ -120,6 +122,7 @@
   "simulator": {
     "title": "Assembly Simulator",
     "subtitle": "Choose quantity and preview the multi-panel display effect",
+    "type_label": "Machine Type",
     "quantity_label": "Number of Units",
     "upload_label": "Upload Image",
     "upload_btn": "Choose Image",
