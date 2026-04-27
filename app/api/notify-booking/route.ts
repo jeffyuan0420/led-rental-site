@@ -73,7 +73,7 @@ export async function POST(req: Request) {
       <tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">機型</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">${PRODUCT_LABELS[product_type]} × ${quantity} 台</td></tr>
       <tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">租賃日期</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">${start_date} ～ ${end_date}（${days} 天）</td></tr>
       <tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">設定協助</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">${setupLabel}</td></tr>
-      ${teardown_time === "night" ? `<tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">撤場時間</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">夜間（19:00–22:00）</td></tr>` : ""}
+      ${teardown_time === "night" ? `<tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">撤場時間</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">夜間（17:00–22:00）</td></tr>` : ""}
       <tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">估算費用</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;font-weight:700">${needsQuote ? "專案報價" : `NT$ ${total.toLocaleString()}（含稅）`}</td></tr>
       <tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">發票需求</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">${invoice_type === "company" ? "三聯式（公司）" : "二聯式（個人）"}</td></tr>
       ${invoice_type === "company" ? `
@@ -100,7 +100,7 @@ export async function POST(req: Request) {
         ${company ? `<tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">公司</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">${company}</td></tr>` : ""}
         <tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">租賃日期</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">${start_date} ～ ${end_date}（共 ${days} 天）</td></tr>
         <tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">設定協助</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">${setupLabel}</td></tr>
-        ${teardown_time === "night" ? `<tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">撤場時間</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">夜間撤場（19:00–22:00）</td></tr>` : ""}
+        ${teardown_time === "night" ? `<tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">撤場時間</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">夜間撤場（17:00–22:00）</td></tr>` : ""}
         <tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">發票需求</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">${invoice_type === "company" ? "三聯式（公司）" : "二聯式（個人）"}</td></tr>
         ${invoice_type === "company" && invoice_company ? `<tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">公司抬頭</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">${invoice_company}</td></tr>` : ""}
         ${invoice_type === "company" && invoice_tax_id ? `<tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">統一編號</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">${invoice_tax_id}</td></tr>` : ""}

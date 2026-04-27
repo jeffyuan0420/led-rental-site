@@ -16,7 +16,7 @@ export const RATES = {
     fullDay: 4500,  // 每人整天（未稅）
   },
   shipping: 0,      // PLACEHOLDER: 單趟運費
-  nightSurcharge: 2000, // 夜間撤場加成（19:00-22:00），每台未稅
+  nightSurcharge: 2000, // 夜間撤場加成（17:00-22:00），每台未稅
   maxDays: 5,       // 超過此天數須聯繫業務
 } as const
 

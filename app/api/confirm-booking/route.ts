@@ -74,7 +74,7 @@ export async function POST(req: Request) {
         ${company ? `<tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">公司</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">${company}</td></tr>` : ""}
         <tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">租賃日期</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">${start_date} ～ ${end_date}（共 ${days} 天）</td></tr>
         <tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">設定協助</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">${setupLabel}</td></tr>
-        ${teardown_time === "night" ? `<tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">撤場時間</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">夜間撤場（19:00–22:00）</td></tr>` : ""}
+        ${teardown_time === "night" ? `<tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">撤場時間</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">夜間撤場（17:00–22:00）</td></tr>` : ""}
         ${notes ? `<tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600;vertical-align:top">備註</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">${notes}</td></tr>` : ""}
       </table>
 

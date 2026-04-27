@@ -295,7 +295,7 @@ export default function AdminBookingsClient() {
                 <div className="space-y-1 text-gray-600">
                   <p>機型：{PRODUCT_LABELS[selected.product_type]} × {selected.quantity} 台</p>
                   <p>日期：{selected.start_date} ～ {selected.end_date}（共 {days} 天）</p>
-                  {selected.teardown_time === "night" && <p>撤場：夜間撤場（19:00–22:00）</p>}
+                  {selected.teardown_time === "night" && <p>撤場：夜間撤場（17:00–22:00）</p>}
                 </div>
                 <p className="font-semibold text-gray-700 pt-1">■ 付款金額</p>
                 <div className="space-y-1 text-gray-600">

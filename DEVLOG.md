@@ -20,6 +20,19 @@
 
 ---
 
+## v0.9.8 — 2026-04-27：夜間撤場時間標準改為 17:00
+
+**變更：**
+- `messages/zh-TW.json`、`messages/en.json`：所有 19:00 → 17:00
+- `lib/pricing.ts`：注解更新
+- `app/api/notify-booking/route.ts`、`app/api/confirm-booking/route.ts`：信件內時段更新
+- `app/admin/bookings/AdminBookingsClient.tsx`：後台預覽更新
+
+**原因：**
+- 2026-04-27 開會決議：標準撤場改為 17:00，17:00 後計夜間加成
+
+---
+
 ## v0.9.7 — 2026-04-27：前台「標準預約」工作天文案 2→5（i18n）
 
 **變更：**
