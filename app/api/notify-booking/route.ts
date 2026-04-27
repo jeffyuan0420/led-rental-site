@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import { NextResponse } from "next/server";
-import { PAYMENT, addWorkingDays } from "@/lib/payment";
+import { PAYMENT, subtractWorkingDays } from "@/lib/payment";
 import { calculateTotal, RATES } from "@/lib/pricing";
 
 const NOTIFY_EMAIL = "help@csknight.com";
@@ -54,8 +54,8 @@ export async function POST(req: Request) {
   const tax = Math.round(subtotal * 0.05);
   const total = subtotal + tax;
 
-  // Payment deadline
-  const deadline = addWorkingDays(new Date(), PAYMENT.paymentDeadlineDays);
+  // Payment deadline: 租賃日前 N 個工作天
+  const deadline = subtractWorkingDays(new Date(start_date), PAYMENT.paymentDeadlineDays);
   const deadlineStr = `${deadline.getFullYear()}/${String(deadline.getMonth() + 1).padStart(2, "0")}/${String(deadline.getDate()).padStart(2, "0")}${DAYS_OF_WEEK[deadline.getDay()]}`;
 
   // LINE OA 連結（開啟官方帳號聊天）
@@ -92,7 +92,7 @@ export async function POST(req: Request) {
     <div style="font-family:sans-serif;max-width:580px;color:#111">
       <h2 style="color:#111">租賃預約確認通知</h2>
       <p>親愛的 ${name} 您好，</p>
-      <p>感謝您預約 Persona 盛源 LED廣告機租賃服務，您的預約已成功建立。請於 <strong>${PAYMENT.paymentDeadlineDays} 個工作天內（${deadlineStr} 前）</strong>完成全額匯款，以正式保留機台時段。</p>
+      <p>感謝您預約 Persona 盛源 LED廣告機租賃服務，您的預約已成功建立。請於 <strong>租賃日前 ${PAYMENT.paymentDeadlineDays} 個工作天（${deadlineStr}）前</strong>完成訂金匯款，以正式保留機台時段。</p>
 
       <h3 style="margin-top:24px;margin-bottom:8px;color:#374151">■ 預約資訊</h3>
       <table style="border-collapse:collapse;width:100%;font-size:14px">

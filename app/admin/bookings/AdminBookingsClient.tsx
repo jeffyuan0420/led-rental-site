@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, type Booking } from "@/lib/supabase";
 import { calculateTotal, RATES } from "@/lib/pricing";
-import { PAYMENT, addWorkingDays } from "@/lib/payment";
+import { PAYMENT, subtractWorkingDays } from "@/lib/payment";
 
 const PRODUCT_LABELS = {
   single: "兩折機",
@@ -278,7 +278,7 @@ export default function AdminBookingsClient() {
         const subtotal = rentalFee + setupFee + nightFee;
         const tax = Math.round(subtotal * 0.05);
         const total = subtotal + tax;
-        const deadline = addWorkingDays(new Date(), PAYMENT.paymentDeadlineDays);
+        const deadline = subtractWorkingDays(new Date(selected.start_date), PAYMENT.paymentDeadlineDays);
         const deadlineStr = formatDeadline(deadline);
         return (
           <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setShowConfirmPreview(false)}>

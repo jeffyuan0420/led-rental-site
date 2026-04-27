@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import { NextResponse } from "next/server";
-import { PAYMENT, addWorkingDays } from "@/lib/payment";
+import { PAYMENT, subtractWorkingDays } from "@/lib/payment";
 import { calculateTotal, RATES } from "@/lib/pricing";
 
 const NOTIFY_EMAIL = "help@csknight.com";
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
   const total = subtotal + tax;
   const setupLabel = setup_option === "none" ? "不需要" : setup_option === "half" ? "半天" : "整天";
 
-  const deadline = addWorkingDays(new Date(), PAYMENT.paymentDeadlineDays);
+  const deadline = subtractWorkingDays(new Date(start_date), PAYMENT.paymentDeadlineDays);
   const deadlineStr = `${deadline.getFullYear()}/${String(deadline.getMonth() + 1).padStart(2, "0")}/${String(deadline.getDate()).padStart(2, "0")}${DAYS_OF_WEEK[deadline.getDay()]}`;
 
   const subject = `【租賃時段確認】${name} — ${PRODUCT_LABELS[product_type]} × ${quantity} 台`;
@@ -66,7 +66,7 @@ export async function POST(req: Request) {
     <div style="font-family:sans-serif;max-width:580px;color:#111">
       <h2 style="color:#111">租賃時段確認通知</h2>
       <p>親愛的 ${name} 您好，</p>
-      <p>感謝您預約 Persona Taiwan LED 廣告機租賃服務。您的預約已確認，請於 <strong>${PAYMENT.paymentDeadlineDays} 個工作天內（${deadlineStr} 前）</strong>完成全額匯款，以正式保留您的機台時段。</p>
+      <p>感謝您預約 Persona Taiwan LED 廣告機租賃服務。您的預約已確認，請於 <strong>租賃日前 ${PAYMENT.paymentDeadlineDays} 個工作天（${deadlineStr}）前</strong>完成訂金匯款，以正式保留您的機台時段。</p>
 
       <h3 style="margin-top:24px;margin-bottom:8px;color:#374151">■ 預約資訊</h3>
       <table style="border-collapse:collapse;width:100%;font-size:14px">

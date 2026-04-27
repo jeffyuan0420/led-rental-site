@@ -5,6 +5,21 @@
 
 ---
 
+## v0.9.6 — 2026-04-27：庫存調整 + 付款截止邏輯改為租賃日前 N 個工作天
+
+**變更：**
+- `app/booking/BookingClient.tsx`：單面機庫存上限 24 → 20
+- `lib/payment.ts`：`paymentDeadlineDays` 3 → 5；新增 `subtractWorkingDays` 函數
+- `app/api/notify-booking/route.ts`：截止日改算「`start_date` 前 5 個工作天」；信件文案同步更新
+- `app/api/confirm-booking/route.ts`：同上
+- `app/admin/bookings/AdminBookingsClient.tsx`：補寄確認信預覽截止日同步改算法
+
+**原因：**
+- 2026-04-27 開會確認：單面機實際庫存 20 台（原 24 台）
+- 標準預約付款截止改為「租賃日前 5 個工作天確認匯款」（原為「送單後 3 個工作天」）
+
+---
+
 ## v0.1.0 — 2026-04-21：專案初始化 + 基礎架構
 
 **建立內容：**

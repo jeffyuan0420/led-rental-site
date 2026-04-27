@@ -10,7 +10,7 @@ import { getSetupPersons, calculateTotal, RATES, type SetupOption } from "@/lib/
 import TaiwanAddressInput from "@/components/TaiwanAddressInput";
 
 const MAX_QTY = { single: 10, triple: 2 };
-const INVENTORY = { single: 24, triple: 2 };
+const INVENTORY = { single: 20, triple: 2 };
 const BUFFER_DAYS = 2;
 
 function addDays(date: Date, n: number): Date {

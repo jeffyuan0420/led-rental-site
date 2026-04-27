@@ -9,7 +9,7 @@ export const PAYMENT = {
   bankCode: "012",
   accountName: "鉅財王數位科技股份有限公司",
   accountNumber: "82120000150007",
-  paymentDeadlineDays: 3, // 幾個工作天內完成匯款
+  paymentDeadlineDays: 5, // 租賃日前幾個工作天完成匯款
   accountantLineId: "0908867233", // 會計的個人 LINE ID（備用）
   companyLineOA: "@touchpersona",  // 公司 LINE 官方帳號（用於確認信預填訊息）
 } as const;
@@ -22,6 +22,18 @@ export function addWorkingDays(from: Date, days: number): Date {
     result.setDate(result.getDate() + 1);
     const dow = result.getDay();
     if (dow !== 0 && dow !== 6) added++;
+  }
+  return result;
+}
+
+/** 計算 N 個工作天前的日期（週一～週五） */
+export function subtractWorkingDays(from: Date, days: number): Date {
+  const result = new Date(from);
+  let subtracted = 0;
+  while (subtracted < days) {
+    result.setDate(result.getDate() - 1);
+    const dow = result.getDay();
+    if (dow !== 0 && dow !== 6) subtracted++;
   }
   return result;
 }
