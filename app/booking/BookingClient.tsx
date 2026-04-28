@@ -553,7 +553,12 @@ export default function BookingClient() {
           />
           <span className="text-sm text-gray-700 leading-relaxed">
             我已閱讀並同意
-            <span className="font-semibold text-gray-900">「設備租賃契約」</span>
+            <a
+              href="/contract"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-gray-900 underline underline-offset-2 hover:text-gray-600"
+            >「設備租賃契約」</a>
             所有條款，包含租金、保管責任、違約金等約定。提交本表單即代表本人確認簽署此契約，甲方將以此紀錄為憑。
           </span>
         </label>
