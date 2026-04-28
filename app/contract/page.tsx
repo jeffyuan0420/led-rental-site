@@ -71,14 +71,7 @@ export default function ContractPage() {
           <h2 className="font-bold mb-2">第五條　租金給付方式及條件</h2>
           <ol className="ml-6 space-y-2 list-none">
             <li>一、乙方應於租期開始前5日，給付相當於全額租金之定金，雙方約定定金於租期開始後得轉換為租金。</li>
-            <li>二、匯款資訊：
-              <ul className="ml-4 mt-1 space-y-0.5">
-                <li>（一）戶名：鉅財王數位科技股份有限公司。</li>
-                <li>（二）銀行代碼：012-7152。</li>
-                <li>（三）銀行：台北富邦銀行　分行：安和分行。</li>
-                <li>（四）帳號：82120000150007。</li>
-              </ul>
-            </li>
+            <li>二、匯款資訊：預約確認後，詳細匯款帳號將隨契約書一併寄至您的電子信箱。</li>
             <li>三、發票開立方式依預約表單填寫之發票資訊為準（二聯式/三聯式）。</li>
           </ol>
         </section>
@@ -137,17 +130,12 @@ export default function ContractPage() {
 
       </div>
 
-      {/* 甲方資訊 */}
+      {/* 說明 */}
       <div className="mt-12 border-t border-gray-200 pt-8">
-        <p className="font-semibold mb-3">立契約書人</p>
-        <div className="border border-gray-300 rounded-lg p-5 w-64 text-sm space-y-1">
-          <p className="font-semibold text-gray-700 mb-2">甲方</p>
-          <p>姓　　名：鉅財王數位科技股份有限公司</p>
-          <p>代　表　人：呂淑君</p>
-          <p>統一編號：94213667</p>
-          <p>地　　址：新北市新莊區新北大道2段219號8樓</p>
+        <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 text-sm text-gray-600">
+          <p className="font-semibold text-gray-800 mb-2">關於契約簽署</p>
+          <p>預約送出並確認後，系統將自動產生填入您資料的完整契約書（含甲乙雙方資訊、匯款帳號），以 PDF 附件寄送至您填寫的電子信箱。</p>
         </div>
-        <p className="text-xs text-gray-400 mt-4">乙方簽署欄位將依您的預約資料自動填入，並隨確認信寄出。</p>
       </div>
     </div>
   );
