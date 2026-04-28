@@ -40,6 +40,7 @@ export default function BookingClient() {
     company: "",
     phone: "",
     email: "",
+    id_number: "",
     product_type: "single" as "single" | "triple",
     quantity: 1,
     setup_option: "none" as SetupOption,
@@ -52,6 +53,7 @@ export default function BookingClient() {
     customer_city: "", customer_district: "", customer_detail: "",
     notes: "",
   });
+  const [agreedToContract, setAgreedToContract] = useState(false);
 
   // Auto-populate rental dates when event dates change
   useEffect(() => {
@@ -127,6 +129,14 @@ export default function BookingClient() {
       setError(t("address_required"));
       return;
     }
+    if (!form.id_number) {
+      setError("請填寫身分證字號（個人）或統一編號（公司）");
+      return;
+    }
+    if (!agreedToContract) {
+      setError("請勾選同意租賃契約，預約才能生效");
+      return;
+    }
     if (form.invoice_type === "company" && (!form.invoice_company || !form.invoice_tax_id || !form.invoice_city || !form.invoice_district || !form.invoice_detail)) {
       setError(t("invoice_required"));
       return;
@@ -143,6 +153,7 @@ export default function BookingClient() {
       company: form.company || null,
       phone: form.phone,
       email: form.email,
+      id_number: form.id_number,
       product_type: form.product_type,
       quantity: form.quantity,
       event_start_date: eventStart ? eventStart.toISOString().split("T")[0] : null,
@@ -453,6 +464,18 @@ export default function BookingClient() {
         />
       </div>
 
+      {/* ID Number */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          身分證字號（個人）／統一編號（公司）<span className="text-red-500"> *</span>
+        </label>
+        <p className="text-xs text-gray-400 mb-2">用於簽署租賃契約，不對外公開</p>
+        <input required type="text" value={form.id_number}
+          onChange={(e) => setForm({ ...form, id_number: e.target.value.trim() })}
+          className="w-full border-2 border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-gray-900 focus:outline-none"
+          placeholder="A123456789 或 12345678" />
+      </div>
+
       {/* Notes */}
       <div>
         <label className="block text-sm font-semibold text-gray-700 mb-2">{t("notes_label")}</label>
@@ -517,6 +540,23 @@ export default function BookingClient() {
           </div>
         );
       })()}
+
+      {/* Contract Agreement */}
+      <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={agreedToContract}
+            onChange={(e) => setAgreedToContract(e.target.checked)}
+            className="mt-0.5 w-4 h-4 accent-gray-900 flex-shrink-0"
+          />
+          <span className="text-sm text-gray-700 leading-relaxed">
+            我已閱讀並同意
+            <span className="font-semibold text-gray-900">「設備租賃契約」</span>
+            所有條款，包含租金、保管責任、違約金等約定。提交本表單即代表本人確認簽署此契約，甲方將以此紀錄為憑。
+          </span>
+        </label>
+      </div>
 
       {availabilityMsg && (
         <p className="text-yellow-800 text-sm bg-yellow-50 border border-yellow-300 rounded-lg px-4 py-2">

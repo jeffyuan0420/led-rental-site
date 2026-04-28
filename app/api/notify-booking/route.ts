@@ -1,7 +1,10 @@
 import nodemailer from "nodemailer";
 import { NextResponse } from "next/server";
 import { PAYMENT, subtractWorkingDays } from "@/lib/payment";
-import { calculateTotal, RATES } from "@/lib/pricing";
+import { calculateTotal, RATES, getSetupPersons } from "@/lib/pricing";
+import { renderToBuffer } from "@react-pdf/renderer";
+import { ContractPDF } from "@/lib/contract-pdf";
+import React from "react";
 
 const NOTIFY_EMAIL = "help@csknight.com";
 const DAYS_OF_WEEK = ["（日）", "（一）", "（二）", "（三）", "（四）", "（五）", "（六）"];
@@ -16,12 +19,15 @@ interface BookingPayload {
   company?: string;
   phone: string;
   email: string;
+  id_number?: string;
   product_type: "single" | "triple";
   quantity: number;
   setup_option: "none" | "half" | "full";
   teardown_time?: "daytime" | "night";
   start_date: string;
   end_date: string;
+  delivery_address?: string;
+  customer_address?: string;
   invoice_type?: "personal" | "company";
   invoice_company?: string;
   invoice_tax_id?: string;
@@ -43,7 +49,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
-  const { name, company, phone, email, product_type, quantity, setup_option, teardown_time = "daytime", start_date, end_date, invoice_type, invoice_company, invoice_tax_id, invoice_address, notes } = body;
+  const { name, company, phone, email, id_number, product_type, quantity, setup_option, teardown_time = "daytime", start_date, end_date, delivery_address, customer_address, invoice_type, invoice_company, invoice_tax_id, invoice_address, notes } = body;
   const setupLabel = setup_option === "none" ? "不需要" : setup_option === "half" ? "半天" : "整天";
 
   // Fee calculation
@@ -156,6 +162,39 @@ export async function POST(req: Request) {
     </div>
   `;
 
+  // Generate contract PDF
+  let contractPdfBuffer: Buffer | null = null;
+  try {
+    const contractData = {
+      name,
+      id_number: id_number || "",
+      customer_address: customer_address || "",
+      product_type,
+      quantity,
+      start_date,
+      end_date,
+      days,
+      delivery_address: delivery_address || "",
+      setup_option,
+      setup_persons: getSetupPersons(quantity),
+      invoice_type: invoice_type || "personal",
+      invoice_company,
+      invoice_tax_id,
+      invoice_address,
+      contract_date: new Date().toISOString().split("T")[0],
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    contractPdfBuffer = Buffer.from(
+      await renderToBuffer(React.createElement(ContractPDF, { data: contractData }) as any)
+    );
+  } catch (pdfErr) {
+    console.error("Contract PDF generation failed:", pdfErr);
+  }
+
+  const contractAttachment = contractPdfBuffer
+    ? [{ filename: `租賃契約_${name}_${start_date}.pdf`, content: contractPdfBuffer, contentType: "application/pdf" }]
+    : [];
+
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
@@ -170,6 +209,7 @@ export async function POST(req: Request) {
       replyTo: email,
       subject: adminSubject,
       html: adminHtml,
+      attachments: contractAttachment,
     });
     await transporter.sendMail({
       from: `"Persona Taiwan" <${smtpUser}>`,
@@ -177,6 +217,7 @@ export async function POST(req: Request) {
       cc: NOTIFY_EMAIL,
       subject: customerSubject,
       html: customerHtml,
+      attachments: contractAttachment,
     });
     return NextResponse.json({ ok: true });
   } catch (err) {

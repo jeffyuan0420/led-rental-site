@@ -18,6 +18,9 @@ CREATE TABLE IF NOT EXISTS bookings (
   end_date DATE NOT NULL,
   setup_option TEXT DEFAULT 'none' CHECK (setup_option IN ('none', 'half', 'full')),
   teardown_time TEXT DEFAULT 'daytime' CHECK (teardown_time IN ('daytime', 'night')),
+  id_number TEXT,                 -- 身分證字號（個人）或統一編號（公司），用於契約
+  delivery_address TEXT,          -- 設備交付地址
+  customer_address TEXT,          -- 乙方（客戶）地址
   invoice_type TEXT DEFAULT 'personal' CHECK (invoice_type IN ('personal', 'company')),
   invoice_company TEXT,
   invoice_tax_id TEXT,
@@ -70,3 +73,10 @@ CREATE INDEX IF NOT EXISTS idx_bookings_status
 -- VALUES
 --   ('測試客戶A', '測試公司', '0912000001', 'test@test.com', 'single', 1, '2026-05-01', '2026-05-03', 'none', 'daytime', 'personal', 'confirmed'),
 --   ('測試客戶B', NULL, '0912000002', 'test2@test.com', 'triple', 2, '2026-05-10', '2026-05-12', 'half', 'night', 'company', 'pending');
+
+-- ============================================================
+-- 現有資料庫升級（已部署者執行這幾行）
+-- ============================================================
+-- ALTER TABLE bookings ADD COLUMN IF NOT EXISTS id_number TEXT;
+-- ALTER TABLE bookings ADD COLUMN IF NOT EXISTS delivery_address TEXT;
+-- ALTER TABLE bookings ADD COLUMN IF NOT EXISTS customer_address TEXT;
