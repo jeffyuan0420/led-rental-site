@@ -167,6 +167,7 @@ export async function POST(req: Request) {
   try {
     const contractData = {
       name,
+      company: company || undefined,
       id_number: id_number || "",
       customer_address: customer_address || "",
       product_type,

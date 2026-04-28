@@ -300,6 +300,7 @@ export default function BookingClient() {
             onChange={(e) => setForm({ ...form, company: e.target.value })}
             className="w-full border-2 border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-gray-900 focus:outline-none"
             placeholder={t("company_placeholder")} />
+          <p className="text-xs text-gray-400 mt-1">如填寫公司名稱，契約乙方將登記為公司而非個人</p>
         </div>
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">

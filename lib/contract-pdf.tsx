@@ -9,6 +9,7 @@ Font.register({
 
 export interface ContractData {
   name: string;
+  company?: string;
   id_number: string;
   customer_address: string;
   product_type: "single" | "triple";
@@ -99,7 +100,7 @@ export function ContractPDF({ data }: { data: ContractData }) {
               <Text>鉅財王數位科技股份有限公司　　（下稱甲方）</Text>
             </View>
             <View style={s.partyLine}>
-              <Text>{data.name}　　（下稱乙方）</Text>
+              <Text>{data.company ? `${data.company}（代表人：${data.name}）` : data.name}　　（下稱乙方）</Text>
             </View>
           </View>
         </View>
@@ -240,8 +241,18 @@ export function ContractPDF({ data }: { data: ContractData }) {
           </View>
           <View style={s.sigBox}>
             <Text style={s.sigBoxTitle}>乙方</Text>
-            <Text>{`姓　　名：${data.name}`}</Text>
-            <Text>{`身分證字號：${data.id_number}`}</Text>
+            {data.company ? (
+              <>
+                <Text>{`姓　　名：${data.company}`}</Text>
+                <Text>{`代　表　人：${data.name}`}</Text>
+                <Text>{`統一編號：${data.id_number}`}</Text>
+              </>
+            ) : (
+              <>
+                <Text>{`姓　　名：${data.name}`}</Text>
+                <Text>{`身分證字號：${data.id_number}`}</Text>
+              </>
+            )}
             <Text>{`地　　址：${data.customer_address}`}</Text>
           </View>
         </View>
