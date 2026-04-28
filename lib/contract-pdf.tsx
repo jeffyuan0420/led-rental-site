@@ -100,7 +100,7 @@ export function ContractPDF({ data }: { data: ContractData }) {
               <Text>鉅財王數位科技股份有限公司　　（下稱甲方）</Text>
             </View>
             <View style={s.partyLine}>
-              <Text>{data.company ? `${data.company}（代表人：${data.name}）` : data.name}　　（下稱乙方）</Text>
+              <Text>{data.company ? `${data.company}（承辦人：${data.name}）` : data.name}　　（下稱乙方）</Text>
             </View>
           </View>
         </View>
@@ -244,7 +244,7 @@ export function ContractPDF({ data }: { data: ContractData }) {
             {data.company ? (
               <>
                 <Text>{`姓　　名：${data.company}`}</Text>
-                <Text>{`代　表　人：${data.name}`}</Text>
+                <Text>{`承　辦　人：${data.name}`}</Text>
                 <Text>{`統一編號：${data.id_number}`}</Text>
               </>
             ) : (
