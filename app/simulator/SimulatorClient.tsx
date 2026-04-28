@@ -6,8 +6,8 @@ import { useTranslations } from "next-intl";
 import BackButton from "@/components/BackButton";
 
 const MACHINE_CONFIG = {
-  single: { panelW: 160, panelH: 480, mmW: 664, mmH: 1920, pxW: 344, pxH: 1032, maxQty: 5, labelKey: "single_name", demoVideo: "/videos/demo-robot.mp4" },
-  triple: { panelW: 320, panelH: 480, mmW: 1280, mmH: 1920, pxW: 688, pxH: 1032, maxQty: 3, labelKey: "triple_name", demoVideo: "/videos/demo-triple-car.mp4" },
+  single: { panelW: 160, panelH: 480, mmW: 664, displayMmW: 640, mmH: 1920, pxW: 344, pxH: 1032, maxQty: 5, maxTotalQty: 6, labelKey: "single_name", demoVideo: "/videos/demo-robot.mp4" },
+  triple: { panelW: 320, panelH: 480, mmW: 1280, displayMmW: 1280, mmH: 1920, pxW: 688, pxH: 1032, maxQty: 3, maxTotalQty: 3, labelKey: "triple_name", demoVideo: "/videos/demo-triple-car.mp4" },
 };
 
 type Quantity = 1 | 2 | 3 | 4 | 5;
@@ -80,8 +80,11 @@ export default function SimulatorClient() {
 
           <div className="bg-gray-50 rounded-lg p-3 text-xs text-gray-500 space-y-1">
             <p className="font-semibold text-gray-700 mb-1">{tProduct(config.labelKey as "single_name" | "triple_name")}</p>
-            <p>{config.mmW * quantity} × {config.mmH} mm</p>
-            <p className="text-gray-400">{config.pxW * quantity} × {config.pxH} px</p>
+            <p><span className="text-gray-400">整機外觀尺寸　</span>{config.mmW * quantity} × {config.mmH} mm</p>
+            <p><span className="text-gray-400">顯示尺寸　　　</span>{config.displayMmW * quantity} × {config.mmH} mm</p>
+            {config.maxTotalQty > config.maxQty && (
+              <p className="text-gray-400">最多可拼接 {config.maxTotalQty} 台</p>
+            )}
             <div className="mt-2 pt-2 border-t border-gray-200">
               <p className="font-semibold text-gray-600 mb-0.5">{t("content_rec_label")}</p>
               <p className="text-yellow-700">{config.pxW * quantity} × {config.pxH} px</p>
