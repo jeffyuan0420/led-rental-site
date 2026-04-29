@@ -24,13 +24,13 @@ export const RATES = {
 export type ProductType = 'single' | 'triple'
 export type SetupOption = 'none' | 'half' | 'full'
 
-export function getWeekendSurcharge(startDate: Date, endDate: Date, quantity: number): number {
+export function getWeekendSurcharge(startDate: Date, endDate: Date, _quantity: number): number {
   const isWeekend = (d: Date) => { const day = d.getDay(); return day === 0 || day === 6; }
   const sameDay = startDate.toDateString() === endDate.toDateString()
   let count = 0
   if (isWeekend(startDate)) count++
   if (!sameDay && isWeekend(endDate)) count++
-  return count * RATES.weekendSurcharge * quantity
+  return count * RATES.weekendSurcharge  // 假日加成以「趟」計，不乘台數
 }
 
 export function getSetupPersons(quantity: number): number {
