@@ -253,7 +253,13 @@
     "id_number_required": "Please enter your ID, passport, or ARC number",
     "contract_agree_text": "I have read and agree to the <link>Equipment Rental Contract</link>, including all terms on rental fees, liability, and penalties. Submitting this form constitutes my acceptance of the contract.",
     "contract_agree_required": "Please agree to the rental contract to proceed",
-    "price_agree_required": "Please confirm the fee breakdown to proceed"
+    "price_agree_required": "Please confirm the fee breakdown to proceed",
+    "addr_city_label": "City / County",
+    "addr_district_label": "District",
+    "addr_detail_label": "Street Address",
+    "addr_city_placeholder": "Select city/county",
+    "addr_district_placeholder": "Select district",
+    "addr_detail_placeholder": "Street name, house/building number"
   },
   "promo": {
     "p0_badge": "📅 Limited Offer",

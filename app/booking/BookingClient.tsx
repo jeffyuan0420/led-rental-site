@@ -442,6 +442,8 @@ export default function BookingClient() {
                 city={form.invoice_city} district={form.invoice_district} detail={form.invoice_detail}
                 onChange={(c, d, v) => setForm({ ...form, invoice_city: c, invoice_district: d, invoice_detail: v })}
                 required
+                cityLabel={t("addr_city_label")} districtLabel={t("addr_district_label")} detailLabel={t("addr_detail_label")}
+                cityPlaceholder={t("addr_city_placeholder")} districtPlaceholder={t("addr_district_placeholder")} detailPlaceholder={t("addr_detail_placeholder")}
               />
             </div>
           </div>
@@ -458,6 +460,8 @@ export default function BookingClient() {
           city={form.delivery_city} district={form.delivery_district} detail={form.delivery_detail}
           onChange={(c, d, v) => setForm({ ...form, delivery_city: c, delivery_district: d, delivery_detail: v })}
           required
+          cityLabel={t("addr_city_label")} districtLabel={t("addr_district_label")} detailLabel={t("addr_detail_label")}
+          cityPlaceholder={t("addr_city_placeholder")} districtPlaceholder={t("addr_district_placeholder")} detailPlaceholder={t("addr_detail_placeholder")}
         />
       </div>
 
@@ -471,6 +475,8 @@ export default function BookingClient() {
           city={form.customer_city} district={form.customer_district} detail={form.customer_detail}
           onChange={(c, d, v) => setForm({ ...form, customer_city: c, customer_district: d, customer_detail: v })}
           required
+          cityLabel={t("addr_city_label")} districtLabel={t("addr_district_label")} detailLabel={t("addr_detail_label")}
+          cityPlaceholder={t("addr_city_placeholder")} districtPlaceholder={t("addr_district_placeholder")} detailPlaceholder={t("addr_detail_placeholder")}
         />
       </div>
 

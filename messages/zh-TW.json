@@ -253,7 +253,13 @@
     "id_number_required": "請填寫身分證字號（個人）或統一編號（公司）",
     "contract_agree_text": "我已閱讀並同意<link>「設備租賃契約」</link>所有條款，包含租金、保管責任、違約金等約定。提交本表單即代表本人確認簽署此契約，甲方將以此紀錄為憑。",
     "contract_agree_required": "請勾選同意租賃契約，預約才能生效",
-    "price_agree_required": "請勾選確認費用明細，預約才能生效"
+    "price_agree_required": "請勾選確認費用明細，預約才能生效",
+    "addr_city_label": "縣市",
+    "addr_district_label": "鄉鎮市區",
+    "addr_detail_label": "詳細地址",
+    "addr_city_placeholder": "請選擇縣市",
+    "addr_district_placeholder": "請選擇鄉鎮市區",
+    "addr_detail_placeholder": "路名、門牌號碼"
   },
   "promo": {
     "p0_badge": "📅 限時優惠",

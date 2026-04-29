@@ -5,6 +5,18 @@
 
 ---
 
+## v1.0.6 — 2026-04-29：地址欄位 i18n（TaiwanAddressInput）
+
+**變更：**
+- `components/TaiwanAddressInput.tsx`：新增 `cityPlaceholder` / `districtPlaceholder` props
+- `messages/zh-TW.json` + `messages/en.json`：新增 6 個地址相關翻譯 key
+- `app/booking/BookingClient.tsx`：三處 TaiwanAddressInput 全部傳入翻譯 props
+
+**原因：**
+- 英文版預約表單縣市/鄉鎮市區/詳細地址欄位仍顯示中文 label 與 placeholder
+
+---
+
 ## v1.0.5 — 2026-04-29：修正預約表單英文版缺漏翻譯
 
 **變更：**

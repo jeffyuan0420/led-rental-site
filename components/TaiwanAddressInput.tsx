@@ -12,6 +12,8 @@ interface Props {
   cityLabel?: string;
   districtLabel?: string;
   detailLabel?: string;
+  cityPlaceholder?: string;
+  districtPlaceholder?: string;
 }
 
 const selectCls = "border-2 border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:border-gray-900 focus:outline-none bg-white w-full";
@@ -22,6 +24,8 @@ export default function TaiwanAddressInput({
   cityLabel = "縣市",
   districtLabel = "鄉鎮市區",
   detailLabel = "詳細地址",
+  cityPlaceholder = "請選擇縣市",
+  districtPlaceholder = "請選擇鄉鎮市區",
 }: Props) {
   const districts = city ? (TAIWAN_DISTRICTS[city] ?? []) : [];
 
@@ -36,7 +40,7 @@ export default function TaiwanAddressInput({
             required={required}
             className={selectCls}
           >
-            <option value="">請選擇縣市</option>
+            <option value="">{cityPlaceholder}</option>
             {TAIWAN_CITIES.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
@@ -49,7 +53,7 @@ export default function TaiwanAddressInput({
             disabled={!city}
             className={`${selectCls} disabled:opacity-40 disabled:cursor-not-allowed`}
           >
-            <option value="">請選擇鄉鎮市區</option>
+            <option value="">{districtPlaceholder}</option>
             {districts.map((d) => <option key={d} value={d}>{d}</option>)}
           </select>
         </div>
