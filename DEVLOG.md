@@ -5,6 +5,23 @@
 
 ---
 
+## v1.0.5 — 2026-04-29：修正預約表單英文版缺漏翻譯
+
+**變更：**
+- `messages/zh-TW.json` + `messages/en.json`：新增 7 個翻譯 key
+  - `id_number_label` / `id_number_hint` / `id_number_placeholder` / `id_number_required`
+  - `contract_agree_text`（含 rich text `<link>` 插值）
+  - `contract_agree_required` / `price_agree_required`
+- `app/booking/BookingClient.tsx`：
+  - 身分證欄位改用 `t()` key，英文版顯示「ID / Passport / ARC Number」
+  - 契約同意文字改用 `t.rich()` 插入超連結
+  - 所有 hardcode 中文錯誤提示改用翻譯 key
+
+**原因：**
+- 英文版預約表單身分證欄位與契約同意文字仍顯示中文
+
+---
+
 ## v1.0.4 — 2026-04-29：更換 Logo + Navbar 改白底
 
 **變更：**

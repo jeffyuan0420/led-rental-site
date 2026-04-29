@@ -131,15 +131,15 @@ export default function BookingClient() {
       return;
     }
     if (!form.id_number) {
-      setError("請填寫身分證字號（個人）或統一編號（公司）");
+      setError(t("id_number_required"));
       return;
     }
     if (!agreedToContract) {
-      setError("請勾選同意租賃契約，預約才能生效");
+      setError(t("contract_agree_required"));
       return;
     }
     if (startDate && endDate && !agreedToPrice) {
-      setError("請勾選確認費用明細，預約才能生效");
+      setError(t("price_agree_required"));
       return;
     }
     if (form.invoice_type === "company" && (!form.invoice_company || !form.invoice_tax_id || !form.invoice_city || !form.invoice_district || !form.invoice_detail)) {
@@ -477,13 +477,13 @@ export default function BookingClient() {
       {/* ID Number */}
       <div>
         <label className="block text-sm font-semibold text-gray-700 mb-2">
-          身分證字號（個人）／統一編號（公司）<span className="text-red-500"> *</span>
+          {t("id_number_label")}<span className="text-red-500"> *</span>
         </label>
-        <p className="text-xs text-gray-400 mb-2">用於簽署租賃契約，不對外公開</p>
+        <p className="text-xs text-gray-400 mb-2">{t("id_number_hint")}</p>
         <input required type="text" value={form.id_number}
           onChange={(e) => setForm({ ...form, id_number: e.target.value.trim() })}
           className="w-full border-2 border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-gray-900 focus:outline-none"
-          placeholder="A123456789 或 12345678" />
+          placeholder={t("id_number_placeholder")} />
       </div>
 
       {/* Notes */}
@@ -574,14 +574,16 @@ export default function BookingClient() {
             className="mt-0.5 w-4 h-4 accent-gray-900 flex-shrink-0"
           />
           <span className="text-sm text-gray-700 leading-relaxed">
-            我已閱讀並同意
-            <a
-              href="/contract"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-gray-900 underline underline-offset-2 hover:text-gray-600"
-            >「設備租賃契約」</a>
-            所有條款，包含租金、保管責任、違約金等約定。提交本表單即代表本人確認簽署此契約，甲方將以此紀錄為憑。
+            {t.rich("contract_agree_text", {
+              link: (chunks) => (
+                <a
+                  href="/contract"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-gray-900 underline underline-offset-2 hover:text-gray-600"
+                >{chunks}</a>
+              )
+            })}
           </span>
         </label>
       </div>

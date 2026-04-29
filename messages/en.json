@@ -246,7 +246,14 @@
     "delivery_address_hint": "Enter the delivery location so we can determine if remote-area surcharges apply",
     "customer_address_label": "Customer Address (Personal: home address)",
     "customer_address_hint": "For internal use only, not shared publicly",
-    "address_required": "Please complete the full address (city, district, and street)"
+    "address_required": "Please complete the full address (city, district, and street)",
+    "id_number_label": "ID / Passport / ARC Number",
+    "id_number_hint": "Required for rental contract signing. Not shared publicly.",
+    "id_number_placeholder": "e.g. A123456789 or passport number",
+    "id_number_required": "Please enter your ID, passport, or ARC number",
+    "contract_agree_text": "I have read and agree to the <link>Equipment Rental Contract</link>, including all terms on rental fees, liability, and penalties. Submitting this form constitutes my acceptance of the contract.",
+    "contract_agree_required": "Please agree to the rental contract to proceed",
+    "price_agree_required": "Please confirm the fee breakdown to proceed"
   },
   "promo": {
     "p0_badge": "📅 Limited Offer",
