@@ -80,10 +80,10 @@ export default function SimulatorClient() {
 
           <div className="bg-gray-50 rounded-lg p-3 text-xs text-gray-500 space-y-1">
             <p className="font-semibold text-gray-700 mb-1">{tProduct(config.labelKey as "single_name" | "triple_name")}</p>
-            <p><span className="text-gray-400">整機外觀尺寸　</span>{config.mmW * quantity} × {config.mmH} mm</p>
-            <p><span className="text-gray-400">顯示尺寸　　　</span>{config.displayMmW * quantity} × {config.mmH} mm</p>
+            <p><span className="text-gray-400">{t("spec_physical_size")}　</span>{config.mmW * quantity} × {config.mmH} mm</p>
+            <p><span className="text-gray-400">{t("spec_display_size")}　　　</span>{config.displayMmW * quantity} × {config.mmH} mm</p>
             {config.maxTotalQty > config.maxQty && (
-              <p className="text-gray-400">最多可拼接 {config.maxTotalQty} 台</p>
+              <p className="text-gray-400">{t("spec_max_units", { count: config.maxTotalQty })}</p>
             )}
             <div className="mt-2 pt-2 border-t border-gray-200">
               <p className="font-semibold text-gray-600 mb-0.5">{t("content_rec_label")}</p>
@@ -132,7 +132,7 @@ export default function SimulatorClient() {
         </div>
 
         <p className="text-xs text-gray-400 text-center mt-3">
-          預覽比例約 1:{scaleRatio} — {config.mmW * quantity} × {config.mmH} mm / {config.pxW * quantity} × {config.pxH} px
+          {t("spec_preview_scale", { ratio: scaleRatio })} — {config.mmW * quantity} × {config.mmH} mm / {config.pxW * quantity} × {config.pxH} px
         </p>
         <p className="text-xs text-gray-400 text-center mt-1">{t("multi_content_note")}</p>
       </div>

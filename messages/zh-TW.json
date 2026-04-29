@@ -134,7 +134,11 @@
     "preview_scale": "預覽比例 1:4",
     "content_rec_label": "建議素材解析度",
     "content_rec_16_9": "（最接近 16:9，建議使用此配置）",
-    "multi_content_note": "※ 實際使用時，每台螢幕可分別播放不同素材，靈活搭配展示內容"
+    "multi_content_note": "※ 實際使用時，每台螢幕可分別播放不同素材，靈活搭配展示內容",
+    "spec_physical_size": "整機外觀尺寸",
+    "spec_display_size": "顯示尺寸",
+    "spec_max_units": "最多可拼接 {count} 台",
+    "spec_preview_scale": "預覽比例約 1:{ratio}"
   },
   "calculator": {
     "title": "費用試算器",
@@ -155,7 +159,7 @@
     "total": "估算總費用",
     "days_unit": "天",
     "currency": "NT$",
-    "note": "※ 以上為估算金額，實際費用以確認書為準",
+    "note": "※ 以上為估算金額，實際費用以確認書為準。若進場或撤場日為週六/日，每台加收假日加成 NT$2,000（預約表單自動計算）",
     "product_type_label": "機型",
     "single_label": "兩折機",
     "triple_label": "三折雙面機",
@@ -237,6 +241,7 @@
     "summary_rental_fee": "租賃費用",
     "summary_setup_fee": "設定協助費",
     "summary_night_fee": "夜間撤場服務費",
+    "summary_weekend_fee": "假日加成（進/撤場）",
     "summary_subtotal": "小計（未稅）",
     "summary_tax": "營業稅（5%）",
     "summary_total": "估算總費用（含稅）",

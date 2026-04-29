@@ -5,6 +5,31 @@
 
 ---
 
+## v1.0.8 — 2026-04-29：週末假日加成（進/撤場日）
+
+**變更：**
+- `lib/pricing.ts`：新增 `RATES.weekendSurcharge = 2000`、`getWeekendSurcharge()` 函式
+  - 進場日或撤場日為週六/日 → 每台 +2,000（未稅）
+  - 同一天進出只算一次
+- `app/booking/BookingClient.tsx`：費用摘要自動計算並顯示假日加成
+- `messages/zh-TW.json` / `en.json`：新增 `summary_weekend_fee`；calculator `note` 加假日加成說明
+
+**規則：**
+- 進場日 = 週末 → +NT$2,000/台
+- 撤場日 = 週末（且不同日） → +NT$2,000/台
+- 費用試算頁無日期選擇，改在備註說明
+
+## v1.0.7 — 2026-04-29：模擬器規格標籤英文化
+
+**變更：**
+- `messages/zh-TW.json` / `en.json`：新增 `spec_physical_size`、`spec_display_size`、`spec_max_units`、`spec_preview_scale`
+- `app/simulator/SimulatorClient.tsx`：整機外觀尺寸/顯示尺寸/最多可拼接/預覽比例改用 `t()` 翻譯 key
+
+**原因：**
+- 英文版模擬器規格標籤仍顯示中文
+
+---
+
 ## v1.0.6 — 2026-04-29：地址欄位 i18n（TaiwanAddressInput）
 
 **變更：**

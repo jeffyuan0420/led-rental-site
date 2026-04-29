@@ -6,7 +6,7 @@ import BackButton from "@/components/BackButton";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { supabase } from "@/lib/supabase";
-import { getSetupPersons, calculateTotal, RATES, type SetupOption } from "@/lib/pricing";
+import { getSetupPersons, calculateTotal, getWeekendSurcharge, RATES, type SetupOption } from "@/lib/pricing";
 import TaiwanAddressInput from "@/components/TaiwanAddressInput";
 
 const MAX_QTY = { single: 10, triple: 2 };
@@ -512,7 +512,8 @@ export default function BookingClient() {
           includeShipping: false,
         });
         const nightFee = form.teardown_time === "night" ? RATES.nightSurcharge * form.quantity : 0;
-        const subtotal = rentalFee + setupFee + nightFee;
+        const weekendFee = getWeekendSurcharge(startDate, endDate, form.quantity);
+        const subtotal = rentalFee + setupFee + nightFee + weekendFee;
         const tax = Math.round(subtotal * 0.05);
         const total = subtotal + tax;
         return (
@@ -536,6 +537,12 @@ export default function BookingClient() {
                   <div className="flex justify-between text-gray-600">
                     <span>{t("summary_night_fee")}</span>
                     <span>NT$ {nightFee.toLocaleString()}</span>
+                  </div>
+                )}
+                {weekendFee > 0 && (
+                  <div className="flex justify-between text-gray-600">
+                    <span>{t("summary_weekend_fee")}</span>
+                    <span>NT$ {weekendFee.toLocaleString()}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-gray-500 text-xs pt-1 border-t border-gray-200">

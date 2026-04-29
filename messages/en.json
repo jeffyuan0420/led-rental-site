@@ -134,7 +134,11 @@
     "preview_scale": "Preview at 1:4 scale",
     "content_rec_label": "Recommended content resolution",
     "content_rec_16_9": "(closest to 16:9 — recommended for video)",
-    "multi_content_note": "* Each panel can play different content independently for flexible display combinations"
+    "multi_content_note": "* Each panel can play different content independently for flexible display combinations",
+    "spec_physical_size": "Physical Size",
+    "spec_display_size": "Display Size",
+    "spec_max_units": "Up to {count} units side by side",
+    "spec_preview_scale": "Preview scale approx. 1:{ratio}"
   },
   "calculator": {
     "title": "Price Calculator",
@@ -155,7 +159,7 @@
     "total": "Estimated Total",
     "days_unit": "day(s)",
     "currency": "NT$",
-    "note": "* Estimated amount only. Final price confirmed in agreement.",
+    "note": "* Estimated amount only. Final price confirmed in agreement. A weekend surcharge of NT$2,000/unit applies if setup or teardown falls on Saturday or Sunday (calculated automatically in the booking form).",
     "product_type_label": "Model",
     "single_label": "Two-Fold",
     "triple_label": "Triple-Fold Double-Side",
@@ -237,6 +241,7 @@
     "summary_rental_fee": "Rental Fee",
     "summary_setup_fee": "Setup Assistance Fee",
     "summary_night_fee": "Night Teardown Fee",
+    "summary_weekend_fee": "Weekend Surcharge (setup/teardown)",
     "summary_subtotal": "Subtotal (excl. tax)",
     "summary_tax": "VAT (5%)",
     "summary_total": "Est. Total (incl. tax)",

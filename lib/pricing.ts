@@ -17,11 +17,21 @@ export const RATES = {
   },
   shipping: 0,      // PLACEHOLDER: 單趟運費
   nightSurcharge: 2000, // 夜間撤場加成（17:00-22:00），每台未稅
+  weekendSurcharge: 2000, // 假日加成（進/撤場日為六日），每台未稅
   maxDays: 5,       // 超過此天數須聯繫業務
 } as const
 
 export type ProductType = 'single' | 'triple'
 export type SetupOption = 'none' | 'half' | 'full'
+
+export function getWeekendSurcharge(startDate: Date, endDate: Date, quantity: number): number {
+  const isWeekend = (d: Date) => { const day = d.getDay(); return day === 0 || day === 6; }
+  const sameDay = startDate.toDateString() === endDate.toDateString()
+  let count = 0
+  if (isWeekend(startDate)) count++
+  if (!sameDay && isWeekend(endDate)) count++
+  return count * RATES.weekendSurcharge * quantity
+}
 
 export function getSetupPersons(quantity: number): number {
   return quantity <= 5 ? 1 : 2
