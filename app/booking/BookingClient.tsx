@@ -54,6 +54,7 @@ export default function BookingClient() {
     notes: "",
   });
   const [agreedToContract, setAgreedToContract] = useState(false);
+  const [agreedToPrice, setAgreedToPrice] = useState(false);
 
   // Auto-populate rental dates when event dates change
   useEffect(() => {
@@ -135,6 +136,10 @@ export default function BookingClient() {
     }
     if (!agreedToContract) {
       setError("請勾選同意租賃契約，預約才能生效");
+      return;
+    }
+    if (startDate && endDate && !agreedToPrice) {
+      setError("請勾選確認費用明細，預約才能生效");
       return;
     }
     if (form.invoice_type === "company" && (!form.invoice_company || !form.invoice_tax_id || !form.invoice_city || !form.invoice_district || !form.invoice_detail)) {
@@ -363,7 +368,11 @@ export default function BookingClient() {
             <button key={opt} type="button"
               onClick={() => setForm({ ...form, setup_option: opt })}
               className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all ${form.setup_option === opt ? "bg-gray-900 text-white border-gray-900" : "border-gray-300 text-gray-600 hover:border-gray-700"}`}>
-              {t(`setup_${opt}` as "setup_none" | "setup_half" | "setup_full")}
+              {opt === "none"
+                ? t("setup_none")
+                : opt === "half"
+                ? `${t("setup_half")} NT$${(getSetupPersons(form.quantity) * RATES.setup.halfDay).toLocaleString()}`
+                : `${t("setup_full")} NT$${(getSetupPersons(form.quantity) * RATES.setup.fullDay).toLocaleString()}`}
             </button>
           ))}
         </div>
@@ -536,6 +545,19 @@ export default function BookingClient() {
                   <span>NT$ {total.toLocaleString()}</span>
                 </div>
                 <p className="text-xs text-gray-400 mt-1">{t("summary_note")}</p>
+                <div className="mt-3 pt-3 border-t border-gray-200">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={agreedToPrice}
+                      onChange={(e) => setAgreedToPrice(e.target.checked)}
+                      className="mt-0.5 w-4 h-4 accent-gray-900 flex-shrink-0"
+                    />
+                    <span className="text-sm text-gray-700 leading-relaxed">
+                      我確認以上費用明細，含稅總金額為 <strong>NT$ {total.toLocaleString()}</strong>，並同意依此金額支付。
+                    </span>
+                  </label>
+                </div>
               </div>
             )}
           </div>
