@@ -5,6 +5,20 @@
 
 ---
 
+## v1.0.9 — 2026-04-30：修正 Email 遺漏假日加成費用
+
+**變更：**
+- `app/api/notify-booking/route.ts`：
+  - 補上 `getWeekendSurcharge` import
+  - 費用計算加入 `weekendFee`（原本 subtotal 未含此項，導致 Email 金額低報）
+  - 管理員通知 Email 新增假日加成明細列
+  - 客戶確認 Email 新增假日加成明細列
+
+**原因：**
+- v1.0.8 加了前端假日加成計算，但 Email 路由未同步更新，造成確認信金額與表單顯示不一致
+
+---
+
 ## v1.0.8 — 2026-04-29：週末假日加成（進/撤場日）
 
 **變更：**

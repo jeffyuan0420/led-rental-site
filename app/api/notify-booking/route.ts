@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import { NextResponse } from "next/server";
 import { PAYMENT, subtractWorkingDays } from "@/lib/payment";
-import { calculateTotal, RATES, getSetupPersons } from "@/lib/pricing";
+import { calculateTotal, RATES, getSetupPersons, getWeekendSurcharge } from "@/lib/pricing";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { ContractPDF } from "@/lib/contract-pdf";
 import React from "react";
@@ -56,7 +56,8 @@ export async function POST(req: Request) {
   const days = Math.max(1, Math.round((new Date(end_date).getTime() - new Date(start_date).getTime()) / 86400000) + 1);
   const { rentalFee, setupFee, needsQuote } = calculateTotal({ productType: product_type, quantity, days, setupOption: setup_option, includeShipping: false });
   const nightFee = teardown_time === "night" ? RATES.nightSurcharge * quantity : 0;
-  const subtotal = rentalFee + setupFee + nightFee;
+  const weekendFee = getWeekendSurcharge(new Date(start_date), new Date(end_date), quantity);
+  const subtotal = rentalFee + setupFee + nightFee + weekendFee;
   const tax = Math.round(subtotal * 0.05);
   const total = subtotal + tax;
 
@@ -80,6 +81,7 @@ export async function POST(req: Request) {
       <tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">租賃日期</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">${start_date} ～ ${end_date}（${days} 天）</td></tr>
       <tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">設定協助</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">${setupLabel}</td></tr>
       ${teardown_time === "night" ? `<tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">撤場時間</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">夜間（17:00–22:00）</td></tr>` : ""}
+      ${weekendFee > 0 ? `<tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">假日加成</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">NT$ ${weekendFee.toLocaleString()}（進/撤場日為例假日）</td></tr>` : ""}
       <tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">估算費用</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;font-weight:700">${needsQuote ? "專案報價" : `NT$ ${total.toLocaleString()}（含稅）`}</td></tr>
       <tr><td style="padding:8px 12px;background:#f3f4f6;font-weight:600">發票需求</td><td style="padding:8px 12px;border-bottom:1px solid #e5e7eb">${invoice_type === "company" ? "三聯式（公司）" : "二聯式（個人）"}</td></tr>
       ${invoice_type === "company" ? `
@@ -125,6 +127,7 @@ export async function POST(req: Request) {
         <tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600;width:130px">租賃費用</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">NT$ ${rentalFee.toLocaleString()}</td></tr>
         ${setupFee > 0 ? `<tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">設定協助費</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">NT$ ${setupFee.toLocaleString()}</td></tr>` : ""}
         ${nightFee > 0 ? `<tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">夜間撤場費</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">NT$ ${nightFee.toLocaleString()}</td></tr>` : ""}
+        ${weekendFee > 0 ? `<tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">假日加成</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">NT$ ${weekendFee.toLocaleString()}（進/撤場日為例假日）</td></tr>` : ""}
         <tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">小計（未稅）</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">NT$ ${subtotal.toLocaleString()}</td></tr>
         <tr><td style="padding:6px 12px;background:#f3f4f6;font-weight:600">營業稅（5%）</td><td style="padding:6px 12px;border-bottom:1px solid #e5e7eb">NT$ ${tax.toLocaleString()}</td></tr>
         <tr><td style="padding:6px 12px;background:#e5e7eb;font-weight:700">合計（含稅）</td><td style="padding:6px 12px;font-weight:700;border-bottom:1px solid #e5e7eb">NT$ ${total.toLocaleString()}</td></tr>
