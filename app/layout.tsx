@@ -5,6 +5,7 @@ import { getLocale, getMessages } from "next-intl/server";
 import Navbar from "@/components/Navbar";
 import PromoBanner from "@/components/PromoBanner";
 import LineButton from "@/components/LineButton";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -42,6 +43,7 @@ export default async function RootLayout({
           <PromoBanner />
           <main className="flex-1">{children}</main>
           <LineButton />
+          <ServiceWorkerRegister />
         </NextIntlClientProvider>
       </body>
     </html>
