@@ -5,6 +5,19 @@
 
 ---
 
+## v1.3.0 — 2026-05-04：PWA 支援
+
+**變更：**
+- `next.config.ts`：整合 `next-pwa`，生產環境自動產生 Service Worker
+- `app/manifest.ts`：新增 Web App Manifest（名稱、icon、主題色 #0f0f0f）
+- `app/layout.tsx`：加入 manifest、Apple Web App meta、apple-touch-icon
+- `public/`：新增 icon-192x192.png、icon-512x512.png、icon-180x180.png、apple-touch-icon.png、favicon.ico（深黑底 + 青藍色 LED 像素點陣風格）
+
+**原因：**
+- 客戶希望網站可以加入手機主畫面，開啟後像 App 全螢幕體驗
+
+---
+
 ## v1.2.0 — 2026-05-04：規格修正 + 租賃天數調整 + 促銷關閉
 
 **變更：**
