@@ -6,12 +6,12 @@ import { useTranslations } from "next-intl";
 
 // ── 控制開關 ──────────────────
 const PROMO_ENABLED = true;
+// p0（限時優惠）暫時關閉，日後促銷再啟用
 // ──────────────────────────────
 
 const PROMO_META = [
-  { bg: "bg-gradient-to-br from-amber-400 via-yellow-300 to-amber-400", textDark: true,  deco: ["🎁","🚚","⭐","🎉"], href: "/booking" },
-  { bg: "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900",      textDark: false, deco: ["✨","🏆","🎯","💡"], href: "/products" },
-  { bg: "bg-gradient-to-br from-amber-600 via-orange-500 to-amber-600",  textDark: false, deco: ["📦","📦","⚡","🎯"], href: "/calculator" },
+  { bg: "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900",      textDark: false, deco: ["✨","🏆","🎯","💡"], href: "/products",    idx: "p1" as const },
+  { bg: "bg-gradient-to-br from-amber-600 via-orange-500 to-amber-600",  textDark: false, deco: ["📦","📦","⚡","🎯"], href: "/calculator",  idx: "p2" as const },
 ] as const;
 
 export default function PromoBanner() {
@@ -26,7 +26,7 @@ export default function PromoBanner() {
   const next = () => setCurrent((c) => (c + 1) % total);
 
   const p = PROMO_META[current];
-  const idx = `p${current}` as "p0" | "p1" | "p2";
+  const idx = p.idx;
 
   const textBase   = p.textDark ? "text-gray-900" : "text-white";
   const textMuted  = p.textDark ? "text-gray-700"  : "text-white/70";

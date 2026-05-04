@@ -14,10 +14,11 @@ export default async function ProductsPage() {
       key: "single" as const,
       name: t("single_name"),
       nameEn: "Two-Fold Display",
-      size: "664 × 1920 mm",
+      size: "664 × 2080 × 440 mm",
       brightness: "650～800 nits",
       ipRating: "IP31",
       weight: "52 kg",
+      maxPower: "≤ 600 W",
       useCases: [t("single_use1"), t("single_use2"), t("single_use3")],
       image: "/images/single.png",
       highlight: t("single_highlight"),
@@ -27,10 +28,11 @@ export default async function ProductsPage() {
       key: "triple" as const,
       name: t("triple_name"),
       nameEn: "Triple-Fold Double-Side Display",
-      size: "640 × 1920 mm / 1280 × 1920 mm",
+      size: "1280 × 2065.8 × 488.8 mm",
       brightness: "650～800 nits",
       ipRating: "IP31",
       weight: "~80 kg",
+      maxPower: "≤ 1200 W",
       useCases: [t("triple_use1"), t("triple_use2"), t("triple_use3")],
       image: "/images/triple.png",
       highlight: t("triple_highlight"),
@@ -92,6 +94,7 @@ export default async function ProductsPage() {
                     { label: t("brightness"), value: product.brightness },
                     { label: t("ip_rating"), value: product.ipRating },
                     { label: t("weight"), value: product.weight },
+                    { label: t("power"), value: product.maxPower },
                   ].map((spec) => (
                     <tr key={spec.label} className="border-b border-gray-100">
                       <td className="py-2 pr-4 text-gray-500 font-medium w-28">

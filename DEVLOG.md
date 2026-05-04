@@ -5,6 +5,36 @@
 
 ---
 
+## v1.2.0 — 2026-05-04：規格修正 + 租賃天數調整 + 促銷關閉
+
+**變更：**
+- `app/products/page.tsx`：兩折機外觀尺寸 664×1920→664×2080×440mm；三折機 640/1280×1920→1280×2065.8×488.8mm（W×H×D）
+- `app/products/page.tsx`：規格表新增「最大功耗」欄位（兩折≤600W / 三折≤1200W）
+- `lib/pricing.ts`：maxDays 5→4（標準租賃上限改為 4 天）
+- `messages/zh-TW.json` + `en.json`：同步更新 FAQ、試算器、預約表單所有「5天」文案→「4天」；更新尺寸說明；新增 power 翻譯鍵
+- `components/PromoBanner.tsx`：移除 p0「限時優惠」輪播，目前僅顯示 p1、p2；日後促銷再加回
+
+**原因：**
+- Jeff 確認實際機台含底座整機外觀尺寸有深度（D），原本只有 W×H 不完整
+- 租賃方案正式改為 1-4 天同價（原 1-5 天）
+- 限時優惠 p0 為預留促銷位置，非常態方案，暫時隱藏
+
+---
+
+## v1.1.0 — 2026-04-30：建立官網嵌入檔 led-rental-embed.html
+
+**變更：**
+- 新增 `led-rental-embed.html`（位於 led-rental-site 根目錄）
+  - 純 HTML iframe，將 `https://led-rental-site.vercel.app` 嵌入，100vw × 100vh
+  - 設計為單一靜態檔案，同事上傳到 csknight.com 主機即可讓 `/led-rental.html` 上線
+  - Vercel 端若有任何更新，此嵌入檔完全自動同步，同事無需再動
+
+**原因：**
+- 客戶需求：在 www.csknight.com/led-rental.html 提供租賃頁面（Dreamweaver 靜態站）
+- iframe 方案避免重複維護兩套代碼，所有更新只改 Vercel 端即可
+
+---
+
 ## v1.0.9 — 2026-04-30：修正 Email 遺漏假日加成費用
 
 **變更：**
