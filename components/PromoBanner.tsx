@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 
 // ── 控制開關 ──────────────────
-const PROMO_ENABLED = true;
+const PROMO_ENABLED = false;
 // p0（限時優惠）暫時關閉，日後促銷再啟用
 // ──────────────────────────────
 
