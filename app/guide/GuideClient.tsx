@@ -130,6 +130,44 @@ function SingleGuide({ srcA, srcB }: { srcA: string; srcB: string }) {
   );
 }
 
+/* ── HalfPanel: shows only left or right half of a video ────── */
+
+function HalfPanel({ src, half, mirror, w, h }: {
+  src: string;
+  half: "left" | "right";
+  mirror?: boolean;
+  w: number;
+  h: number;
+}) {
+  return (
+    <div
+      style={{
+        width: w,
+        height: h,
+        overflow: "hidden",
+        position: "relative",
+        transform: mirror ? "scaleX(-1)" : undefined,
+        flexShrink: 0,
+      }}
+      className="bg-black rounded-sm"
+    >
+      <video
+        src={src}
+        autoPlay loop muted playsInline
+        style={{
+          position: "absolute",
+          width: w * 2,
+          height: h,
+          objectFit: "cover",
+          top: 0,
+          left: half === "left" ? 0 : undefined,
+          right: half === "right" ? 0 : undefined,
+        }}
+      />
+    </div>
+  );
+}
+
 /* ── 三折雙面機 Guide ────────────────────────────────────────── */
 
 function TripleGuide({ srcA, srcB }: { srcA: string; srcB: string }) {
@@ -147,15 +185,15 @@ function TripleGuide({ srcA, srcB }: { srcA: string; srcB: string }) {
           <div className="flex flex-col items-center">
             <p className="text-xs text-gray-500 font-semibold mb-3 text-center">平面展開圖（製作時）</p>
             <div className="flex items-stretch gap-0">
-              {/* Panel 1: A mirrored */}
+              {/* Panel 1: left half of A, mirrored */}
               <div className="flex flex-col items-center gap-1">
                 <span className="text-[10px] text-gray-400 font-medium">面板 1</span>
-                <Panel src={srcA} w={W} h={H} transform="scaleX(-1)" />
-                <span className="text-[10px] text-sky-600 font-semibold mt-0.5">A（水平鏡像）</span>
+                <HalfPanel src={srcA} half="left" mirror w={W} h={H} />
+                <span className="text-[10px] text-sky-600 font-semibold mt-0.5">A 左半（鏡像）</span>
               </div>
               {/* Divider */}
               <div className="self-stretch border-l border-dashed border-gray-400 mx-1" style={{ marginTop: 18, marginBottom: 18 }} />
-              {/* Panel 2: B normal */}
+              {/* Panel 2: B full, normal */}
               <div className="flex flex-col items-center gap-1">
                 <span className="text-[10px] text-gray-400 font-medium">面板 2</span>
                 <Panel src={srcB} w={W} h={H} />
@@ -163,14 +201,14 @@ function TripleGuide({ srcA, srcB }: { srcA: string; srcB: string }) {
               </div>
               {/* Divider */}
               <div className="self-stretch border-l border-dashed border-gray-400 mx-1" style={{ marginTop: 18, marginBottom: 18 }} />
-              {/* Panel 3: A normal */}
+              {/* Panel 3: right half of A, normal */}
               <div className="flex flex-col items-center gap-1">
                 <span className="text-[10px] text-gray-400 font-medium">面板 3</span>
-                <Panel src={srcA} w={W} h={H} />
-                <span className="text-[10px] text-sky-600 font-semibold mt-0.5">A（正常）</span>
+                <HalfPanel src={srcA} half="right" w={W} h={H} />
+                <span className="text-[10px] text-sky-600 font-semibold mt-0.5">A 右半（正常）</span>
               </div>
             </div>
-            <p className="text-[10px] text-gray-400 mt-2 text-center">面板 1＋3 合成正面 · 面板 2 為背面</p>
+            <p className="text-[10px] text-gray-400 mt-2 text-center">面板 1＋3 各佔畫面一半，折疊後合成完整正面 · 面板 2 為背面</p>
           </div>
 
           <div className="text-3xl text-gray-300">→</div>
