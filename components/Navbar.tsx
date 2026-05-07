@@ -77,6 +77,7 @@ export default function Navbar() {
     { href: "/", label: t("home") },
     { href: "/products", label: t("products") },
     { href: "/simulator", label: t("simulator") },
+    { href: "/guide", label: t("guide") },
     { href: "/calculator", label: t("calculator") },
     { href: "/booking", label: t("booking") },
     { href: "/faq", label: t("faq") },
