@@ -5,6 +5,16 @@
 
 ---
 
+## v1.4.2 — 2026-05-07：三折機面板1/3影片同步
+
+**變更：**
+- `app/guide/GuideClient.tsx`：TripleGuide 加入 useRef + useEffect，面板1 的 timeupdate 事件強制同步面板3 currentTime（誤差 > 50ms 才修正）；HalfPanel 新增 videoRef prop，移除已無用的 mirror prop
+
+**原因：**
+- 面板1和面板3是同一部影片的左右半邊，各自獨立播放時會有時間差，視覺上誤以為是不同影片
+
+---
+
 ## v1.4.1 — 2026-05-07：三折機素材指南正背面修正
 
 **變更：**

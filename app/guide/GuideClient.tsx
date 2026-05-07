@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import BackButton from "@/components/BackButton";
 
@@ -36,10 +36,10 @@ function Panel({ src, w, h, transform }: { src: string; w: number; h: number; tr
   );
 }
 
-function HalfPanel({ src, half, mirror, w, h }: { src: string; half: "left" | "right"; mirror?: boolean; w: number; h: number }) {
+function HalfPanel({ src, half, w, h, videoRef }: { src: string; half: "left" | "right"; w: number; h: number; videoRef?: React.RefObject<HTMLVideoElement> }) {
   return (
-    <div style={{ width: w, height: h, overflow: "hidden", flexShrink: 0, transform: mirror ? "scaleX(-1)" : undefined }} className="bg-black rounded-sm">
-      <video src={src} autoPlay loop muted playsInline
+    <div style={{ width: w, height: h, overflow: "hidden", flexShrink: 0 }} className="bg-black rounded-sm">
+      <video ref={videoRef} src={src} autoPlay loop muted playsInline
         style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transform: "scaleX(2)", transformOrigin: half === "left" ? "left center" : "right center" }} />
     </div>
   );
@@ -95,6 +95,22 @@ function SingleGuide({ srcA, srcB }: { srcA: string; srcB: string }) {
 function TripleGuide({ srcA, srcB }: { srcA: string; srcB: string }) {
   const t = useTranslations("guide");
   const W = 70, H = 210;
+  const ref1 = useRef<HTMLVideoElement>(null);
+  const ref3 = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const v1 = ref1.current;
+    const v3 = ref3.current;
+    if (!v1 || !v3) return;
+    const sync = () => {
+      if (Math.abs(v1.currentTime - v3.currentTime) > 0.05) {
+        v3.currentTime = v1.currentTime;
+      }
+    };
+    v1.addEventListener("timeupdate", sync);
+    return () => v1.removeEventListener("timeupdate", sync);
+  }, [srcA]);
+
   return (
     <div className="space-y-5">
       <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
@@ -106,7 +122,7 @@ function TripleGuide({ srcA, srcB }: { srcA: string; srcB: string }) {
             <div className="flex items-stretch gap-0">
               <div className="flex flex-col items-center gap-1">
                 <span className="text-[10px] text-gray-400 font-medium">{t("panel1")}</span>
-                <HalfPanel src={srcA} half="right" w={W} h={H} />
+                <HalfPanel src={srcA} half="right" w={W} h={H} videoRef={ref1} />
                 <span className="text-[10px] text-sky-600 font-semibold mt-0.5">{t("panel1_label")}</span>
               </div>
               <div className="self-stretch border-l border-dashed border-gray-400 mx-1" style={{ marginTop: 18, marginBottom: 18 }} />
@@ -118,7 +134,7 @@ function TripleGuide({ srcA, srcB }: { srcA: string; srcB: string }) {
               <div className="self-stretch border-l border-dashed border-gray-400 mx-1" style={{ marginTop: 18, marginBottom: 18 }} />
               <div className="flex flex-col items-center gap-1">
                 <span className="text-[10px] text-gray-400 font-medium">{t("panel3")}</span>
-                <HalfPanel src={srcA} half="left" w={W} h={H} />
+                <HalfPanel src={srcA} half="left" w={W} h={H} videoRef={ref3} />
                 <span className="text-[10px] text-sky-600 font-semibold mt-0.5">{t("panel3_label")}</span>
               </div>
             </div>
