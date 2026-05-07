@@ -71,11 +71,26 @@ export default function BookingClient() {
   }, [startDate, endDate, form.product_type, form.quantity]);
 
   function filterDate(date: Date): boolean {
-    const tomorrow = new Date();
+    const now = new Date();
+    const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(0, 0, 0, 0);
-    return date >= tomorrow;
+    // Past noon: earliest selectable date is day after tomorrow
+    const minDate = now.getHours() >= 12
+      ? new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000)
+      : tomorrow;
+    return date >= minDate;
   }
+
+  // True if the selected start date is tomorrow
+  const isTomorrow = (() => {
+    if (!startDate) return false;
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return startDate.toDateString() === tomorrow.toDateString();
+  })();
+  const showPaymentDeadline = isTomorrow && new Date().getHours() < 12;
 
   async function checkAvailability(
     start: Date | null,
@@ -284,6 +299,11 @@ export default function BookingClient() {
           </div>
         </div>
         <p className="text-xs text-yellow-600 mt-2">{t("rental_date_note")}</p>
+        {showPaymentDeadline && (
+          <div className="mt-2 bg-amber-50 border border-amber-300 rounded-lg px-3 py-2 text-xs text-amber-700">
+            ⚠️ 您選擇的配送日為明日，請於<strong>今日下午 5:00 前</strong>完成匯款，以利我們安排出貨。逾時訂單將順延至下一個工作日。
+          </div>
+        )}
       </div>
 
       {/* Contact info */}
