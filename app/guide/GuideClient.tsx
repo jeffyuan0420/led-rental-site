@@ -141,27 +141,19 @@ function HalfPanel({ src, half, mirror, w, h }: {
 }) {
   return (
     <div
-      style={{
-        width: w,
-        height: h,
-        overflow: "hidden",
-        position: "relative",
-        transform: mirror ? "scaleX(-1)" : undefined,
-        flexShrink: 0,
-      }}
+      style={{ width: w, height: h, overflow: "hidden", flexShrink: 0, transform: mirror ? "scaleX(-1)" : undefined }}
       className="bg-black rounded-sm"
     >
       <video
         src={src}
         autoPlay loop muted playsInline
         style={{
-          position: "absolute",
-          width: w * 2,
-          height: h,
+          width: "100%",
+          height: "100%",
           objectFit: "cover",
-          top: 0,
-          left: half === "left" ? 0 : undefined,
-          right: half === "right" ? 0 : undefined,
+          display: "block",
+          transform: "scaleX(2)",
+          transformOrigin: half === "left" ? "left center" : "right center",
         }}
       />
     </div>
