@@ -5,6 +5,17 @@
 
 ---
 
+## v1.4.1 — 2026-05-07：三折機素材指南正背面修正
+
+**變更：**
+- `app/guide/GuideClient.tsx`：面板 1 移除鏡像（`mirror` prop 刪除）；步驟一選擇器在三折 tab 下 A=背面、B=正面（與單折相反）
+- `messages/zh-TW.json` + `messages/en.json`：panel1_label 改「A 右半（正常）」、panel3_label 改「A 左半（正常）」；triple_footer / triple_tips_a/b 正背面文字對調
+
+**原因：**
+- 三折機正面（面向主要觀眾）是面板 2（B畫面），背面才是面板 1＋3（A畫面）；原始示意圖正背面標籤貼反且面板 1 誤標為鏡像
+
+---
+
 ## v1.4.0 — 2026-05-07：素材製作指南頁面
 
 **變更：**
