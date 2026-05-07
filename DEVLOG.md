@@ -5,6 +5,17 @@
 
 ---
 
+## v1.3.3 — 2026-05-07：修正 iframe 內語言切換失效
+
+**變更：**
+- `components/Navbar.tsx`：locale cookie 加入 `SameSite=None; Secure`
+
+**原因：**
+- 網站嵌入官網 iframe 時，瀏覽器以 SameSite=Lax 預設封鎖跨域 cookie，導致點英文無效
+- 加入 SameSite=None; Secure 後，cookie 可在 iframe 跨域環境中正常寫入與讀取
+
+---
+
 ## v1.3.2 — 2026-05-07：促銷輪播暫時隱藏
 
 **變更：**

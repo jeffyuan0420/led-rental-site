@@ -83,7 +83,7 @@ export default function Navbar() {
   ];
 
   async function switchLocale(locale: string) {
-    document.cookie = `locale=${locale}; path=/; max-age=31536000`;
+    document.cookie = `locale=${locale}; path=/; max-age=31536000; SameSite=None; Secure`;
     window.location.reload();
   }
 
