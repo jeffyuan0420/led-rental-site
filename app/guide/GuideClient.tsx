@@ -36,7 +36,7 @@ function Panel({ src, w, h, transform }: { src: string; w: number; h: number; tr
   );
 }
 
-function HalfPanel({ src, half, w, h, videoRef }: { src: string; half: "left" | "right"; w: number; h: number; videoRef?: React.RefObject<HTMLVideoElement> }) {
+function HalfPanel({ src, half, w, h, videoRef }: { src: string; half: "left" | "right"; w: number; h: number; videoRef?: React.RefObject<HTMLVideoElement | null> }) {
   return (
     <div style={{ width: w, height: h, overflow: "hidden", flexShrink: 0 }} className="bg-black rounded-sm">
       <video ref={videoRef} src={src} autoPlay loop muted playsInline
