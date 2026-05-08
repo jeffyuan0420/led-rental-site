@@ -4,12 +4,13 @@ import { useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import BackButton from "@/components/BackButton";
 
-const DEMO_VIDEOS = ["robot", "car", "jewelry", "triple-car"] as const;
+const DEMO_VIDEOS = ["robot", "car", "jewelry", "triple-car", "back-a"] as const;
 const DEMO_SRCS: Record<typeof DEMO_VIDEOS[number], string> = {
   robot:        "/videos/demo-robot.mp4",
   car:          "/videos/demo-car.mp4",
   jewelry:      "/videos/demo-jewelry.mp4",
   "triple-car": "/videos/demo-triple-car.mp4",
+  "back-a":     "/videos/demo-back-a.mp4",
 };
 
 type Tab = "single" | "triple";
@@ -171,6 +172,10 @@ export default function GuideClient() {
   const [tab, setTab] = useState<Tab>("single");
   const [selA, setSelA] = useState(0);
   const [selB, setSelB] = useState(1);
+
+  useEffect(() => {
+    setSelA(tab === "triple" ? 4 : 0);
+  }, [tab]);
 
   const srcA = DEMO_SRCS[DEMO_VIDEOS[selA]];
   const srcB = DEMO_SRCS[DEMO_VIDEOS[selB]];
