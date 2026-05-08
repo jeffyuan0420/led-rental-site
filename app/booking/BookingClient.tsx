@@ -485,6 +485,13 @@ export default function BookingClient() {
         />
       </div>
 
+      {/* Floor Surcharge Policy Notice */}
+      <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 text-sm text-orange-900">
+        <p className="font-semibold mb-1.5">🏗️ {t("floor_policy_title")}</p>
+        <p className="text-orange-800 leading-relaxed">{t("floor_policy_body")}</p>
+        <p className="text-orange-600 text-xs mt-2">{t("floor_policy_dim")}</p>
+      </div>
+
       {/* Customer Address */}
       <div>
         <label className="block text-sm font-semibold text-gray-700 mb-1">

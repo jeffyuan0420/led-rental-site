@@ -5,6 +5,17 @@
 
 ---
 
+## v1.5.2 — 2026-05-08：預約表單加入樓層費政策說明框
+
+**變更：**
+- `app/booking/BookingClient.tsx`：配送地址下方加入橘色說明框，載明樓層費公式（NT$2,000/層）、外包裝尺寸、兩折機具體例子
+- `messages/zh-TW.json` + `messages/en.json`：新增 `floor_policy_title` / `floor_policy_body` / `floor_policy_dim`
+
+**原因：**
+- 費用說明僅在試算器，客戶直接到預約頁會不知道有樓層費，事後產生糾紛；在表單送出前明確揭露
+
+---
+
 ## v1.5.1 — 2026-05-08：電梯核取方塊加入外包裝尺寸提示
 
 **變更：**
