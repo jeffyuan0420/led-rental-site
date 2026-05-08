@@ -5,6 +5,20 @@
 
 ---
 
+## v1.7.0 — 2026-05-08：多產品線架構重組（產品線子頁面）
+
+**變更：**
+- `app/products/page.tsx`：改寫為產品線入口頁（LED 廣告機 + 觸控廣告機 兩張大卡片）
+- `app/products/led/page.tsx`：新建，LED 廣告機專頁（原 /products 的 LED 內容移入）
+- `app/products/kiosk/page.tsx`：新建，觸控廣告機專頁（原 kiosk 區塊移入）
+- `messages/zh-TW.json` + `messages/en.json`：新增 overview / led_line / kiosk_line / view_details 系列鍵值
+
+**原因：**
+- 原設計將所有產品堆在同一頁，擴充新品項後會雜亂
+- 改為「產品線入口頁 → 各自子頁」架構，未來加產品只需新增一頁 + 入口卡
+
+---
+
 ## v1.6.0 — 2026-05-08：產品頁新增觸控式直立廣告機規格區
 
 **變更：**
