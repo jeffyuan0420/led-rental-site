@@ -5,6 +5,18 @@
 
 ---
 
+## v1.4.5 — 2026-05-08：加入三折機背面示範影片，切換tab自動選用
+
+**變更：**
+- `public/videos/demo-back-a.mp4`：新增三折機專用背面示範影片（344×1032，左右各半設計）
+- `app/guide/GuideClient.tsx`：DEMO_VIDEOS 加入 "back-a"；切換到三折 tab 時 useEffect 自動將 selA 設為 index 4（back-a）
+- `messages/zh-TW.json` + `messages/en.json`：新增 `demo_E` 標籤「背面示範」
+
+**原因：**
+- 原示範影片（機器人/車等）主體在中央，HalfPanel 裁切後內容不自然；專用 344×1032 背面畫布影片左右各設計內容，裁切後面板1/3 各自顯示正確，無壓縮感
+
+---
+
 ## v1.4.4 — 2026-05-08：修正三折機面板解析度（面板2=344×1032，面板1/3各172×1032）
 
 **變更：**
