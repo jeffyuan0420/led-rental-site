@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import BackButton from "@/components/BackButton";
-import { RATES, calculateTotal, getSetupPersons, type ProductType, type SetupOption } from "@/lib/pricing";
+import { RATES, calculateTotal, getFloorSurcharge, getSetupPersons, type ProductType, type SetupOption } from "@/lib/pricing";
 
 const LINE_OA = "https://line.me/R/ti/p/@touchpersona";
 const MAX_STANDARD_DAYS = RATES.maxDays;
@@ -16,6 +16,9 @@ export default function CalculatorClient() {
   const [daysInput, setDaysInput] = useState<string>("1");
   const [setupOption, setSetupOption] = useState<SetupOption>("none");
   const [includeShipping, setIncludeShipping] = useState(true);
+  const [deliveryFloor, setDeliveryFloor] = useState<number>(1);
+  const [floorInput, setFloorInput] = useState<string>("1");
+  const [hasElevator, setHasElevator] = useState(true);
 
   const quantity = Math.max(1, parseInt(qtyInput) || 1);
   const days = Math.max(1, parseInt(daysInput) || 1);
@@ -24,6 +27,8 @@ export default function CalculatorClient() {
   const result = calculateTotal({ productType, quantity, days, setupOption, includeShipping });
   const hasRates = RATES.perUnit.single > 0;
   const setupPersons = getSetupPersons(quantity);
+  const floorSurcharge = getFloorSurcharge(deliveryFloor, hasElevator);
+  const grandTotal = result.total + floorSurcharge;
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
@@ -112,12 +117,46 @@ export default function CalculatorClient() {
       </div>
 
       {/* Shipping */}
-      <div className="mb-8">
+      <div className="mb-6">
         <label className="flex items-center gap-3 cursor-pointer">
           <input type="checkbox" checked={includeShipping} onChange={(e) => setIncludeShipping(e.target.checked)} className="w-5 h-5 rounded accent-gray-900" />
           <span className="text-sm text-gray-700">{t("include_shipping")}</span>
           {RATES.shipping > 0 && <span className="text-xs text-gray-400 ml-auto">NT$ {(RATES.shipping * 2).toLocaleString()}</span>}
         </label>
+      </div>
+
+      {/* Floor Surcharge */}
+      <div className="mb-8">
+        <label className="block text-sm font-semibold text-gray-700 mb-1">{t("floor_label")}</label>
+        <p className="text-xs text-gray-400 mb-3">{t("floor_hint")}</p>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => { const v = Math.max(1, deliveryFloor - 1); setDeliveryFloor(v); setFloorInput(String(v)); }}
+            className="w-10 h-10 rounded-full border-2 border-gray-300 text-xl font-bold hover:border-gray-700 transition-colors"
+          >−</button>
+          <input
+            type="number"
+            min={1}
+            max={30}
+            value={floorInput}
+            onChange={(e) => setFloorInput(e.target.value)}
+            onBlur={() => { const v = Math.max(1, parseInt(floorInput) || 1); setDeliveryFloor(v); setFloorInput(String(v)); }}
+            className="w-20 border-2 border-gray-300 rounded-xl px-3 py-2 text-lg font-bold text-center focus:border-gray-900 focus:outline-none"
+          />
+          <span className="text-gray-500">{t("floor_suffix")}</span>
+        </div>
+        {deliveryFloor > 1 && (
+          <label className="flex items-center gap-3 mt-4 cursor-pointer">
+            <input type="checkbox" checked={hasElevator} onChange={(e) => setHasElevator(e.target.checked)} className="w-5 h-5 rounded accent-gray-900" />
+            <span className="text-sm text-gray-700">{t("has_elevator_label")}</span>
+          </label>
+        )}
+        {deliveryFloor > 1 && !hasElevator && (
+          <div className="mt-3 bg-orange-50 border border-orange-200 rounded-xl p-4 text-sm text-orange-900">
+            <p className="font-semibold mb-1">🏗️ {t("floor_surcharge_fee")}</p>
+            <p className="text-orange-700">NT$1,000 × 2{t("floor_persons_unit")} × {deliveryFloor - 1}{t("floor_above_unit")} = <span className="font-bold">NT$ {floorSurcharge.toLocaleString()}</span></p>
+          </div>
+        )}
       </div>
 
       {/* Long rental warning */}
@@ -159,19 +198,25 @@ export default function CalculatorClient() {
                     <span>NT$ {result.shippingFee.toLocaleString()}</span>
                   </div>
                 )}
+                {floorSurcharge > 0 && (
+                  <div className="flex justify-between text-orange-700">
+                    <span>{t("floor_surcharge_fee")} ({deliveryFloor - 1}{t("floor_above_unit")})</span>
+                    <span>NT$ {floorSurcharge.toLocaleString()}</span>
+                  </div>
+                )}
               </div>
               <div className="border-t border-gray-300 pt-3 space-y-1.5">
                 <div className="flex justify-between items-center text-gray-500 text-sm">
                   <span>{t("subtotal_excl_tax")}</span>
-                  <span>NT$ {result.total.toLocaleString()}</span>
+                  <span>NT$ {grandTotal.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between items-center text-gray-500 text-sm">
                   <span>{t("tax_label")} (5%)</span>
-                  <span>NT$ {Math.round(result.total * 0.05).toLocaleString()}</span>
+                  <span>NT$ {Math.round(grandTotal * 0.05).toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between items-center pt-1 border-t border-gray-200">
                   <span className="font-bold text-gray-900 text-lg">{t("estimated_total_label")}</span>
-                  <span className="font-bold text-2xl text-gray-900">NT$ {Math.round(result.total * 1.05).toLocaleString()}</span>
+                  <span className="font-bold text-2xl text-gray-900">NT$ {Math.round(grandTotal * 1.05).toLocaleString()}</span>
                 </div>
               </div>
               <p className="text-xs text-gray-400 mt-2">{t("note")}</p>

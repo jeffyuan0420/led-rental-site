@@ -18,6 +18,7 @@ export const RATES = {
   shipping: 0,      // PLACEHOLDER: 單趟運費
   nightSurcharge: 2000, // 夜間撤場加成（17:00-22:00），每台未稅
   weekendSurcharge: 2000, // 假日加成（進/撤場日為六日），每台未稅
+  floorSurchargePerFloor: 2000, // 樓層搬運費（1,000/人 × 最少2人），每層未稅
   maxDays: 4,       // 超過此天數須聯繫業務
 } as const
 
@@ -41,6 +42,11 @@ export function getSetupFee(setupOption: SetupOption, quantity: number): number 
   if (setupOption === 'none') return 0
   const persons = getSetupPersons(quantity)
   return persons * (setupOption === 'half' ? RATES.setup.halfDay : RATES.setup.fullDay)
+}
+
+export function getFloorSurcharge(floor: number, hasElevator: boolean): number {
+  if (floor <= 1 || hasElevator) return 0
+  return RATES.floorSurchargePerFloor * (floor - 1)
 }
 
 export function calculateTotal({

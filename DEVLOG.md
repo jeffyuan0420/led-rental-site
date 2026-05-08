@@ -5,6 +5,18 @@
 
 ---
 
+## v1.5.0 — 2026-05-08：費用試算器新增樓層搬運費計算
+
+**變更：**
+- `lib/pricing.ts`：新增 `RATES.floorSurchargePerFloor: 2000`（NT$1,000/人 × 最少2人）及 `getFloorSurcharge(floor, hasElevator)` 函式
+- `app/calculator/CalculatorClient.tsx`：新增「交貨樓層」數字輸入 + 「有電梯」核取方塊；無電梯時即時顯示樓層費公式並計入總價
+- `messages/zh-TW.json` + `messages/en.json`：新增 floor 相關 i18n 鍵值
+
+**原因：**
+- 配送費用含運至1樓；若無電梯需人工搬樓，按 NT$1,000/人 × 最少2人 × 超過1樓的樓數計算，讓客戶自助試算後有完整費用預期
+
+---
+
 ## v1.4.5 — 2026-05-08：加入三折機背面示範影片，切換tab自動選用
 
 **變更：**

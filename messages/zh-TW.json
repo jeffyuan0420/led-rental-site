@@ -178,7 +178,14 @@
     "back": "返回上一頁",
     "goto_booking": "前往預約",
     "long_rental_warning": "展期超過 4 天，費用依專案報價",
-    "long_rental_cta": "聯繫業務洽談"
+    "long_rental_cta": "聯繫業務洽談",
+    "floor_label": "交貨樓層",
+    "floor_suffix": "樓",
+    "floor_hint": "機台預設配送至一樓（免費）。若需搬至高樓層，請填寫實際樓層。",
+    "has_elevator_label": "建築物有可使用的電梯（機台尺寸可進入）",
+    "floor_surcharge_fee": "樓層搬運費",
+    "floor_persons_unit": "人",
+    "floor_above_unit": "層"
   },
   "booking": {
     "title": "預約租賃",

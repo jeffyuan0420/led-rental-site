@@ -178,7 +178,14 @@
     "back": "Back",
     "goto_booking": "Proceed to Booking",
     "long_rental_warning": "Rentals over 4 days are priced per project",
-    "long_rental_cta": "Contact Us via LINE"
+    "long_rental_cta": "Contact Us via LINE",
+    "floor_label": "Delivery Floor",
+    "floor_suffix": "F",
+    "floor_hint": "Delivery to the 1st floor is included (free). Enter the actual floor if the machine needs to be moved higher.",
+    "has_elevator_label": "Building has an accessible elevator (machine fits inside)",
+    "floor_surcharge_fee": "Floor Surcharge",
+    "floor_persons_unit": " staff",
+    "floor_above_unit": "F above"
   },
   "booking": {
     "title": "Book a Rental",
