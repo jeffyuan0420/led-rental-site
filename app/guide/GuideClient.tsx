@@ -94,7 +94,7 @@ function SingleGuide({ srcA, srcB }: { srcA: string; srcB: string }) {
 
 function TripleGuide({ srcA, srcB }: { srcA: string; srcB: string }) {
   const t = useTranslations("guide");
-  const W = 70, H = 210;
+  const W1 = 35, W2 = 70, H = 210;
   const ref1 = useRef<HTMLVideoElement>(null);
   const ref3 = useRef<HTMLVideoElement>(null);
 
@@ -122,19 +122,19 @@ function TripleGuide({ srcA, srcB }: { srcA: string; srcB: string }) {
             <div className="flex items-stretch gap-0">
               <div className="flex flex-col items-center gap-1">
                 <span className="text-[10px] text-gray-400 font-medium">{t("panel1")}</span>
-                <HalfPanel src={srcA} half="right" w={W} h={H} videoRef={ref1} />
+                <HalfPanel src={srcA} half="right" w={W1} h={H} videoRef={ref1} />
                 <span className="text-[10px] text-sky-600 font-semibold mt-0.5">{t("panel1_label")}</span>
               </div>
               <div className="self-stretch border-l border-dashed border-gray-400 mx-1" style={{ marginTop: 18, marginBottom: 18 }} />
               <div className="flex flex-col items-center gap-1">
                 <span className="text-[10px] text-gray-400 font-medium">{t("panel2")}</span>
-                <Panel src={srcB} w={W} h={H} />
+                <Panel src={srcB} w={W2} h={H} />
                 <span className="text-[10px] text-amber-600 font-semibold mt-0.5">{t("panel2_label")}</span>
               </div>
               <div className="self-stretch border-l border-dashed border-gray-400 mx-1" style={{ marginTop: 18, marginBottom: 18 }} />
               <div className="flex flex-col items-center gap-1">
                 <span className="text-[10px] text-gray-400 font-medium">{t("panel3")}</span>
-                <HalfPanel src={srcA} half="left" w={W} h={H} videoRef={ref3} />
+                <HalfPanel src={srcA} half="left" w={W1} h={H} videoRef={ref3} />
                 <span className="text-[10px] text-sky-600 font-semibold mt-0.5">{t("panel3_label")}</span>
               </div>
             </div>
@@ -145,11 +145,11 @@ function TripleGuide({ srcA, srcB }: { srcA: string; srcB: string }) {
             <p className="text-xs text-gray-500 font-semibold mb-3 text-center">{t("folded_title")}</p>
             <div className="flex gap-4">
               <div className="flex flex-col items-center gap-2">
-                <Panel src={srcB} w={W} h={H} />
+                <Panel src={srcB} w={W2} h={H} />
                 <span className="text-xs font-bold text-amber-600 bg-amber-50 px-3 py-0.5 rounded border border-amber-200">{t("front")}</span>
               </div>
               <div className="flex flex-col items-center gap-2">
-                <Panel src={srcA} w={W} h={H} />
+                <Panel src={srcA} w={W2} h={H} />
                 <span className="text-xs font-bold text-sky-600 bg-sky-50 px-3 py-0.5 rounded border border-sky-200">{t("back")}</span>
               </div>
             </div>
