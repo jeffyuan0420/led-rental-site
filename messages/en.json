@@ -182,7 +182,9 @@
     "floor_label": "Delivery Floor",
     "floor_suffix": "F",
     "floor_hint": "Delivery to the 1st floor is included (free). Enter the actual floor if the machine needs to be moved higher.",
-    "has_elevator_label": "Building has an accessible elevator (machine fits inside)",
+    "has_elevator_label": "Building has an accessible elevator that fits the machine case",
+    "elevator_dim_single": "Two-fold case dimensions: 84 × 102.5 × 130.5 cm (W×D×H)",
+    "elevator_dim_triple": "Triple-fold case dimensions: TBD — please contact us to confirm",
     "floor_surcharge_fee": "Floor Surcharge",
     "floor_persons_unit": " staff",
     "floor_above_unit": "F above"

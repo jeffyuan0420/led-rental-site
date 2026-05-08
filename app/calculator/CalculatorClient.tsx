@@ -146,10 +146,17 @@ export default function CalculatorClient() {
           <span className="text-gray-500">{t("floor_suffix")}</span>
         </div>
         {deliveryFloor > 1 && (
-          <label className="flex items-center gap-3 mt-4 cursor-pointer">
-            <input type="checkbox" checked={hasElevator} onChange={(e) => setHasElevator(e.target.checked)} className="w-5 h-5 rounded accent-gray-900" />
-            <span className="text-sm text-gray-700">{t("has_elevator_label")}</span>
-          </label>
+          <div className="mt-4 space-y-2">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" checked={hasElevator} onChange={(e) => setHasElevator(e.target.checked)} className="w-5 h-5 rounded accent-gray-900" />
+              <span className="text-sm text-gray-700">{t("has_elevator_label")}</span>
+            </label>
+            <p className="text-xs text-gray-400 ml-8">
+              {productType === "single"
+                ? t("elevator_dim_single")
+                : t("elevator_dim_triple")}
+            </p>
+          </div>
         )}
         {deliveryFloor > 1 && !hasElevator && (
           <div className="mt-3 bg-orange-50 border border-orange-200 rounded-xl p-4 text-sm text-orange-900">
