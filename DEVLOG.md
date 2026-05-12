@@ -5,6 +5,29 @@
 
 ---
 
+## v1.7.2 — 2026-05-12：強制 Vercel 重新部署
+
+**變更：**
+- 空 commit 推上 main，觸發 Vercel 從 v1.7.1 乾淨代碼重新建置
+
+**原因：**
+- v1.7.1 revert 已推上 GitHub，但 Vercel 卡在 v1.7.0 舊 build，產品介紹頁仍顯示 kiosk 卡片
+
+---
+
+## v1.7.1 — 2026-05-08：移除多產品線架構，恢復純 LED 站（revert）
+
+**變更：**
+- `app/products/kiosk/page.tsx`：刪除
+- `app/products/led/page.tsx`：刪除
+- `app/products/page.tsx`：恢復為純 LED 廣告機頁（兩折機 + 三折雙面機）
+- `messages/zh-TW.json` + `messages/en.json`：移除 kiosk_* / overview_* / led_line / kiosk_line / view_details 鍵值
+
+**原因：**
+- LED 站保持獨立只賣 LED 廣告機租賃；觸控廣告機（kiosk）另起新站放
+
+---
+
 ## v1.7.0 — 2026-05-08：多產品線架構重組（產品線子頁面）
 
 **變更：**
