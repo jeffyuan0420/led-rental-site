@@ -141,6 +141,12 @@ export default async function ProductsPage() {
                 >
                   {tHero("cta_booking")}
                 </Link>
+                <Link
+                  href="/calculator"
+                  className="flex-1 text-center border-2 border-gray-900 hover:bg-gray-100 text-gray-900 font-semibold py-2.5 rounded-lg text-sm transition-colors"
+                >
+                  {tNav("calculator")}
+                </Link>
               </div>
             </div>
           </div>

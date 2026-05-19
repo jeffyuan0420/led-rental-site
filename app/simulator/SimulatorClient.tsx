@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import BackButton from "@/components/BackButton";
 
 const MACHINE_CONFIG = {
@@ -17,6 +18,8 @@ type Quantity = 1 | 2 | 3 | 4 | 5;
 export default function SimulatorClient() {
   const t = useTranslations("simulator");
   const tProduct = useTranslations("product");
+  const tHero = useTranslations("hero");
+  const tNav = useTranslations("nav");
   const searchParams = useSearchParams();
   const initialType = (searchParams.get("type") === "triple" ? "triple" : "single") as keyof typeof MACHINE_CONFIG;
   const [machineType, setMachineType] = useState<keyof typeof MACHINE_CONFIG>(initialType);
@@ -150,6 +153,20 @@ export default function SimulatorClient() {
           {t("spec_preview_scale", { ratio: scaleRatio })} — {config.mmW * quantity} × {config.mmH} mm / {config.pxW * quantity} × {config.pxH} px
         </p>
         <p className="text-xs text-gray-400 text-center mt-1">{t("multi_content_note")}</p>
+        <div className="flex gap-3 mt-6">
+          <Link
+            href="/booking"
+            className="flex-1 text-center bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-semibold py-3 rounded-lg text-sm transition-colors"
+          >
+            {tHero("cta_booking")}
+          </Link>
+          <Link
+            href="/calculator"
+            className="flex-1 text-center border-2 border-gray-900 hover:bg-gray-100 text-gray-900 font-semibold py-3 rounded-lg text-sm transition-colors"
+          >
+            {tNav("calculator")}
+          </Link>
+        </div>
       </div>
     </div>
   );
