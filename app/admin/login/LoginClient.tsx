@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { isAllowedAdminEmail } from "@/lib/admin-auth";
 
 export default function LoginClient() {
   const [email, setEmail] = useState("");
@@ -23,6 +24,9 @@ export default function LoginClient() {
 
     if (sbError) {
       setError("帳號或密碼錯誤，請再試一次");
+    } else if (!isAllowedAdminEmail(email)) {
+      await supabase.auth.signOut();
+      setError("此帳號沒有後台權限");
     } else {
       router.push("/admin/bookings");
     }

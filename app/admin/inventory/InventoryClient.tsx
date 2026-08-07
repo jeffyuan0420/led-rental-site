@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { isAllowedAdminEmail } from "@/lib/admin-auth";
 
 export default function InventoryClient() {
   const router = useRouter();
@@ -13,8 +14,11 @@ export default function InventoryClient() {
   const [msg, setMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (!data.session) router.push("/admin/login");
+    supabase.auth.getSession().then(async ({ data }) => {
+      if (!data.session || !isAllowedAdminEmail(data.session.user.email)) {
+        if (data.session) await supabase.auth.signOut();
+        router.push("/admin/login");
+      }
     });
     fetch("/api/inventory")
       .then((r) => r.json())
@@ -28,9 +32,13 @@ export default function InventoryClient() {
   async function handleSave() {
     setSaving(true);
     setMsg(null);
+    const { data: { session } } = await supabase.auth.getSession();
     const res = await fetch("/api/inventory", {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(session ? { Authorization: `Bearer ${session.access_token}` } : {}),
+      },
       body: JSON.stringify({ single, triple }),
     });
     if (res.ok) {

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, type Booking } from "@/lib/supabase";
+import { isAllowedAdminEmail } from "@/lib/admin-auth";
 import { calculateTotal, RATES } from "@/lib/pricing";
 import { PAYMENT, subtractWorkingDays } from "@/lib/payment";
 
@@ -87,7 +88,8 @@ export default function AdminBookingsClient() {
 
   async function checkAuthAndLoad() {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+    if (!session || !isAllowedAdminEmail(session.user.email)) {
+      if (session) await supabase.auth.signOut();
       router.push("/admin/login");
       return;
     }

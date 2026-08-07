@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createServerSupabase } from "@/lib/supabase-server";
+import { isAllowedAdminEmail } from "@/lib/admin-auth";
 
 export async function GET() {
   const sb = createServerSupabase();
@@ -19,6 +20,17 @@ export async function GET() {
 
 export async function PATCH(req: Request) {
   const sb = createServerSupabase();
+
+  const authHeader = req.headers.get("authorization") ?? "";
+  const token = authHeader.replace(/^Bearer\s+/i, "");
+  if (!token) {
+    return NextResponse.json({ error: "未登入" }, { status: 401 });
+  }
+  const { data: userData, error: userError } = await sb.auth.getUser(token);
+  if (userError || !isAllowedAdminEmail(userData?.user?.email)) {
+    return NextResponse.json({ error: "無權限" }, { status: 403 });
+  }
+
   const body = await req.json();
   const { single, triple } = body as { single: number; triple: number };
 
