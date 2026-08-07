@@ -5,6 +5,17 @@
 
 ---
 
+## v1.8.0 — 2026-05-19：產品介紹 & 拼接模擬 加入費用試算 CTA
+
+**變更：**
+- `app/products/page.tsx`：產品卡片底部新增第三個按鈕「費用試算」→ /calculator（outlined 樣式）
+- `app/simulator/SimulatorClient.tsx`：模擬預覽下方新增「立即預約」+「費用試算」兩個 CTA 按鈕
+
+**原因：**
+- 客戶看完產品後習慣直接截圖問價，不主動點費用試算；加橋接 CTA 引導用戶不需要跳回頂端導航
+
+---
+
 ## v1.7.2 — 2026-05-12：強制 Vercel 重新部署
 
 **變更：**
@@ -798,3 +809,25 @@ URL 格式錯誤導致點擊後無法開啟 LINE 官方帳號；文字未反映�
 **原因：**
 1. 公司派員工填表時，乙方應為公司法人而非個人員工，避免員工離職後求償無門
 2. 模擬器規格區塊「344×1032 px」與「建議素材解析度」重複顯示；整機外觀尺寸與顯示尺寸需分開標示
+
+## v1.1.0 — 2026-05-15：後台庫存管理功能
+
+**變更：**
+- 新增 `app/api/inventory/route.ts`：GET 讀取庫存、PATCH 更新庫存（Supabase inventory 表）
+- 新增 `app/admin/inventory/page.tsx` + `InventoryClient.tsx`：後台庫存管理頁面，業助可手動改兩折機/三折機可租台數
+- 修改 `app/booking/BookingClient.tsx`：移除 hardcode `INVENTORY` 常數，改為 mount 時 fetch `/api/inventory`，fallback 預設值 {single:20, triple:2}
+- `app/admin/bookings/page.tsx`：加入「📦 庫存管理」按鈕連結至 `/admin/inventory`
+
+**原因：**
+業助打單後需手動更新網站庫存，避免網站顯示庫存數與實際可租台數不符。
+
+**注意：** 需在 Supabase 執行以下 SQL 建立資料表：
+```sql
+CREATE TABLE inventory (
+  id INTEGER PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+  single_stock INTEGER NOT NULL DEFAULT 20,
+  triple_stock INTEGER NOT NULL DEFAULT 2,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+INSERT INTO inventory (single_stock, triple_stock) VALUES (20, 2);
+```

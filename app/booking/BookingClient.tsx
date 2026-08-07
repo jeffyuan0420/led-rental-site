@@ -10,7 +10,6 @@ import { getSetupPersons, calculateTotal, getWeekendSurcharge, RATES, type Setup
 import TaiwanAddressInput from "@/components/TaiwanAddressInput";
 
 const MAX_QTY = { single: 10, triple: 2 };
-const INVENTORY = { single: 20, triple: 2 };
 const BUFFER_DAYS = 2;
 
 function addDays(date: Date, n: number): Date {
@@ -29,6 +28,12 @@ export default function BookingClient() {
   // Rental dates (auto-populated, but editable)
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+
+  const [inventory, setInventory] = useState({ single: 20, triple: 2 });
+
+  useEffect(() => {
+    fetch("/api/inventory").then(r => r.json()).then(setInventory);
+  }, []);
 
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -99,7 +104,7 @@ export default function BookingClient() {
     qty: number
   ) {
     if (!start || !end) { setAvailabilityMsg(null); return; }
-    const maxUnits = INVENTORY[productType];
+    const maxUnits = inventory[productType];
     if (qty > maxUnits) {
       setAvailabilityMsg(t("availability_max", { max: maxUnits }));
       return;
