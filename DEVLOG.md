@@ -5,6 +5,21 @@
 
 ---
 
+## v1.8.1 — 2026-08-07：補推庫存管理上線 + 修補未授權寫入漏洞
+
+**變更：**
+- 補 commit/push 先前只在本機完成的 v1.1.0 庫存管理功能（`app/admin/inventory/`、`app/api/inventory/`、bookings 頁按鈕、booking 頁改 fetch 即時庫存）
+- 新增 `lib/admin-auth.ts`：`ADMIN_ALLOWED_EMAILS` 白名單 + `isAllowedAdminEmail()`
+- `app/admin/login/LoginClient.tsx`：登入成功後檢查 email 是否在白名單，不在則強制登出並顯示「此帳號沒有後台權限」
+- `app/admin/bookings/AdminBookingsClient.tsx`、`app/admin/inventory/InventoryClient.tsx`：已有 session 但 email 不在白名單也擋下並登出，避免繞過登入頁
+- `app/api/inventory/route.ts`：PATCH 改為需帶 Supabase access token，伺服器端驗證 email 白名單，未授權回 401/403
+
+**原因：**
+1. 庫存管理功能開發完成後一直沒 commit，正式站從未有這個功能；Jeff 詢問後才發現漏推
+2. 推上線前發現：這個 Supabase 專案跟其他系統（標案追蹤等）共用 Auth users，後台登入原本沒有角色限制，任何有效帳號都能登入 LED 後台；`PATCH /api/inventory` 更是完全公開、無需登入即可竄改庫存數字，用 service role key 繞過 RLS。上線前立即補上白名單擋下
+
+---
+
 ## v1.8.0 — 2026-05-19：產品介紹 & 拼接模擬 加入費用試算 CTA
 
 **變更：**
