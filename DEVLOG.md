@@ -5,6 +5,52 @@
 
 ---
 
+## v1.10.0 — 2026-09-27：3D 模擬新增婚宴會場、舞台活動場景
+
+**變更：**
+- `lib/sim3d/catalog-scenes.ts`：新增 `ENVS.wedding`（酒紅地毯、香檳布幔、白花拱門、Welcome 迎賓畫架、3 張圓桌＋椅套、水晶吊燈）與 `ENVS.stage`（60cm 舞台＋前緣燈條＋階梯、黑色背幕與活動名稱、桁架門架＋彩色光束、線陣列喇叭、兩排觀眾席）
+- `components/sim3d/Scene3D.tsx`：場景可用 `userData.lift` 把 LED 墊高（舞台）、`userData.bg` 指定背景色；鏡頭隨之抬高
+- `app/simulator/SimulatorClient.tsx`：場景清單改為 飯店大廳／婚宴會場／展場攤位／舞台活動／門市／建築入口
+- `messages/zh-TW.json`、`messages/en.json`：新增 `scene_wedding`、`scene_stage`
+
+**原因：**
+- 婚宴與舞台是 LED 租賃主要客群場景，Jeff 要求與 v1.9 一併上線
+
+---
+
+## v1.9.1 — 2026-09-27：折疊後兩面皆正向＋「轉到另一面看」按鈕
+
+**變更：**
+- `lib/sim3d/ledModel.ts`：折疊 UV 改為通用換面機制；新增 `wholeFrame` 模式（示範影片用），兩折／三折折疊後正反兩面都顯示完整、正向畫面；客戶上傳素材仍照素材指南排法
+- `components/sim3d/Scene3D.tsx`：新增 `demo` 參數與 `flipView()`，鏡頭沿水平繞產品半圈到另一面
+- `app/simulator/SimulatorClient.tsx`：折疊時 3D 畫面下方顯示「🔄 轉到另一面看」按鈕
+- `messages/zh-TW.json`、`messages/en.json`：新增 `flip_view`
+
+**原因：**
+- Jeff 確認：兩折機上半往後折，不論從哪一面看畫面都是正的；示範影片不是頭對頭格式，原本折疊後正面會倒過來
+- Jeff 要求折疊後能讓人轉到背面看呈現效果，拖曳旋轉不夠直覺
+
+---
+
+## v1.9.0 — 2026-09-27：拼接模擬器升級：3D 場地模擬＋現場照片合成＋即時報價
+
+**變更：**
+- 新增依賴 `three`（+ `@types/three`）：3D 模擬；移植 Persona 3D 型錄的 ledfold 機型與場景
+- `lib/sim3d/catalog-scenes.ts`：型錄場景（飯店大廳／展場攤位／門市／建築入口）與建模工具，改用 npm three，貼圖補 sRGB
+- `lib/sim3d/ledModel.ts`：兩折機（上片往後翻 180° 磁吸）、三折機（左右片向後折）3D 模型；展開可拼接、素材依台數切割 UV；兩折折疊依素材指南「頭對頭」畫布呈現
+- `components/sim3d/Scene3D.tsx`：3D 畫面（旋轉／縮放、開合動畫、鏡頭繞到牆後自動隱藏牆面、下載截圖、無 WebGL 時退回平面預覽）
+- `components/sim3d/PhotoComposite.tsx` + `lib/sim3d/homography.ts`：上傳現場照片 → 拖四角透視貼上 LED 畫面 → 以照片原解析度下載 PNG
+- `lib/sim3d/media.ts`：客戶素材本機讀取（不上傳伺服器）；規定解析度（兩折 344×台數 × 1032、三折 688×台數 × 1032，折疊一律單台畫布），不符時紅字警告並照實機強制拉伸呈現
+- `app/simulator/SimulatorClient.tsx`：改為「3D 場地／現場照片合成／平面預覽」三分頁；新增形態（展開／折疊）、場景、素材上傳；台數上限＝拼接上限與即時庫存取小；新增即時報價卡（沿用 `pricing.ts` 租金＋設定協助）
+- `app/booking/BookingClient.tsx`：支援 `?type=&qty=&setup=` 由模擬器帶入機型、台數、設定協助
+- `messages/zh-TW.json`、`messages/en.json`：新增 simulator 相關字串
+
+**原因：**
+- 客戶自己看出要幾台、擺起來多大、效果如何，減少來回溝通，並產出可拿去說服主管的示意圖
+- Jeff 要求素材可上傳但必須規定解析度，不符者照實強制拉伸，讓客戶看到後果
+
+---
+
 ## v1.8.1 — 2026-08-07：補推庫存管理上線 + 修補未授權寫入漏洞
 
 **變更：**
