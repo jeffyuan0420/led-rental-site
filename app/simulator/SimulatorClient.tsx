@@ -26,7 +26,7 @@ const MACHINE_CONFIG = {
 
 type MachineType = keyof typeof MACHINE_CONFIG;
 type Tab = "3d" | "photo" | "flat";
-const SCENES: SceneKey[] = ["hotel", "expo", "retail", "outdoor"];
+const SCENES: SceneKey[] = ["hotel", "wedding", "expo", "stage", "retail", "outdoor"];
 
 export default function SimulatorClient() {
   const t = useTranslations("simulator");

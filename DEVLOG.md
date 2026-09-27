@@ -5,6 +5,19 @@
 
 ---
 
+## v1.10.0 — 2026-09-27：3D 模擬新增婚宴會場、舞台活動場景
+
+**變更：**
+- `lib/sim3d/catalog-scenes.ts`：新增 `ENVS.wedding`（酒紅地毯、香檳布幔、白花拱門、Welcome 迎賓畫架、3 張圓桌＋椅套、水晶吊燈）與 `ENVS.stage`（60cm 舞台＋前緣燈條＋階梯、黑色背幕與活動名稱、桁架門架＋彩色光束、線陣列喇叭、兩排觀眾席）
+- `components/sim3d/Scene3D.tsx`：場景可用 `userData.lift` 把 LED 墊高（舞台）、`userData.bg` 指定背景色；鏡頭隨之抬高
+- `app/simulator/SimulatorClient.tsx`：場景清單改為 飯店大廳／婚宴會場／展場攤位／舞台活動／門市／建築入口
+- `messages/zh-TW.json`、`messages/en.json`：新增 `scene_wedding`、`scene_stage`
+
+**原因：**
+- 婚宴與舞台是 LED 租賃主要客群場景，Jeff 要求與 v1.9 一併上線
+
+---
+
 ## v1.9.1 — 2026-09-27：折疊後兩面皆正向＋「轉到另一面看」按鈕
 
 **變更：**

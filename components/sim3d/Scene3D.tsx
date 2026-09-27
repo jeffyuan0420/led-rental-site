@@ -7,7 +7,7 @@ import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment
 import S from "@/lib/sim3d/catalog-scenes";
 import { buildLed, type LedModel, type LedType } from "@/lib/sim3d/ledModel";
 
-export type SceneKey = "hotel" | "expo" | "retail" | "outdoor";
+export type SceneKey = "hotel" | "wedding" | "expo" | "stage" | "retail" | "outdoor";
 export type Media = { kind: "video" | "image"; url: string };
 
 export interface Scene3DHandle {
@@ -184,8 +184,14 @@ const Scene3D = forwardRef<Scene3DHandle, Props>(function Scene3D({ type, quanti
     c.fold = { from, to, t0: performance.now(), k: from };
     led.setFold(from);
 
-    const W = led.width, cy = led.height / 2;
-    c.camera.position.set(W * 0.3 + 0.8, 1.35, W * 0.8 + 3.6);
+    // 場景可把 LED 墊高（例如舞台），鏡頭一起抬高
+    const lift: number = env.userData.lift ?? 0;
+    led.group.position.y = lift;
+    const bg: string = env.userData.bg ?? "#eef1f5";
+    (c.scene.background as THREE.Color).set(bg);
+    c.scene.fog!.color.set(bg);
+    const W = led.width, cy = lift + led.height / 2;
+    c.camera.position.set(W * 0.3 + 0.8, 1.35 + lift, W * 0.8 + 3.6);
     c.controls.target.set(0, cy - 0.05, 0);
     const dz = c.camera.position.distanceTo(c.controls.target);
     c.controls.minDistance = 0.8;

@@ -149,6 +149,8 @@
     "fold_note_triple": "Side panels fold back and lock magnetically — front and back faces",
     "scene_label": "Venue",
     "scene_hotel": "Hotel lobby",
+    "scene_wedding": "Wedding",
+    "scene_stage": "Stage event",
     "scene_expo": "Expo booth",
     "scene_retail": "Retail store",
     "scene_outdoor": "Entrance",

@@ -386,5 +386,134 @@ ENVS.outdoor = (wz, half) => {
 };
 
 // 原檔為無型別 JS，統一以 any 對外輸出
+/* ---- LED 租賃網站新增場景：婚宴、舞台（沿用上方建模工具與材質）---- */
+// 布幔：垂直皺褶明暗
+function drapeTex(base, key) {
+  return canvasTex('drape' + key, 512, 64, (g, w, h) => {
+    g.fillStyle = base; g.fillRect(0, 0, w, h);
+    for (let x = 0; x < w; x += 32) {
+      const gr = g.createLinearGradient(x, 0, x + 32, 0);
+      gr.addColorStop(0, 'rgba(0,0,0,0.22)'); gr.addColorStop(0.45, 'rgba(255,255,255,0.14)'); gr.addColorStop(1, 'rgba(0,0,0,0.22)');
+      g.fillStyle = gr; g.fillRect(x, 0, 32, h);
+    }
+  });
+}
+// 婚宴椅：白色椅套＋金色綁帶
+function banquetChair(parent, x, z, ry) {
+  const c = new THREE.Group(); c.position.set(x, 0, z); c.rotation.y = ry; parent.add(c);
+  const cover = M('#f7f4ee', { roughness: 0.85 });
+  box(0.44, 0.46, 0.44, cover, 0, 0.23, 0, c);
+  box(0.44, 0.52, 0.06, cover, 0, 0.72, -0.19, c);
+  box(0.46, 0.08, 0.08, '#c9a24b', 0, 0.6, -0.19, c, { metalness: 0.5, roughness: 0.4 });
+  return c;
+}
+// 圓桌：白桌巾、香檳色桌旗、中央花藝、餐具、8 張椅
+function banquetTable(parent, x, z, seed) {
+  const t = new THREE.Group(); t.position.set(x, 0, z); parent.add(t);
+  cyl(t, 0.9, 0.95, 0.74, '#fbf9f5', 0, 0.37, 0, 40, { roughness: 0.9 });
+  cyl(t, 0.91, 0.91, 0.01, '#e9d9b8', 0, 0.745, 0, 40, { roughness: 0.7 });
+  cyl(t, 0.07, 0.09, 0.3, '#ffffff', 0, 0.9, 0, 16, { roughness: 0.1, metalness: 0.3 });
+  const r = rng(seed * 13 + 5);
+  for (let i = 0; i < 9; i++) {
+    const f = mesh(new THREE.SphereGeometry(0.06 + r() * 0.03, 10, 8), M(['#f3f0ea', '#e8b4b8', '#f6d7d9'][i % 3], { roughness: 0.7 }));
+    const a = i * 0.7; f.position.set(Math.cos(a) * 0.09, 1.08 + r() * 0.08, Math.sin(a) * 0.09); t.add(f);
+  }
+  for (let i = 0; i < 8; i++) {
+    const a = (i / 8) * Math.PI * 2 + 0.2;
+    cyl(t, 0.13, 0.13, 0.012, '#ffffff', Math.cos(a) * 0.68, 0.752, Math.sin(a) * 0.68, 24, { roughness: 0.2 });
+    cyl(t, 0.025, 0.02, 0.14, M('#ffffff', { transparent: true, opacity: 0.35, roughness: 0.05 }), Math.cos(a) * 0.55, 0.82, Math.sin(a) * 0.55 + 0.1, 10);
+    banquetChair(t, Math.cos(a) * 1.25, Math.sin(a) * 1.25, -a - Math.PI / 2);
+  }
+  return t;
+}
+// 水晶吊燈：金環＋垂墜水晶＋發光燈泡
+function chandelier(parent, x, y, z) {
+  const g = new THREE.Group(); g.position.set(x, y, z); parent.add(g);
+  cyl(g, 0.004, 0.004, 1.2, '#c9a24b', 0, 0.6, 0, 4);
+  const ring = mesh(new THREE.TorusGeometry(0.45, 0.02, 8, 40), M('#c9a24b', { metalness: 0.85, roughness: 0.25 })); ring.rotation.x = Math.PI / 2; g.add(ring);
+  const crystal = M('#ffffff', { transparent: true, opacity: 0.75, metalness: 0.2, roughness: 0.05 });
+  for (let i = 0; i < 16; i++) {
+    const a = (i / 16) * Math.PI * 2, drop = new THREE.Mesh(new THREE.OctahedronGeometry(0.035, 0), crystal);
+    drop.position.set(Math.cos(a) * 0.45, -0.12 - (i % 3) * 0.05, Math.sin(a) * 0.45); g.add(drop);
+    const b = new THREE.Mesh(new THREE.SphereGeometry(0.03, 8, 6), glow('#fff1d6')); b.position.set(Math.cos(a) * 0.45, 0.04, Math.sin(a) * 0.45); g.add(b);
+  }
+  return g;
+}
+ENVS.wedding = (wz, half) => {
+  const w = new THREE.Group(), W = Math.max(13, half * 2 + 9), WH = 4.4;
+  // 酒紅花紋地毯、香檳色布幔主牆、牆面暖色間接光
+  flat(w, W, 11, texMat(TEX.carpet('#4a1a25', W / 1.2, 11 / 1.2), { roughness: 1 }), 0, 0.002, wz + 5.5, -Math.PI / 2).castShadow = false;
+  box(W, WH, 0.1, texMat(drapeTex('#e9dcc5', 'champ'), { roughness: 0.95 }), 0, WH / 2, wz, w);
+  w.children[w.children.length - 1].material.map.repeat.set(W / 1.6, 1);
+  flat(w, W, 0.06, glow('#ffd9a0'), 0, WH - 0.2, wz + 0.07);
+  // 產品左後方：白花拱門
+  const ax = -(half + 1.3), az = wz + 0.7, aw = 1.7, ah = 2.3;
+  const white = M('#fbf9f5', { roughness: 0.6 });
+  [-1, 1].forEach(s => cyl(w, 0.05, 0.05, ah, white, ax + s * aw / 2, ah / 2, az, 12));
+  const arc = mesh(new THREE.TorusGeometry(aw / 2, 0.05, 8, 32, Math.PI), white); arc.position.set(ax, ah, az); w.add(arc);
+  const fr = rng(71);
+  for (let i = 0; i < 46; i++) {
+    const t = i / 45, a = Math.PI * t, onArc = i % 3 !== 0;
+    const px = onArc ? ax + Math.cos(a) * aw / 2 : ax + (fr() > 0.5 ? 1 : -1) * aw / 2, py = onArc ? ah + Math.sin(a) * aw / 2 : 0.3 + fr() * ah;
+    const f = mesh(new THREE.SphereGeometry(0.07 + fr() * 0.05, 10, 8), M(['#f6f3ee', '#e8b4b8', '#f3d9dc', '#9cb89a'][i % 4], { roughness: 0.75 }));
+    f.position.set(px + (fr() - 0.5) * 0.08, py, az + (fr() - 0.5) * 0.12); w.add(f);
+  }
+  // 產品右前方：迎賓畫架
+  const ex = half + 0.9, ez = 0.1;
+  [-0.25, 0.25].forEach(dx => { const leg = cyl(w, 0.015, 0.015, 1.7, '#c9a24b', ex + dx, 0.85, ez, 8, { metalness: 0.8, roughness: 0.3 }); leg.rotation.x = -0.12; });
+  box(0.62, 0.84, 0.03, '#f7f4ee', ex, 1.35, ez + 0.08, w).rotation.x = -0.12;
+  const sign = flat(w, 0.56, 0.3, new THREE.MeshBasicMaterial({ map: labelTexture('Welcome', { w: 512, h: 256, font: 'italic 600 110px Georgia,serif', color: '#8a6a2f' }), transparent: true }), ex, 1.42, ez + 0.1, -0.12);
+  sign.material.toneMapped = false;
+  // 兩側圓桌、吊燈、盆花
+  banquetTable(w, -(half + 2.6), 1.2, 1);
+  banquetTable(w, half + 2.9, 1.6, 2);
+  banquetTable(w, half + 2.4, wz + 1.3, 3);
+  chandelier(w, -(half + 2.6), 3.1, 1.2);
+  chandelier(w, half + 2.9, 3.1, 1.6);
+  chandelier(w, 0, 3.3, 0.6);
+  leafyPlant(w, half + 0.9, wz + 0.45, 1.3, '#f1ede6');
+  return w;
+};
+ENVS.stage = (wz, half) => {
+  const s = new THREE.Group(), sw = Math.max(8, half * 2 + 5), sd = 3.2, lift = 0.6, WH = 5.2;
+  s.userData.lift = lift; // LED 立在舞台上
+  s.userData.bg = '#101217'; // 室內活動會場：暗色背景
+  // 深色活動會場地板、黑色背幕、頂部金色活動名稱
+  flat(s, 30, 20, texMat(TEX.carpet('#2a2d33', 20, 13), { roughness: 1 }), 0, 0.001, wz + 8, -Math.PI / 2).castShadow = false;
+  box(sw + 4, WH, 0.1, texMat(drapeTex('#16161c', 'black'), { roughness: 0.95 }), 0, WH / 2, wz, s);
+  s.children[s.children.length - 1].material.map.repeat.set((sw + 4) / 1.6, 1);
+  const title = flat(s, 3.6, 0.6, new THREE.MeshBasicMaterial({ map: labelTexture('ANNUAL GALA 2026', { w: 1024, font: '800 96px "Segoe UI",Arial,sans-serif', color: '#e9c46a' }), transparent: true }), 0, WH - 0.9, wz + 0.07);
+  title.material.toneMapped = false;
+  // 舞台：黑色台體、木紋台面、前緣燈條、側邊階梯
+  box(sw, lift, sd, '#15171a', 0, lift / 2, wz + sd / 2, s, { roughness: 0.8 });
+  flat(s, sw, sd, texMat(TEX.carpet('#1e2126', sw, sd), { roughness: 0.9 }), 0, lift + 0.002, wz + sd / 2, -Math.PI / 2).castShadow = false;
+  flat(s, sw, 0.03, glow('#5ab0ff'), 0, lift - 0.04, wz + sd + 0.002);
+  for (let i = 0; i < 3; i++) box(1.0, lift * (i + 1) / 3, 0.3, '#15171a', sw / 2 - 0.6, lift * (i + 1) / 6, wz + sd + 0.15 + (2 - i) * 0.3, s, { roughness: 0.8 });
+  // 桁架門架＋彩色光束
+  const ty = 4.4, tz = wz + sd * 0.55;
+  truss(s, sw + 0.4, ty, tz);
+  [-1, 1].forEach(k => { for (let i = 0; i < 3; i++) cyl(s, 0.025, 0.025, ty, M('#c9ced4', { metalness: 0.85, roughness: 0.3 }), k * (sw / 2 + 0.2) + (i - 1) * 0.12, ty / 2, tz + (i === 1 ? 0.2 : -0.1), 8); });
+  [[-2.2, '#7a5af8'], [-0.8, '#36b3a8'], [0.8, '#e0572c'], [2.2, '#7a5af8']].forEach(([x, col]) => {
+    const g = new THREE.Group(); g.position.set(x, ty - 0.3, tz); s.add(g);
+    cyl(g, 0.08, 0.1, 0.22, '#2b3036', 0, 0, 0, 14);
+    const len = ty - 0.3, cone = new THREE.Mesh(new THREE.ConeGeometry(0.7, len, 24, 1, true), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.07, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }));
+    cone.position.set(0, -len / 2, 0.2); cone.rotation.x = -0.12; g.add(cone);
+  });
+  // 台下兩側線陣列喇叭
+  [-1, 1].forEach(k => {
+    const x = k * (sw / 2 + 0.9);
+    box(0.7, 0.55, 0.6, '#1b1d21', x, 0.275, wz + sd - 0.2, s, { roughness: 0.7 });
+    for (let i = 0; i < 4; i++) box(0.6, 0.22, 0.5, '#23262b', x, 1.3 + i * 0.24, wz + sd - 0.2, s, { roughness: 0.6 }).rotation.x = i * 0.04;
+  });
+  // 觀眾席兩排（低於視線，不擋畫面）
+  for (let row = 0; row < 2; row++) for (let x = -3.9; x <= 3.9; x += 0.65) {
+    if (Math.abs(x) < 0.5) continue; // 中央走道
+    const c = new THREE.Group(); c.position.set(x, 0, wz + sd + 1.5 + row * 0.9); s.add(c);
+    box(0.44, 0.06, 0.42, '#2b3036', 0, 0.45, 0, c); box(0.44, 0.42, 0.05, '#2b3036', 0, 0.68, 0.2, c);
+    [[-0.19, -0.18], [0.19, -0.18], [-0.19, 0.18], [0.19, 0.18]].forEach(([lx, lz]) => box(0.03, 0.45, 0.03, '#8a9099', lx, 0.225, lz, c, { metalness: 0.6 }));
+  }
+  return s;
+};
+
 const api: any = { M, mesh, box, roundedBox, cyl, disposeTree, ENVS };
 export default api;
