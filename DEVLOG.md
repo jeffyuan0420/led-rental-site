@@ -5,6 +5,25 @@
 
 ---
 
+## v1.9.0 — 2026-09-27：拼接模擬器升級：3D 場地模擬＋現場照片合成＋即時報價
+
+**變更：**
+- 新增依賴 `three`（+ `@types/three`）：3D 模擬；移植 Persona 3D 型錄的 ledfold 機型與場景
+- `lib/sim3d/catalog-scenes.ts`：型錄場景（飯店大廳／展場攤位／門市／建築入口）與建模工具，改用 npm three，貼圖補 sRGB
+- `lib/sim3d/ledModel.ts`：兩折機（上片往後翻 180° 磁吸）、三折機（左右片向後折）3D 模型；展開可拼接、素材依台數切割 UV；兩折折疊依素材指南「頭對頭」畫布呈現
+- `components/sim3d/Scene3D.tsx`：3D 畫面（旋轉／縮放、開合動畫、鏡頭繞到牆後自動隱藏牆面、下載截圖、無 WebGL 時退回平面預覽）
+- `components/sim3d/PhotoComposite.tsx` + `lib/sim3d/homography.ts`：上傳現場照片 → 拖四角透視貼上 LED 畫面 → 以照片原解析度下載 PNG
+- `lib/sim3d/media.ts`：客戶素材本機讀取（不上傳伺服器）；規定解析度（兩折 344×台數 × 1032、三折 688×台數 × 1032，折疊一律單台畫布），不符時紅字警告並照實機強制拉伸呈現
+- `app/simulator/SimulatorClient.tsx`：改為「3D 場地／現場照片合成／平面預覽」三分頁；新增形態（展開／折疊）、場景、素材上傳；台數上限＝拼接上限與即時庫存取小；新增即時報價卡（沿用 `pricing.ts` 租金＋設定協助）
+- `app/booking/BookingClient.tsx`：支援 `?type=&qty=&setup=` 由模擬器帶入機型、台數、設定協助
+- `messages/zh-TW.json`、`messages/en.json`：新增 simulator 相關字串
+
+**原因：**
+- 客戶自己看出要幾台、擺起來多大、效果如何，減少來回溝通，並產出可拿去說服主管的示意圖
+- Jeff 要求素材可上傳但必須規定解析度，不符者照實強制拉伸，讓客戶看到後果
+
+---
+
 ## v1.8.1 — 2026-08-07：補推庫存管理上線 + 修補未授權寫入漏洞
 
 **變更：**

@@ -61,6 +61,18 @@ export default function BookingClient() {
   const [agreedToContract, setAgreedToContract] = useState(false);
   const [agreedToPrice, setAgreedToPrice] = useState(false);
 
+  // 從模擬器帶入機型／台數／設定協助（/booking?type=triple&qty=2&setup=half）
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search);
+    const type = p.get("type") === "triple" ? "triple" : p.get("type") === "single" ? "single" : null;
+    if (!type) return;
+    const qty = Math.min(Math.max(1, parseInt(p.get("qty") ?? "1") || 1), MAX_QTY[type]);
+    const setup = (["none", "half", "full"] as const).find(s => s === p.get("setup")) ?? "none";
+    // 網址參數只能在 hydration 後讀取，故在 effect 內設定
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setForm(f => ({ ...f, product_type: type, quantity: qty, setup_option: setup }));
+  }, []);
+
   // Auto-populate rental dates when event dates change
   useEffect(() => {
     if (eventStart) setStartDate(addDays(eventStart, -1));
