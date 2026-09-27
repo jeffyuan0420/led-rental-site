@@ -12,6 +12,7 @@ export type Media = { kind: "video" | "image"; url: string };
 
 export interface Scene3DHandle {
   capture(): string | null; // 目前畫面 PNG dataURL
+  flipView(): void; // 鏡頭繞到另一面（看折疊後的背面）
 }
 
 interface Props {
@@ -20,6 +21,7 @@ interface Props {
   folded: boolean;
   sceneKey: SceneKey;
   media: Media;
+  demo?: boolean; // 示範影片（非頭對頭格式）→ 折疊時每面顯示完整正向畫面
   onUnsupported?: () => void;
 }
 
@@ -36,13 +38,14 @@ function hasWebGL() {
   }
 }
 
-const Scene3D = forwardRef<Scene3DHandle, Props>(function Scene3D({ type, quantity, folded, sceneKey, media, onUnsupported }, ref) {
+const Scene3D = forwardRef<Scene3DHandle, Props>(function Scene3D({ type, quantity, folded, sceneKey, media, demo = false, onUnsupported }, ref) {
   const hostRef = useRef<HTMLDivElement>(null);
   const ctx = useRef<{
     renderer: THREE.WebGLRenderer; scene: THREE.Scene; camera: THREE.PerspectiveCamera; controls: OrbitControls;
     screenMat: THREE.MeshBasicMaterial; led: LedModel | null; env: THREE.Object3D | null;
     fold: { from: number; to: number; t0: number; k: number };
     backItems: THREE.Object3D[]; behind: boolean;
+    orbit: { from: number; to: number; t0: number } | null;
   } | null>(null);
 
   useImperativeHandle(ref, () => ({
@@ -51,6 +54,12 @@ const Scene3D = forwardRef<Scene3DHandle, Props>(function Scene3D({ type, quanti
       if (!c) return null;
       c.renderer.render(c.scene, c.camera);
       return c.renderer.domElement.toDataURL("image/png");
+    },
+    flipView() {
+      const c = ctx.current;
+      if (!c) return;
+      const sp = new THREE.Spherical().setFromVector3(c.camera.position.clone().sub(c.controls.target));
+      c.orbit = { from: sp.theta, to: sp.theta + Math.PI, t0: performance.now() };
     },
   }));
 
@@ -97,7 +106,7 @@ const Scene3D = forwardRef<Scene3DHandle, Props>(function Scene3D({ type, quanti
     scene.add(rim);
 
     const screenMat = new THREE.MeshBasicMaterial({ color: "#000", toneMapped: false });
-    ctx.current = { renderer, scene, camera, controls, screenMat, led: null, env: null, fold: { from: 0, to: 0, t0: 0, k: 0 }, backItems: [], behind: false };
+    ctx.current = { renderer, scene, camera, controls, screenMat, led: null, env: null, fold: { from: 0, to: 0, t0: 0, k: 0 }, backItems: [], behind: false, orbit: null };
 
     const resize = () => {
       const w = host.clientWidth, h = host.clientHeight;
@@ -118,6 +127,14 @@ const Scene3D = forwardRef<Scene3DHandle, Props>(function Scene3D({ type, quanti
         const p = Math.min(1, (now - f.t0) / (FOLD_SECONDS * 1000));
         f.k = p >= 1 ? f.to : f.from + (f.to - f.from) * ease(p);
         c.led?.setFold(f.k);
+      }
+      // 「轉到另一面」：沿水平方向繞產品轉半圈（不穿過機身）
+      if (c.orbit) {
+        const p = Math.min(1, (now - c.orbit.t0) / 1400);
+        const off = camera.position.clone().sub(controls.target), sp = new THREE.Spherical().setFromVector3(off);
+        sp.theta = c.orbit.from + (c.orbit.to - c.orbit.from) * ease(p);
+        camera.position.copy(controls.target).add(new THREE.Vector3().setFromSpherical(sp));
+        if (p >= 1) c.orbit = null;
       }
       controls.update();
       // 鏡頭繞到牆後（看折疊背面）時，隱藏牆面與牆上物件，避免整片被牆擋住
@@ -151,7 +168,7 @@ const Scene3D = forwardRef<Scene3DHandle, Props>(function Scene3D({ type, quanti
     if (c.led) { c.scene.remove(c.led.group); c.led.dispose(); }
     if (c.env) { c.scene.remove(c.env); S.disposeTree(c.env); }
     const n = folded ? 1 : quantity;
-    const led = buildLed(type, n, c.screenMat);
+    const led = buildLed(type, n, c.screenMat, demo);
     c.scene.add(led.group);
     const env: THREE.Object3D = S.ENVS[sceneKey](WALL_Z, led.width / 2);
     c.scene.add(env);
@@ -176,7 +193,7 @@ const Scene3D = forwardRef<Scene3DHandle, Props>(function Scene3D({ type, quanti
     c.controls.update();
     // 折疊切換只在這裡處理初始狀態；動畫由下方 effect 觸發
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [type, quantity, sceneKey]);
+  }, [type, quantity, sceneKey, demo]);
 
   // 展開 ↔ 折疊：播放開合動畫（多台時已由父層限制為 1 台）
   useEffect(() => {

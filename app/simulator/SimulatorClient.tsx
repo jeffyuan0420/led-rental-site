@@ -212,11 +212,17 @@ export default function SimulatorClient() {
                 folded={folded}
                 sceneKey={sceneKey}
                 media={media}
+                demo={!upload}
                 onUnsupported={() => { setNo3d(true); setTab("flat"); }}
               />
               <button onClick={downloadShot} className="absolute top-3 right-3 bg-white/90 hover:bg-white text-gray-900 text-xs font-semibold px-3 py-1.5 rounded-lg shadow">
                 ⬇ {t("shot_download")}
               </button>
+              {folded && (
+                <button onClick={() => sceneRef.current?.flipView()} className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-gray-900/90 hover:bg-gray-900 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow">
+                  🔄 {t("flip_view")}
+                </button>
+              )}
             </div>
             <p className="text-xs text-gray-400 text-center mt-2">{t("3d_hint")}</p>
           </>

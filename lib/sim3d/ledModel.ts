@@ -38,7 +38,9 @@ function grilleTexture() {
   return t;
 }
 
-export function buildLed(type: LedType, count: number, screen: THREE.Material): LedModel {
+// wholeFrame：折疊時每一面都顯示完整、正向的畫面（示範影片用，因為它不是頭對頭格式）
+// 否則照素材指南的畫布排法（兩折頭對頭；三折 A右半｜B｜A左半）
+export function buildLed(type: LedType, count: number, screen: THREE.Material, wholeFrame = false): LedModel {
   const d = LED_DIMS[type], two = d.two, g = new THREE.Group();
   const n = count, gap = 0.004, uw = d.w, W = n * uw + (n - 1) * gap, H = d.sh, base = d.base;
   const frameM = M("#15171a", { roughness: 0.45, metalness: 0.3 }), baseM = M("#1f2226", { roughness: 0.5, metalness: 0.3 }), chrome = M("#c9ced4", { metalness: 0.85, roughness: 0.25 });
@@ -54,8 +56,14 @@ export function buildLed(type: LedType, count: number, screen: THREE.Material): 
   }));
   const grille = two ? new THREE.MeshStandardMaterial({ map: grilleTexture(), roughness: 0.8 }) : null;
 
-  type Unit = { Up?: THREE.Group; fl?: THREE.Mesh; fu?: THREE.Mesh; uvs?: { open: Float32Array; foldL: Float32Array; foldU: Float32Array }; P1?: THREE.Group; P3?: THREE.Group };
+  type Unit = { Up?: THREE.Group; P1?: THREE.Group; P3?: THREE.Group };
   const units: Unit[] = [];
+  // 折疊後要換 UV 的螢幕面：open＝展開時，fold＝折疊時（map 對每個 u、v 分別轉換）
+  const swaps: { attr: THREE.BufferAttribute; open: Float32Array; fold: Float32Array }[] = [];
+  const addSwap = (m: THREE.Mesh, fu: (u: number) => number, fv: (v: number) => number) => {
+    const attr = m.geometry.attributes.uv as THREE.BufferAttribute, open = Float32Array.from(attr.array as Float32Array);
+    swaps.push({ attr, open, fold: open.map((v, k) => (k % 2 === 0 ? fu(v) : fv(v))) });
+  };
   for (let i = 0; i < n; i++) {
     const x = -W / 2 + uw / 2 + i * (uw + gap), U = new THREE.Group(); U.position.x = x; g.add(U);
     const ua = (x - uw / 2 + W / 2) / W, ub = (x + uw / 2 + W / 2) / W;
@@ -73,13 +81,16 @@ export function buildLed(type: LedType, count: number, screen: THREE.Material): 
       const Up = new THREE.Group(); Up.position.set(0, hh, -0.0175); L.add(Up);
       box(uw, hh, 0.035, frameM, 0, hh / 2, 0.0175, Up);
       const fu = face(uw - 0.012, hh - 0.004, ua, ub, 0.5, 1); fu.position.set(0, hh / 2, 0.0356); Up.add(fu);
-      // 折疊時依素材指南「頭對頭」畫布：上半＝面 1 正向，下半＝面 2 旋轉 180°
-      // 下片（正面）顯示下半並轉正，上片（翻到背面）顯示上半並轉正
-      const open = Float32Array.from(fl.geometry.attributes.uv.array as Float32Array);
-      const openU = Float32Array.from(fu.geometry.attributes.uv.array as Float32Array);
-      const foldL = open.map((v, k) => (k % 2 === 0 ? ua + ub - v : 0.5 - v));
-      const foldU = openU.map((v, k) => (k % 2 === 0 ? ua + ub - v : 1.5 - v));
-      units.push({ Up, fl, fu, uvs: { open: Float32Array.from([...open, ...openU]), foldL, foldU } });
+      // 上片往後翻 180° 後，從背面看畫面會轉 180°，UV 反轉抵銷，兩面都呈現正向
+      if (wholeFrame) {
+        addSwap(fl, u => u, v => v * 2); // 正面：整張
+        addSwap(fu, u => ua + ub - u, v => 2 - 2 * v); // 背面：整張，轉正
+      } else {
+        // 素材指南「頭對頭」畫布：上半＝面 1 正向，下半＝面 2 旋轉 180°
+        addSwap(fl, u => ua + ub - u, v => 0.5 - v);
+        addSwap(fu, u => ua + ub - u, v => 1.5 - v);
+      }
+      units.push({ Up });
     } else {
       // 底座：平板＋4 輪；螢幕 640＋左右各 320（像素 344＋172×2）
       const pw = uw / 4, cw = uw / 2, r = 0.035, plateW = uw * 0.75;
@@ -88,10 +99,13 @@ export function buildLed(type: LedType, count: number, screen: THREE.Material): 
       const C = new THREE.Group(); C.position.y = base; U.add(C);
       box(cw, H, 0.035, frameM, 0, H / 2, 0, C);
       const fc = face(cw - 0.008, H - 0.004, ua + (ub - ua) * 0.25, ua + (ub - ua) * 0.75, 0, 1); fc.position.set(0, H / 2, 0.0181); C.add(fc);
+      if (wholeFrame) addSwap(fc, u => (u - ua - (ub - ua) * 0.25) * 2, v => v);
       const side = (s: number) => {
         const hinge = new THREE.Group(); hinge.position.set(s * cw / 2, 0, -0.018); C.add(hinge);
         box(pw, H, 0.035, frameM, s * pw / 2, H / 2, 0.018, hinge);
         const f = face(pw - 0.008, H - 0.004, s < 0 ? ua : ua + (ub - ua) * 0.75, s < 0 ? ua + (ub - ua) * 0.25 : ub, 0, 1); f.position.set(s * pw / 2, H / 2, 0.0361); hinge.add(f);
+        // 折到背面後，左片在觀眾右手邊：左片顯示右半、右片顯示左半，合成完整背面
+        if (wholeFrame) addSwap(f, s < 0 ? u => 0.5 + (u - ua) * 2 : u => (u - ua - (ub - ua) * 0.75) * 2, v => v);
         return hinge;
       };
       units.push({ P1: side(-1), P3: side(1) });
@@ -102,20 +116,17 @@ export function buildLed(type: LedType, count: number, screen: THREE.Material): 
   const setFold = (k: number) => units.forEach(u => {
     if (u.Up) {
       u.Up.rotation.x = -Math.PI * k;
-      const want = k > 0.5;
-      if (want !== folded) {
-        const uvL = u.fl!.geometry.attributes.uv, uvU = u.fu!.geometry.attributes.uv;
-        const half = uvL.array.length;
-        (uvL.array as Float32Array).set(want ? u.uvs!.foldL : u.uvs!.open.subarray(0, half));
-        (uvU.array as Float32Array).set(want ? u.uvs!.foldU : u.uvs!.open.subarray(half));
-        uvL.needsUpdate = uvU.needsUpdate = true;
-      }
     } else {
       u.P1!.rotation.y = -Math.PI * k;
       u.P3!.rotation.y = Math.PI * k;
     }
   });
-  const setFoldTracked = (k: number) => { setFold(k); folded = k > 0.5; };
+  const setFoldTracked = (k: number) => {
+    setFold(k);
+    const want = k > 0.5;
+    if (want !== folded) swaps.forEach(w => { (w.attr.array as Float32Array).set(want ? w.fold : w.open); w.attr.needsUpdate = true; });
+    folded = want;
+  };
   setFoldTracked(0);
 
   return {
