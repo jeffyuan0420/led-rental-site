@@ -183,6 +183,7 @@
     "quote_setup_half": "Setup assistance, half day ({count} staff)",
     "quote_setup_full": "Setup assistance, full day ({count} staff)",
     "quote_subtotal": "Subtotal",
+    "quote_over_stock": "{stock} unit(s) available now — contact sales for the other {extra}",
     "quote_note": "Includes events up to {days} days per unit. Night teardown, weekend and floor surcharges per the cost calculator; over {days} days please contact sales"
   },
   "calculator": {

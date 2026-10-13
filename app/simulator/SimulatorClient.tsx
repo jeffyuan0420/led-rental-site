@@ -53,9 +53,10 @@ export default function SimulatorClient() {
     fetch("/api/inventory").then(r => r.json()).then(setStock).catch(() => {});
   }, []);
 
-  // 可選台數：拼接上限與庫存取小者；折疊時只能 1 台
-  const maxQty = Math.max(1, Math.min(config.maxQty, stock[machineType] ?? config.maxQty));
+  // 可選台數：模擬看效果，一律可選到拼接上限；超過庫存只在報價卡提示（預約頁仍依庫存擋）。折疊時只能 1 台
+  const maxQty = config.maxQty;
   const effectiveQty = folded ? 1 : Math.min(quantity, maxQty);
+  const inStock = stock[machineType] ?? maxQty;
   const req = requiredPx(machineType, effectiveQty);
   const fit = upload ? checkFit(upload.w, upload.h, req) : null;
   const media = useMemo(
@@ -279,6 +280,9 @@ export default function SimulatorClient() {
               <span>NT${(rentalFee + setupFee).toLocaleString()}</span>
             </div>
           </div>
+          {effectiveQty > inStock && (
+            <p className="text-xs text-red-600 font-semibold mt-2 bg-red-50 rounded p-2">⚠️ {t("quote_over_stock", { stock: inStock, extra: effectiveQty - inStock })}</p>
+          )}
           <p className="text-xs text-gray-400 mt-2">{t("quote_note", { days: RATES.maxDays })}</p>
           <div className="flex gap-3 mt-4">
             <Link href={`/booking?type=${machineType}&qty=${effectiveQty}&setup=${setupOption}`}

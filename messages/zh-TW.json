@@ -183,6 +183,7 @@
     "quote_setup_half": "設定協助半天（{count} 人）",
     "quote_setup_full": "設定協助整天（{count} 人）",
     "quote_subtotal": "小計",
+    "quote_over_stock": "目前可租 {stock} 台，另外 {extra} 台請洽業務確認",
     "quote_note": "每台含 {days} 天內活動。夜間撤場、假日、樓層搬運等加價依費用試算為準；超過 {days} 天請洽業務"
   },
   "calculator": {
