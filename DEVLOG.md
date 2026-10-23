@@ -5,6 +5,18 @@
 
 ---
 
+## v1.10.2 — 2026-10-23：安全更新，Next.js 升到 16.4.2
+
+**變更：**
+- `package.json`／`package-lock.json`：`next` 與 `eslint-config-next` 從 16.2.4 升到 16.4.2
+
+**原因：**
+- 2026-10 Next.js 安全公告：16.4.0 以前有多個 critical 漏洞（圖片最佳化處理 SVG/AVIF、next/og、`use cache` 可遠端執行程式、Windows 主機 RCE），以及 SSRF、middleware 繞過、Server Actions DoS。修補版 16.4.2。
+
+**已驗證：** 本機 `npm run build` 通過；`npm audit` critical 歸零；剩下的 high 都在 eslint/建置工具鏈與其他套件（另案處理）。**未驗證：** 線上實際瀏覽（尚未推送部署）。
+
+---
+
 ## v1.10.1 — 2026-10-13：模擬器三折機恢復可選 3 台
 
 **變更：**
